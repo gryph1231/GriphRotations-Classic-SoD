@@ -1789,12 +1789,12 @@ function BindPadCore.GameTooltipSetItemByID(self, itemID)
     BindPadCore.InsertBindingTooltip(concat("ITEM ", GetItemInfo(itemID)));
 end
 
-function BindPadCore.GameTooltipSetBagItem(self, bag, slot)
-    local itemID = GetContainerItemID(bag, slot);
-    if itemID then
-        BindPadCore.InsertBindingTooltip(concat("ITEM ", GetItemInfo(itemID)));
-    end
-end
+-- function BindPadCore.GameTooltipSetBagItem(self, bag, slot)
+--     local itemID = GetContainerItemID(bag, slot);
+--     if itemID then
+--         BindPadCore.InsertBindingTooltip(concat("ITEM ", GetItemInfo(itemID)));
+--     end
+-- end
 
 function BindPadCore.GameTooltipSetSpellByID(self, spellID)
     BindPadCore.InsertBindingTooltip(concat("SPELL ", GetSpellInfo(spellID)));
@@ -1809,7 +1809,7 @@ function BindPadCore.GameTooltipSetAction(self, slot)
 end
 
 hooksecurefunc(GameTooltip, "SetItemByID", function(...) return BindPadCore.GameTooltipSetItemByID(...) end);
-hooksecurefunc(GameTooltip, "SetBagItem", function(...) return BindPadCore.GameTooltipSetBagItem(...) end);
+-- hooksecurefunc(GameTooltip, "SetBagItem", function(...) return BindPadCore.GameTooltipSetBagItem(...) end);
 hooksecurefunc(GameTooltip, "SetSpellByID", function(...) return BindPadCore.GameTooltipSetSpellByID(...) end);
 hooksecurefunc(GameTooltip, "SetSpellBookItem", function(...) return BindPadCore.GameTooltipSetSpellBookItem(...) end);
 hooksecurefunc(GameTooltip, "SetAction", function(...) return BindPadCore.GameTooltipSetAction(...) end);
