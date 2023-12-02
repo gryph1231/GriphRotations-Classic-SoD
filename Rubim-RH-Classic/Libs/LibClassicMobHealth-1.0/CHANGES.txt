@@ -1,0 +1,24 @@
+commit daa2bd0e01449455575b04f9a83916f9b6b9efcb
+Author: Pneumatus <pneumatus@curseforge>
+Date:   Sat Jun 1 22:03:33 2019 +0100
+
+    Remove the remaining focus logic, no focus in classic.
+
+commit f97e899349d8f420c9d614e394ee6f25f7bbd149
+Author: Pneumatus <pneumatus@curseforge>
+Date:   Tue May 28 08:54:16 2019 +0100
+
+    Simplify some duplicated logic
+
+commit 98f7e2f02ed616206e226dbc27e345d59f276025
+Author: Pneumatus <pneumatus@curseforge>
+Date:   Mon May 27 21:01:33 2019 +0100
+
+    Remove debug
+
+commit 596aaeb7ea745246d8cd3cf669ee59603c645193
+Author: Pneumatus <pneumatus@curseforge>
+Date:   Mon May 27 20:20:09 2019 +0100
+
+    Initial import
+
