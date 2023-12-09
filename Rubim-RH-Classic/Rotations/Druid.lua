@@ -273,7 +273,6 @@ local I = Item.Druid;
 
 
 
-S.Wrath:RegisterInFlight()
 
 
 

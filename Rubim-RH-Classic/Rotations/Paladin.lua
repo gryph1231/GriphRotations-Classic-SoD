@@ -108,12 +108,21 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 		return I.autoattack:ID()
 	end
 
-	if S.SealofRighteousness:CanCast() and not Player:Buff(S.SealofRighteousness) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-		return S.SealofRighteousness:Cast()
+	-- if S.SealofRighteousness:CanCast() and not Player:Buff(S.SealofRighteousness) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+	-- 	return S.SealofRighteousness:Cast()
+	-- end
+	
+	if S.CrusaderStrike:CanCast(Target) then
+		return S.CrusaderStrike:Cast()
 	end
-		
 
+	if S.DivineStorm:CanCast(Target) then
+		return S.DivineStorm:Cast()
+	end
 
+	if S.SealofCommand:CanCast() and Player:BuffRemains(S.SealofCommand) then
+		return S.DivineStorm:Cast()
+	end
 
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\prot.tga", false
 end
@@ -128,11 +137,22 @@ end
 
 
 	
-		
-		if S.SealofRighteousness:CanCast() and Player:BuffRemains(S.SealofRighteousness)<2 then
-			return S.SealofRighteousness:Cast()
-		end
-			
+
+	-- if S.SealofRighteousness:CanCast() and not Player:Buff(S.SealofRighteousness) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+	-- 	return S.SealofRighteousness:Cast()
+	-- end
+	
+	if S.CrusaderStrike:CanCast(Target) then
+		return S.CrusaderStrike:Cast()
+	end
+
+	if S.DivineStorm:CanCast(Target) then
+		return S.DivineStorm:Cast()
+	end
+
+	if S.SealofCommand:CanCast() and Player:BuffRemains(S.SealofCommand) then
+		return S.DivineStorm:Cast()
+	end
 	
 	
 	
