@@ -108,7 +108,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
     end
 
     if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt1:InFlight()) and not Target:IsDeadOrGhost() then 
-        if not IsCurrentSpell(6603) and TargetinRange(37) then
+        if not IsCurrentSpell(6603)  then
             return Item(135274, { 13, 14 }):ID()
         end
     
@@ -136,7 +136,7 @@ end
     end
 
     if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt1:InFlight()) and not Target:IsDeadOrGhost() then 
-        if not IsCurrentSpell(6603) and TargetinRange(37) then
+        if not IsCurrentSpell(6603) then
             return Item(135274, { 13, 14 }):ID()
         end
     
