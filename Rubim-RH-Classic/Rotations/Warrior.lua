@@ -14,14 +14,18 @@ local Item = HL.Item;
 
 RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
+
     RagingBlow = Spell(402911),
+    ragingblow = Spell(1464),--war stomp
+
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
     Rend = Spell(6547),
     QuickStrike = Spell(429765),
+    quickStrike = Spell(20560), --mocking blow
     HeroicStrike = Spell(1608),
     Cleave = Spell(845),
-	Warstomp = Spell(20549),
+	-- Warstomp = Spell(20549),
 	Whirlwind = Spell(1680),
 	Bloodthirst = Spell(23881),
 	Bloodrage = Spell(2687),
@@ -196,11 +200,12 @@ local function APL()
 -- 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 	
-		if S.ConsumedByRage:CanCast(Player) and not AuraUtil.FindAuraByName("Consumed By Rage", "player") and targetRange5 then
+
+		
+    if S.Bloodrage:CanCast(Player) and not AuraUtil.FindAuraByName("Bloodrage", "player") and targetRange25 and not AuraUtil.FindAuraByName("Consumed By Rage", "player")  then
 		return S.Bloodrage:Cast()
 	end
-	
-	
+
 	if not IsCurrentSpell(6603) and HL.CombatTime()>1 and targetRange5 then
 		return I.autoattack:ID()
 	end
@@ -209,7 +214,7 @@ local function APL()
 
 
     if (AuraUtil.FindAuraByName("Consumed By Rage", "player")  or not AuraUtil.FindAuraByName("Bloodrage", "player") ) and S.RagingBlow:CanCast(Target) and targetRange5 then
-        return S.RagingBlow:Cast()
+        return S.ragingblow:Cast()
     end
 
     if S.Overpower:CanCast(Target) and targetRange5 then
@@ -224,8 +229,8 @@ local function APL()
         return S.Rend:Cast()
     end	
 
-	if S.QuickStrike:CanCast() and targetRange5 and targetRange5 then
-        return S.QuickStrike:Cast()
+	if S.QuickStrike:CanCast() and targetRange5 then
+        return S.quickStrike:Cast()
      end
 
 	if S.Cleave:CanCast() and targetRange5 and inRange5>=2 then
