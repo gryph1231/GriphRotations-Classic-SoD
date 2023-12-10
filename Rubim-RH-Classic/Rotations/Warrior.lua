@@ -216,7 +216,7 @@ local function APL()
         return S.Overpower:Cast()
     end	
 
-	if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>20 then
+	if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>20 and Target:DebuffStack(S.SunderArmor)<5 then
         return S.SunderArmor:Cast()
     end	
 
