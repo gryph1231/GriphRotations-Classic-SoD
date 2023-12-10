@@ -13,8 +13,14 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 
 RubimRH.Spell[1] = {
-    HeroicStrike = Spell(25286),
-    Rend = Spell(772),
+    ConsumedByRage = Spell(425418),
+    RagingBlow = Spell(402911),
+    Overpower = Spell(7384),
+    SunderArmor = Spell(7405),
+    Rend = Spell(6547),
+    QuickStrike = Spell(429765),
+    HeroicStrike = Spell(1608),
+    Cleave = Spell(845),
 	Warstomp = Spell(20549),
 	Whirlwind = Spell(1680),
 	Bloodthirst = Spell(23881),
@@ -22,7 +28,7 @@ RubimRH.Spell[1] = {
 	Execute = Spell(20662),
 	Slam = Spell(11605),
 	BattleShout = Spell(25289),
-	Cleave = Spell(20569),
+	
 	ThunderClap = Spell(11581),
 	
 };
@@ -70,6 +76,114 @@ local function TargetInRange(spellName)
 end
 
 
+local function target_is_dummy()
+    local x = UnitName("target")
+    local targetisdummy = false
+
+    if x then
+        name = x:sub(-5)
+    end
+
+    if Target:Exists() then
+        if name == 'Dummy' or name == 'elist' then
+            targetisdummy = true
+        end
+    else
+        targetisdummy = false
+    end
+
+    return targetisdummy
+end
+
+local function AreaTTD()
+local currHealth = {}
+local currHealthMax = {}
+local areaTTD = {}
+
+    for id = 1, 40 do
+        local unitID = "nameplate" .. id
+        if UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) 
+        and ((UnitHealth(unitID) / UnitHealthMax(unitID)) * 100) < 100 then
+            table.insert(currHealth, UnitHealth(unitID))
+            table.insert(currHealthMax, UnitHealthMax(unitID))
+            if #currHealthMax >= 1 then
+                for id = 1, #currHealthMax do
+                    dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) / HL.CombatTime("nameplate" .. #currHealthMax)
+                    areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
+                end
+            end
+        end
+    end
+    
+    local count = 1
+    local highest = 0
+
+    for count = 1, #currHealthMax do
+        if areaTTD[count] > highest then 
+            highest = areaTTD[count]
+        end
+        count = count + 1
+    end
+    
+	if highest ~= 0 then
+		return highest
+	else
+		return 9999
+	end
+
+end
+
+local function TargetTTD()
+    local currHealth = {}
+    local currHealthMax = {}
+    local allGUID = {}
+    local areaTTD = {}
+    local areaTTD_Predicted = {}
+    local areaDPS = {}
+    local count = 1
+    local highest = 0
+
+    for id = 1, 40 do
+        local unitID = "nameplate" .. id
+        if UnitCanAttack("player", unitID)
+            and ((UnitHealth(unitID) / UnitHealthMax(unitID)) * 100) < 100 then
+            if UnitGUID('Target') then
+                currTarget = UnitGUID('Target')
+            end
+
+            table.insert(allGUID, UnitGUID(unitID))
+            table.insert(currHealth, UnitHealth(unitID))
+            table.insert(currHealthMax, UnitHealthMax(unitID))
+
+            if #allGUID >= 1 and UnitGUID('Target') then
+                while (UnitGUID('Target') ~= allGUID[count]) do
+                    count = count + 1
+                    break
+                end
+            end
+
+            if #currHealthMax >= 1 then
+                for id = 1, #currHealthMax do
+                    dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) /
+                        HL.CombatTime("nameplate" .. #currHealthMax)
+                    if #currHealthMax ~= count then
+                        areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
+                        --areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / (dps + playerDPS)
+                    else
+                        areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / dps
+                    end
+                end
+            end
+        end
+    end
+    if target_is_dummy() then
+        return 8675309
+    elseif #currHealthMax >= 1 and areaTTD_Predicted[count] then
+        return areaTTD_Predicted[count]
+    else
+        return 1
+    end
+end
 
 local function APL()
 
@@ -82,62 +196,45 @@ local function APL()
 -- 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 	
-		if S.Bloodrage:CanCast(Player) and Player:Rage()<80 and targetRange5 then
+		if S.ConsumedByRage:CanCast(Player) and not AuraUtil.FindAuraByName("Consumed By Rage", "player") and targetRange5 then
 		return S.Bloodrage:Cast()
 	end
 	
 	
-	if not IsCurrentSpell(6603) and HL.CombatTime()>2 then
+	if not IsCurrentSpell(6603) and HL.CombatTime()>1 and targetRange5 then
 		return I.autoattack:ID()
 	end
 	
 		
 
--- Whirlwind IconWhirlwind — Whirlwind IconWhirlwind takes over as your top priority spell when fighting multiple enemies at once for the extra AoE damage.
-	
-	if S.Whirlwind:CanCast() and inRange5>=2 and RubimRH.AoEON() then
-        return S.Whirlwind:Cast()
-     end
--- Thunder Clap IconThunder Clap — Thunder Clap IconThunder Clap is not one of your main abilities, but as it is not limited to 4 targets like Whirlwind IconWhirlwind is, you will want to use this on large AoE pulls.
-	
-	if S.ThunderClap:CanCast() and inRange5>=4 and RubimRH.AoEON() then
-        return S.ThunderClap:Cast()
-     end
--- Cleave IconCleave — You replace Heroic Strike IconHeroic Strike with Cleave IconCleave in AoE situations to hit as many targets as possible. This is even better when paired together with Glyph of Cleaving Icon Glyph of Cleaving.
-	if S.Cleave:CanCast() and inRange5>=2 and RubimRH.AoEON() then
-        return S.Cleave:Cast()
-     end
--- After this you will go back into your Single-Target rotation until a higher-priority AoE ability is ready.
-	
-	
--- Sunder Armor IconSunder Armor — Sunder Armor IconSunder Armor remains your best opening ability on bosses, increasing all Physical damage taken. You do not need to do this if someone else, such as a Rogue, is applying an Armor reduction debuff.
-	if S.SunderArmor:CanCast(Target) and Target:TimeToDie()>20 and Target:DebuffStack(S.FesteringWoundDebuff) <= 5 then
+
+    if (AuraUtil.FindAuraByName("Consumed By Rage", "player")  or not AuraUtil.FindAuraByName("Bloodrage", "player") ) and S.RagingBlow:CanCast(Target) and targetRange5 then
+        return S.RagingBlow:Cast()
+    end
+
+    if S.Overpower:CanCast(Target) and targetRange5 then
+        return S.Overpower:Cast()
+    end	
+
+	if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>20 then
         return S.SunderArmor:Cast()
     end	
--- Bloodthirst IconBloodthirst — This spell is the bread and butter of a Fury Warrior's rotation. It has a very low cooldown, letting you use it constantly. Make sure to use this ability as much as possible. It also has a 20% chance to proc Bloodsurge IconBloodsurge.
-	if S.Bloodthirst:CanCast(Target) then
-        return S.Bloodthirst:Cast()
+
+	if S.Rend:CanCast()  and targetRange5 and not Target:Debuff(S.Rend) and TargetTTD()>15 then
+        return S.Rend:Cast()
     end	
--- Whirlwind IconWhirlwind — Whirlwind IconWhirlwind is your highest damage-dealing ability due to you wielding 2 two-handed weapons along with the talent Improved Whirlwind IconImproved Whirlwind. In situations with multiple targets, prioritize using Whirlwind IconWhirlwind over Bloodthirst IconBloodthirst as the AoE damage gained will outweigh the lost cooldown of Bloodthirst IconBloodthirst. It also has a 20% chance to proc Bloodsurge IconBloodsurge.
-	if S.Whirlwind:CanCast() and inRange5>=2 then
-        return S.Whirlwind:Cast()
-    end	
--- Slam IconSlam — You will want to use Slam IconSlam after your two primary abilities are on cooldown if you have a Bloodsurge IconBloodsurge proc. Be aware of your buffs and do not use Slam IconSlam without a Bloodsurge IconBloodsurge proc as it will not be instant cast.
-	if S.Slam:CanCast(Target) and not Player:IsMoving() then
-        return S.Slam:Cast()
-    end	
--- Heroic Strike IconHeroic Strike — You will start using Heroic Strike IconHeroic Strike when you have more than 60 Rage to prevent wasting excess Rage. This is great when paired with Glyph of Heroic Strike Icon Glyph of Heroic Strike for a bit of a Rage refund. It also has a 20% chance to proc Bloodsurge IconBloodsurge.
-	if S.HeroicStrike:CanCast(Target) then
+
+	if S.QuickStrike:CanCast() and targetRange5 and targetRange5 then
+        return S.QuickStrike:Cast()
+     end
+
+	if S.Cleave:CanCast() and targetRange5 and inRange5>=2 then
+        return S.Cleave:Cast()
+     end
+
+     if S.HeroicStrike:CanCast() and targetRange5 then
         return S.HeroicStrike:Cast()
-    end	
--- Execute IconExecute — Execute IconExecute has dropped from being one of your highest-priority spells to your lowest as it has been nerfed greatly in WotLK.
-	if S.Execute:CanCast(Target) then
-        return S.Execute:Cast()
-    end	
-
-
-
-
+     end
 
 
   
