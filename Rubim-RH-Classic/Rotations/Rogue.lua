@@ -36,7 +36,7 @@ tott = Spell(57934),
 Gouge = Spell(1776),
 Kick = Spell(1766),
 Shiv = Spell(5938),
-SinisterStrike = Spell(1752), 
+SinisterStrike = Spell(1757), 
 Sprint = Spell(11305),
 WilloftheForsaken = Spell(7744),
 AdrenalineRush = Spell(13750),
@@ -196,9 +196,9 @@ local function APL()
     targetRange5 = TargetInRange("Sinister Strike")
     targetRange30 = TargetInRange("Throw")
 
-    -- print(inRange30)
+-- print(UnitLevel("player"))
 
-
+-- print(Spell(select(7,GetSpellInfo("Sinister Strike"))):CanCast())
 
 
             if Target:Exists() and Player:CanAttack(Target) then
