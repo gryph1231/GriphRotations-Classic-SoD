@@ -16,7 +16,7 @@ RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
 
     RagingBlow = Spell(402911),
-    ragingblow = Spell(1464),--war stomp
+    ragingblow = Spell(20549),--war stomp
 
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
