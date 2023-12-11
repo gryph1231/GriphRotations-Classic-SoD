@@ -14,9 +14,9 @@ local Item = HL.Item;
 
 RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
-
+    Enrage = Spell(425415),
     RagingBlow = Spell(402911),
-    ragingblow = Spell(20549),--war stomp
+    ragingblow = Spell(355),--taunt
 
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
@@ -202,18 +202,15 @@ local function APL()
 	
 
 		
-    if S.Bloodrage:CanCast(Player) and not AuraUtil.FindAuraByName("Bloodrage", "player") and targetRange25 and not AuraUtil.FindAuraByName("Consumed By Rage", "player")  then
+    if S.Bloodrage:CanCast(Player) and not Player:Buff(S.Bloodrage) and targetRange25 and not Player:Buff(S.Enrage) and Player:Rage()<25 and RubimRH.CDsON() then
 		return S.Bloodrage:Cast()
 	end
 
 	if not IsCurrentSpell(6603) and HL.CombatTime()>1 and targetRange5 then
 		return I.autoattack:ID()
 	end
-	
-		
-
-
-    if (AuraUtil.FindAuraByName("Consumed By Rage", "player")  or not AuraUtil.FindAuraByName("Bloodrage", "player") ) and S.RagingBlow:CanCast(Target) and targetRange5 then
+    
+    if S.RagingBlow:CanCast(Target) and targetRange5 then
         return S.ragingblow:Cast()
     end
 
@@ -221,7 +218,7 @@ local function APL()
         return S.Overpower:Cast()
     end	
 
-	if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>20 and Target:DebuffStack(S.SunderArmor)<5 then
+	if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>60 and TargetTTD()<1000 and Target:DebuffStack(S.SunderArmor)<5 then
         return S.SunderArmor:Cast()
     end	
 
@@ -229,18 +226,21 @@ local function APL()
         return S.Rend:Cast()
     end	
 
-	if S.QuickStrike:CanCast() and targetRange5 then
-        return S.quickStrike:Cast()
-     end
-
-	if S.Cleave:CanCast() and targetRange5 and inRange5>=2 then
+    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage)) and targetRange5 then
+	
+    	if S.Cleave:CanCast() and inRange5>=2 then
         return S.Cleave:Cast()
-     end
+        end
 
-     if S.HeroicStrike:CanCast() and targetRange5 then
+        if S.QuickStrike:CanCast() then
+        return S.quickStrike:Cast()
+        end
+
+        if S.HeroicStrike:CanCast() then
         return S.HeroicStrike:Cast()
-     end
+        end
 
+    end
 
   
 	
