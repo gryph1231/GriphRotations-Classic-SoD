@@ -39,7 +39,11 @@ RubimRH.Spell[1] = {
 	Bloodrage = Spell(2687),
 	-- Execute = Spell(20662),
 	Slam = Spell(11605),
-	BattleShout = Spell(25289),
+	BattleShout1 = Spell(6673),
+    BattleShout2 = Spell(5242),
+
+    BattleShout3 = Spell(6192),
+
 	
 	ThunderClap = Spell(11581),
 	
@@ -279,12 +283,21 @@ end
 -- Out of combat
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
 
-	if S.BattleShout:CanCast(Player) 
-	and not AuraUtil.FindAuraByName("Battle Shout", "player")  and inRange20==0
-	and Player:BuffRemains(S.BattleShout)<60 then
-		return S.BattleShout:Cast()
+	if S.BattleShout1:CanCast(Player) 
+	and not AuraUtil.FindAuraByName("Battle Shout", "player") and Player:IsMoving()and inRange25>=1
+	and Player:BuffRemains(S.BattleShout1)<60 then
+		return S.BattleShout1:Cast()
 	end
-
+	if S.BattleShout2:CanCast(Player) 
+	and not AuraUtil.FindAuraByName("Battle Shout", "player")  and Player:IsMoving() and inRange25>=1
+	and Player:BuffRemains(S.BattleShout2)<60 then
+		return S.BattleShout2:Cast()
+	end
+    if S.BattleShout3:CanCast(Player) 
+	and not AuraUtil.FindAuraByName("Battle Shout", "player") and Player:IsMoving() and inRange25>=1
+	and Player:BuffRemains(S.BattleShout3)<60 then
+		return S.BattleShout3:Cast()
+	end
 
 if S.Charge:CanCast() and targetRange25 then
     return S.Charge:Cast()
