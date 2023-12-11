@@ -17,19 +17,27 @@ RubimRH.Spell[1] = {
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
     ragingblow = Spell(355),--taunt
-
+    Charge = Spell(100),
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
-    Rend = Spell(6547),
+    Execute = Spell(5308),
+    Rend1 = Spell(772),
+    Rend2 = Spell(6546),
+
+    Rend3 = Spell(6547),
+
     QuickStrike = Spell(429765),
     quickStrike = Spell(20560), --mocking blow
     HeroicStrike = Spell(1608),
+    HeroicStrike2 = Spell(284),
+    HeroicStrike3 = Spell(285),
+    HeroicStrike1 = Spell(78),
     Cleave = Spell(845),
 	-- Warstomp = Spell(20549),
 	Whirlwind = Spell(1680),
 	Bloodthirst = Spell(23881),
 	Bloodrage = Spell(2687),
-	Execute = Spell(20662),
+	-- Execute = Spell(20662),
 	Slam = Spell(11605),
 	BattleShout = Spell(25289),
 	
@@ -222,12 +230,22 @@ local function APL()
         return S.SunderArmor:Cast()
     end	
 
-	if S.Rend:CanCast()  and targetRange5 and not Target:Debuff(S.Rend) and TargetTTD()>15 then
-        return S.Rend:Cast()
+	if S.Rend1:CanCast()  and targetRange5 and not Target:Debuff(S.Rend1) and TargetTTD()>15 then
+        return S.Rend1:Cast()
+    end	
+    if S.Rend2:CanCast()  and targetRange5 and not Target:Debuff(S.Rend2) and TargetTTD()>15 then
+        return S.Rend2:Cast()
+    end	
+    if S.Rend3:CanCast()  and targetRange5 and not Target:Debuff(S.Rend3) and TargetTTD()>15 then
+        return S.Rend3:Cast()
     end	
 
-    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage)) and targetRange5 then
+    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or UnitLevel('player')<20) and targetRange5 then
 	
+        if S.Execute:CanCast() and Target:HealthPercentage()<=20 then
+            return S.Execute:Cast()
+        end
+
     	if S.Cleave:CanCast() and inRange5>=2 then
         return S.Cleave:Cast()
         end
@@ -239,11 +257,20 @@ local function APL()
         if S.HeroicStrike:CanCast() then
         return S.HeroicStrike:Cast()
         end
+        if S.HeroicStrike1:CanCast() then
+            return S.HeroicStrike1:Cast()
+        end
+        if S.HeroicStrike2:CanCast() then
+            return S.HeroicStrike2:Cast()
+        end
+        if S.HeroicStrike3:CanCast() then
+            return S.HeroicStrike3:Cast()
+        end
 
     end
 
-  
-	
+
+
 	
 end
 
@@ -259,7 +286,9 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 	end
 
 
-
+if S.Charge:CanCast() and targetRange25 then
+    return S.Charge:Cast()
+end
 
 
 
