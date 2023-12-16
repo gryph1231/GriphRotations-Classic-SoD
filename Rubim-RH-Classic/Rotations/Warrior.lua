@@ -16,7 +16,7 @@ RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
-    ragingblow = Spell(355),--taunt
+    ragingblow = Spell(20594),--taunt
     Charge = Spell(100),
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
@@ -28,7 +28,7 @@ RubimRH.Spell[1] = {
 
     QuickStrike = Spell(429765),
     quickStrike = Spell(20560), --mocking blow
-    HeroicStrike = Spell(1608),
+    HeroicStrike4 = Spell(1608),
     HeroicStrike2 = Spell(284),
     HeroicStrike3 = Spell(285),
     HeroicStrike1 = Spell(78),
@@ -201,18 +201,97 @@ local function TargetTTD()
     end
 end
 
+
+local function IsReady(spell,range_check,aoe_check)
+    local start,duration,enabled = GetSpellCooldown(tostring(spell))
+    local usable, noMana = IsUsableSpell(tostring(spell))
+    local range_counter = 0
+    
+    if duration and start then
+    cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
+    --gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
+    end
+    
+    if cooldown_remains and cooldown_remains < 0 then
+    cooldown_remains = 0
+    end
+    
+    -- if gcd_remains and gcd_remains < 0 then
+    -- gcd_remains = 0
+    -- end
+    
+    if aoe_check then
+    if Spell then
+    for i = 1, 40 do
+    local unitID = "nameplate" .. i
+    if UnitExists(unitID) then          
+    local nameplate_guid = UnitGUID(unitID)
+    local npc_id = select(6, strsplit("-", nameplate_guid))
+    if npc_id ~= '120651' and npc_id ~= '161895' then
+    if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+    range_counter = range_counter + 1
+    end                    
+    end
+    end
+    end
+    end
+    end
+    
+    
+    -- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
+    if usable and enabled and cooldown_remains < 0.5 then
+    if range_check then
+    if IsSpellInRange(tostring(spell), "target") then
+    return true
+    else
+    return false
+    end
+    elseif aoe_check then
+    if range_counter >= aoe_check then
+    return true
+    else
+    return false
+    end
+    elseif range_check and aoe_check then
+    return 'Input range check or aoe check, not both'
+    elseif not range_check and not aoe_check then
+    return true
+    end
+    elseif not enabled then
+    return 'Spell not learned'
+    else
+    return false
+    end
+    end
+
+
 local function APL()
 
-    inRange5 = RangeCount("Heroic Strike")
+    inRange5 = RangeCount("Rend")
     inRange25 = RangeCount("Charge")
 
-    targetRange5 = TargetInRange("Heroic Strike")
+    targetRange5 = TargetInRange("Rend")
     targetRange25 = TargetInRange("Charge")
+    local _,_,_,_,_,expirationTime = AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL")
 
 -- 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 	
-
+        if S.BattleShout1:CanCast() 
+        and Player:IsMoving() and not AuraUtil.FindAuraByName("Battle Shout", "player") 
+        and Player:BuffRemains(S.BattleShout1)<45 then
+            return S.BattleShout1:Cast()
+        end
+        -- if S.BattleShout2:CanCast(Player) 
+        -- and not AuraUtil.FindAuraByName("Battle Shout", "player")  and Player:IsMoving() and inRange25>=1
+        -- and Player:BuffRemains(S.BattleShout2)<60 then
+        --     return S.BattleShout2:Cast()
+        -- end
+        -- if S.BattleShout3:CanCast(Player) 
+        -- and not AuraUtil.FindAuraByName("Battle Shout", "player") and Player:IsMoving() and inRange25>=1
+        -- and Player:BuffRemains(S.BattleShout3)<60 then
+        --     return S.BattleShout3:Cast()
+        -- end
 		
     if S.Bloodrage:CanCast(Player) and not Player:Buff(S.Bloodrage) and targetRange25 and not Player:Buff(S.Enrage) and Player:Rage()<25 and RubimRH.CDsON() then
 		return S.Bloodrage:Cast()
@@ -222,7 +301,7 @@ local function APL()
 		return I.autoattack:ID()
 	end
     
-    if S.RagingBlow:CanCast(Target) and targetRange5 then
+    if IsReady('Raging Blow') and targetRange5 then
         return S.ragingblow:Cast()
     end
 
@@ -234,13 +313,8 @@ local function APL()
         return S.SunderArmor:Cast()
     end	
 
-	if S.Rend1:CanCast()  and targetRange5 and not Target:Debuff(S.Rend1) and TargetTTD()>15 then
-        return S.Rend1:Cast()
-    end	
-    if S.Rend2:CanCast()  and targetRange5 and not Target:Debuff(S.Rend2) and TargetTTD()>15 then
-        return S.Rend2:Cast()
-    end	
-    if S.Rend3:CanCast()  and targetRange5 and not Target:Debuff(S.Rend3) and TargetTTD()>15 then
+
+    if IsReady('Rend')  and targetRange5 and expirationTime<3 and TargetTTD()>15 then
         return S.Rend3:Cast()
     end	
 
@@ -258,18 +332,10 @@ local function APL()
         return S.quickStrike:Cast()
         end
 
-        if S.HeroicStrike:CanCast() then
-        return S.HeroicStrike:Cast()
+        if IsReady('Heroic Strike') then
+        return S.HeroicStrike1:Cast()
         end
-        if S.HeroicStrike1:CanCast() then
-            return S.HeroicStrike1:Cast()
-        end
-        if S.HeroicStrike2:CanCast() then
-            return S.HeroicStrike2:Cast()
-        end
-        if S.HeroicStrike3:CanCast() then
-            return S.HeroicStrike3:Cast()
-        end
+
 
     end
 
@@ -282,21 +348,22 @@ end
 	
 -- Out of combat
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
-
-	if S.BattleShout1:CanCast(Player) 
-	and not AuraUtil.FindAuraByName("Battle Shout", "player") and Player:IsMoving()and inRange25>=1
-	and Player:BuffRemains(S.BattleShout1)<60 then
+	if not IsCurrentSpell(6603) and targetRange5 then
+		return I.autoattack:ID()
+	end
+    -- if S.BattleShout1:CanCast() 
+    -- and Player:IsMoving() and not AuraUtil.FindAuraByName("Battle Shout", "player") 
+    -- and Player:BuffRemains(S.BattleShout1)<45 then
+    --     return S.BattleShout1:Cast()
+    -- end
+	-- if S.BattleShout2:CanCast(Player) 
+	-- and not AuraUtil.FindAuraByName("Battle Shout", "player")  and Player:IsMoving() and inRange25>=1
+	-- and Player:BuffRemains(S.BattleShout2)<60 then
+	-- 	return S.BattleShout2:Cast()
+	-- end
+    if IsReady('Battle Shout')
+	and not AuraUtil.FindAuraByName("Battle Shout", "player") and Player:IsMoving() and inRange25>=1 then
 		return S.BattleShout1:Cast()
-	end
-	if S.BattleShout2:CanCast(Player) 
-	and not AuraUtil.FindAuraByName("Battle Shout", "player")  and Player:IsMoving() and inRange25>=1
-	and Player:BuffRemains(S.BattleShout2)<60 then
-		return S.BattleShout2:Cast()
-	end
-    if S.BattleShout3:CanCast(Player) 
-	and not AuraUtil.FindAuraByName("Battle Shout", "player") and Player:IsMoving() and inRange25>=1
-	and Player:BuffRemains(S.BattleShout3)<60 then
-		return S.BattleShout3:Cast()
 	end
 
 if S.Charge:CanCast() and targetRange25 then
