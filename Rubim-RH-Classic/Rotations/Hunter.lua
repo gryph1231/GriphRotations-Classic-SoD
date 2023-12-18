@@ -110,6 +110,69 @@ local function UpdateCDs()
     end
 end
 
+
+local function IsReady(spell,range_check,aoe_check)
+	local start,duration,enabled = GetSpellCooldown(tostring(spell))
+	local usable, noMana = IsUsableSpell(tostring(spell))
+	local range_counter = 0
+	
+	if duration and start then
+	cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
+	--gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
+	end
+	
+	if cooldown_remains and cooldown_remains < 0 then
+	cooldown_remains = 0
+	end
+	
+	-- if gcd_remains and gcd_remains < 0 then
+	-- gcd_remains = 0
+	-- end
+	
+	if aoe_check then
+	if Spell then
+	for i = 1, 40 do
+	local unitID = "nameplate" .. i
+	if UnitExists(unitID) then          
+	local nameplate_guid = UnitGUID(unitID)
+	local npc_id = select(6, strsplit("-", nameplate_guid))
+	if npc_id ~= '120651' and npc_id ~= '161895' then
+	if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+	range_counter = range_counter + 1
+	end                    
+	end
+	end
+	end
+	end
+	end
+	
+	
+	-- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
+	if usable and enabled and cooldown_remains < 0.5 then
+	if range_check then
+	if IsSpellInRange(tostring(spell), "target") then
+	return true
+	else
+	return false
+	end
+	elseif aoe_check then
+	if range_counter >= aoe_check then
+	return true
+	else
+	return false
+	end
+	elseif range_check and aoe_check then
+	return 'Input range check or aoe check, not both'
+	elseif not range_check and not aoe_check then
+	return true
+	end
+	elseif not enabled then
+	return 'Spell not learned'
+	else
+	return false
+	end
+	end
+
 local function SwingTime()
 	haste = 1.15 * (1 + GetRangedHaste()/100)
 	ASCast = 0.5/haste
@@ -153,7 +216,7 @@ local function CanMulti()
 	gcd = 1.5
 	Swingtimetotal = UnitRangedDamage("player") - ASCast
 	
-	if S.MultiShot:CanCast(Target) and not Player:IsMoving() and ((SwingTime() > MultiTime) or AutoPercent() >= 50) then 
+	if IsReady("Multi-Shot") and not Player:IsMoving() and ((SwingTime() > MultiTime) or AutoPercent() >= 50) then 
 		return true else return false
 	end
 	
@@ -169,7 +232,7 @@ local function CanSteady()
 	haste = 1.15 * (1 + GetRangedHaste()/100)
 	SteadyTime = 1.5/haste
 	
-	if S.SteadyShot:CanCast(Target) and not Player:IsMoving() and ((SwingTime()) > SteadyTime or AutoPercent() >= 50) then
+	if IsReady("Steady Shot") and not Player:IsMoving() and ((SwingTime()) > SteadyTime or AutoPercent() >= 50) then
 		return true else return false
 	end
 
@@ -184,13 +247,13 @@ local function CanArcane()
 	gcd = 1.5 
 	SwingTotal = UnitRangedDamage("player") - ASCast
 	
-		if (S.ArcaneShot:CanCast(Target) and Target:AffectingCombat() and Player:AffectingCombat()) and S.MultiShot:CooldownRemains() >= (gcd-ASCast) + SwingTime() then
+		if (IsReady("Arcane Shot") and Target:AffectingCombat() and Player:AffectingCombat()) and S.MultiShot:CooldownRemains() >= (gcd-ASCast) + SwingTime() then
 			if SwingTime() > ((gcd-ASCast) - (SwingTotal - SteadyTime))+0.35 then 
 				return true else return false
 			end
 		end
 		
-		if (S.ArcaneShot:CanCast(Target) and Target:AffectingCombat() and Player:AffectingCombat()) and S.MultiShot:CooldownRemains() < (gcd-ASCast) + SwingTime() then
+		if (IsReady("Arcane Shot") and Target:AffectingCombat() and Player:AffectingCombat()) and S.MultiShot:CooldownRemains() < (gcd-ASCast) + SwingTime() then
 			if SwingTime() > ((gcd-ASCast) - (SwingTotal - MultiTime))+0.35 then 
 				return true else return false
 			end
@@ -218,8 +281,8 @@ local function APL()
 	
 	-- print(AutoPercent())
 
-			if S.SerpentSting:CanCast(Target) and AutoPercent()>=50 then
-				return S.SerpentStingz:Cast()
+			if IsReady("Serpent Sting") and AutoPercent()>=50 then
+				return S.SerpentSting:Cast()
 			end
 
 if Player:IsCasting() or Player:IsChanneling() or Player:BuffP(S.Drink) or Player:BuffP(S.Food) or Player:BuffP(S.FeignDeath) then
@@ -239,43 +302,43 @@ end
 			end
 
 			if S.FeignDeath:ID() == RubimRH.queuedSpell[1]:ID() and S.FeignDeath:CooldownRemains() <= 1.5 and not Player:IsMoving() then
-				return S.FeignDeathz:Cast()
+				return S.FeignDeath:Cast()
 			end
 
 			if S.TrackGiants:ID() == RubimRH.queuedSpell[1]:ID() and S.ExplosiveTrap:CooldownRemains() <= 1.5 then
-				return S.FrostTrapz:Cast()
+				return S.FrostTrap:Cast()
 			end
 			
 			if S.AspectoftheHawk:ID() == RubimRH.queuedSpell[1]:ID() and S.AspectoftheHawkr1:CooldownRemains() <= 1.5 and not Player:BuffP(S.AspectoftheHawkr1) then
-				return S.AspectoftheHawkz:Cast()
+				return S.AspectoftheHawk:Cast()
 			end
 			
 			if S.TrackUndead:ID() == RubimRH.queuedSpell[1]:ID() and S.AspectoftheViper:CooldownRemains() <= 1.5 and not Player:BuffP(S.AspectoftheViper) then
-				return S.AspectoftheViperz:Cast()
+				return S.AspectoftheViper:Cast()
 			end
 
 			if S.ExplosiveTrap:ID() == RubimRH.queuedSpell[1]:ID() and S.ExplosiveTrap:CooldownRemains() <= 1.5 then
-				return S.ExplosiveTrapz:Cast()
+				return S.ExplosiveTrap:Cast()
 			end
 			
 			if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() and S.FreezingTrap:CooldownRemains() <= 1.5 then
-				return S.FreezingTrapz:Cast()
+				return S.FreezingTrap:Cast()
 			end
 			
 			if S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID() and S.BestialWrathr1:CooldownRemains() <= 1.5 then
-				return S.BestialWrathz:Cast()
+				return S.BestialWrath:Cast()
 			end
 
 			if S.Volley:ID() == RubimRH.queuedSpell[1]:ID() and S.Volleyr1:CooldownRemains() <= 1.5 and not Player:IsMoving() then
-				return S.Volleyz:Cast()
+				return S.Volley:Cast()
 			end
 			
 			if S.ConcussiveShot:ID() == RubimRH.queuedSpell[1]:ID() and S.ConcussiveShot:CooldownRemains() <= 1.5 and Target:Exists() and Player:CanAttack(Target) then
-				return S.ConcussiveShotz:Cast()
+				return S.ConcussiveShot:Cast()
 			end
 			
 			if S.Intimidation:ID() == RubimRH.queuedSpell[1]:ID() and S.Intimidationr1:CooldownRemains() <= 1.5 and IsPetActive() and Pet:AffectingCombat() then
-				return S.Intimidationz:Cast()
+				return S.Intimidation:Cast()
 			end
 			
 			-- if S.HuntersMark:ID() == RubimRH.queuedSpell[1]:ID() and S.HuntersMarkr1:CooldownRemains() <= 1.5 and Target:Exists() and Player:CanAttack(Target) and not Target:Debuff(S.HuntersMarkr1) then
@@ -300,12 +363,12 @@ end
 
 		if Player:AffectingCombat() then
 		
-			if S.AspectoftheViper:IsCastable() and (Player:ManaPercentage() <= 7 and not CanMulti() and not CanArcane() and not CanSteady()) and not (Player:Buff(S.AspectoftheViper) or Player:Buff(S.AspectoftheMonkey) or Player:Buff(S.AspectoftheCheetah) or Player:Buff(S.AspectofthePack)) then
-				return S.AspectoftheViperz:Cast()
+			if IsReady("Aspect of the Viper") and (Player:ManaPercentage() <= 7 and not CanMulti() and not CanArcane() and not CanSteady()) and not (Player:Buff(S.AspectoftheViper) or Player:Buff(S.AspectoftheMonkey) or Player:Buff(S.AspectoftheCheetah) or Player:Buff(S.AspectofthePack)) then
+				return S.AspectoftheViper:Cast()
 			end
 			
-			if S.KillCommand:CanCast(Player) and IsPetActive() and Target:AffectingCombat() and Pet:AffectingCombat() then
-				return S.KillCommandz:Cast()
+			if IsReady("Kill Command") and IsPetActive() and Target:AffectingCombat() and Pet:AffectingCombat() then
+				return S.KillCommand:Cast()
 			end
 		
 			-- if RubimRH.CDsON() and Target:AffectingCombat() then
@@ -325,8 +388,8 @@ end
 
 			-- end
 
-			if S.WingClip:CanCast(Target) and S.RaptorStrike:CanCast() then
-				return S.RaptorStrikez:Cast()
+			if IsReady("Wing Clip") and IsReady("Raptor Strike") then
+				return S.RaptorStrike:Cast()
 			end
 			
 		end
@@ -336,22 +399,22 @@ end
 		-- end
 		
 		if CanMulti() then
-			return S.MultiShotz:Cast()
+			return S.MultiShot:Cast()
 		end
 		
 		if CanSteady() then
-			return S.SteadyShotz:Cast()
+			return S.SteadyShot:Cast()
 		end
 	
 		if CanArcane() then
-			return S.ArcaneShotz:Cast()
+			return S.ArcaneShot:Cast()
 		end
 		
 		if IsCurrentSpell(75) then
 			return S.AutoShot:Cast(), false
 		end
 		
-		return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
+		return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
 	end
 	
 end

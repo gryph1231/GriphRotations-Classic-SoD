@@ -277,9 +277,8 @@ local function APL()
 -- 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 	
-        if S.BattleShout1:CanCast() 
-        and Player:IsMoving() and not AuraUtil.FindAuraByName("Battle Shout", "player") 
-        and Player:BuffRemains(S.BattleShout1)<45 then
+        if IsReady("Battle Shout")
+        and Player:IsMoving() and not AuraUtil.FindAuraByName("Battle Shout", "player") then
             return S.BattleShout1:Cast()
         end
         -- if S.BattleShout2:CanCast(Player) 
@@ -293,7 +292,7 @@ local function APL()
         --     return S.BattleShout3:Cast()
         -- end
 		
-    if S.Bloodrage:CanCast(Player) and not Player:Buff(S.Bloodrage) and targetRange25 and not Player:Buff(S.Enrage) and Player:Rage()<25 and RubimRH.CDsON() then
+    if IsReady("Bloodrage") and not Player:Buff(S.Bloodrage) and targetRange25 and not Player:Buff(S.Enrage) and Player:Rage()<25 and RubimRH.CDsON() then
 		return S.Bloodrage:Cast()
 	end
 
@@ -305,30 +304,30 @@ local function APL()
         return S.ragingblow:Cast()
     end
 
-    if S.Overpower:CanCast(Target) and targetRange5 then
+    if IsReady("Overpower") and targetRange5 then
         return S.Overpower:Cast()
     end	
 
-	if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>60 and TargetTTD()<1000 and Target:DebuffStack(S.SunderArmor)<5 then
+	if IsReady("Sunder Armor") and targetRange5 and TargetTTD()>60 and TargetTTD()<1000 and Target:DebuffStack(S.SunderArmor)<5 then
         return S.SunderArmor:Cast()
     end	
 
 
     if IsReady('Rend')  and targetRange5 and expirationTime<3 and TargetTTD()>15 then
-        return S.Rend3:Cast()
+        return S.Rend1:Cast()
     end	
 
     if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or UnitLevel('player')<20) and targetRange5 then
 	
-        if S.Execute:CanCast() and Target:HealthPercentage()<=20 then
+        if IsReady("Execute") and Target:HealthPercentage()<=20 then
             return S.Execute:Cast()
         end
 
-    	if S.Cleave:CanCast() and inRange5>=2 then
+    	if IsReady("Cleave") and inRange5>=2 then
         return S.Cleave:Cast()
         end
 
-        if S.QuickStrike:CanCast() then
+        if IsReady("Quick Strike") then
         return S.quickStrike:Cast()
         end
 

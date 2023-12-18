@@ -132,110 +132,52 @@ RubimRH.Spell[269] = {
 }
 
 RubimRH.Spell[4] = {
-Attack = Spell(6603),
-
-Blind = Spell(2094),
-blind = Spell(16342), --flametongue weapon
-
-CloakofShadows = Spell(31224),
-cloakofshadows = Spell(2062), --earth elemental totem
-
-Distract = Spell(2836),
-distract = Spell(2894),--fire elemental totem
-
-Sap = Spell(11297),
-sap = Spell(30706),--totem of wrath
-
-Stealth = Spell(1787),
-stealth = Spell(25547),--fire nova totem
-
-Vanish = Spell(26889),
-
-Ambush = Spell(27441),
-ambush = Spell(8177),--grounding totem
-
-CheapShot = Spell(1833),
-cheapshot = Spell(25560),--Frost resist totem 
-
-DeadlyThrow = Spell(26679),
-deadlythrow = Spell(25557),--flametongue totem
-
-Envenom = Spell(39967),
-envenom = Spell(25457), --flame shock
-
-DeadlyPoison = Spell(27187), --doublecheck this
-
--- Eviscerate = Spell(26865), --final rank
-Eviscerate = Spell(11300), --60 rank
-eviscerate = Spell(25442), --chain lightning
-
-ExposeArmor = Spell(26866),
-exposearmor = Spell(25563), --fire resist totem
-
-Garrote = Spell(26884),
-garrote = Spell(25359), --grace of air totem
-
-KidneyShot = Spell(8643),
-kidneyshot = Spell(25567), --healing stream totem
-
-Mutilate = Spell(34413),
-
--- Rupture = Spell(26867),--final rank
-Rupture = Spell(11275), --60 rank
-rupture = Spell(25449), -- lightning bolt
-
-SliceandDice = Spell(6774),
-sliceanddice = Spell(2825), -- bloodlust
-
--- BackStab = Spell(26863),--final rank
-BackStab = Spell(11281),--60 rank
-backstab = Spell(25464),--frost shock
-
-Evasion = Spell(26669),
-
-Feint = Spell(27448),
-feint = Spell(25525),--stoneclaw totem
-
-Gouge = Spell(38764),
-gouge = Spell(25509),--stoneskin totem 
-
-Kick = Spell(38768),
-kick = Spell(25528),--strength of earth totem
-
-Shiv = Spell(5938),
-shiv = Spell(25420), --lesser healing wave
-
--- SinisterStrike = Spell(26862), --final rank
-SinisterStrike = Spell(11294), --60 rank
-sinisterstrike = Spell(25454), --earth shock
-
-Sprint = Spell(11305),
-
-WilloftheForsaken = Spell(7744),
-willoftheforsaken = Spell(25908),--tranquil air totem
-
-
-AdrenalineRush = Spell(13750),
-adrenalinerush = Spell(16166),--elemental mastery
-
-BladeFlurry = Spell(13877),
-bladeflurry = Spell(8143),--tremor totem
-
-mainhandpoison_instant = Spell(33736), --water shield
-offhandpoison_deadly = Spell(25020),--lightning shield
-
-
-
-
-
-
-	
-
-	trinket = Spell(33697), -- Blood Fury
-	trinket2 = Spell(26296), -- berserking
-	
-
-	Default = Spell(1),
+    Evasion = Spell(5277),
+    SliceandDice = Spell(5171),
+    Default = Spell(1),
+    Blind = Spell(2094),
+    CloakofShadows = Spell(31224),
+    Distract = Spell(2836),
+    Sap = Spell(11297),
+    Stealth = Spell(1784),
+    Vanish = Spell(26889),
+    Ambush = Spell(48691),
+    CheapShot = Spell(1833),
+    DeadlyThrow = Spell(48674),
+    Envenom = Spell(57993),
+    DeadlyPoison = Spell(27187),
+    Eviscerate = Spell(6761),
+    ExposeArmor = Spell(26866),
+    Garrote = Spell(48676),
+    KidneyShot = Spell(8643),
+    Rupture = Spell(48672),
+    SnD = Spell(6774),
+    Backstab = Spell(53),
+    Feint = Spell(48659),
+    tott = Spell(57934),
+    Gouge = Spell(1776),
+    Kick = Spell(1766),
+    Shiv = Spell(5938),
+    SinisterStrike = Spell(1757),
+    Sprint = Spell(11305),
+    WilloftheForsaken = Spell(7744),
+    AdrenalineRush = Spell(13750),
+    BladeFlurry = Spell(13877),
+    mainhandpoison_instant = Spell(6495), -- sentry totem
+    offhandpoison_instant = Spell(370), -- purge
+    mainhandpoison_instant1 = Spell(25500), -- frostbrand weapon
+    offhandpoison_instant1 = Spell(8017), -- rockbiter weapon
+    KillingSpree = Spell(51690),
+    FanofKnives = Spell(51723),
+    ColdBlood = Spell(14177),
+    SB = Spell(20777),         -- ascestral spirit --/use [@player] Saronite Bomb
+    GTSC = Spell(20549),       -- war stomp--/use [@player] Global Thermal Sapper Charge
+    trinket_gloves = Spell(52127), --water shield
+    HungerforBlood = Spell(51662),
+    HungerforBloodBuff = Spell(63848),
+    Mutilate = Spell(1329),
+    Shadowstrike = Spell(399985),
+    shadowstrike = Spell(20594), --human racials
 }
 
 
