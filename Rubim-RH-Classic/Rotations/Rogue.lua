@@ -12,6 +12,9 @@ local Nameplate = Unit.Nameplate;
 
 RubimRH.Spell[4] = {
     Evasion = Spell(5277),
+    Envenom = Spell(399963),
+    envenom = Spell(20580),
+    DeadlyPoisonDebuff = Spell(434312),
     SliceandDice = Spell(5171),
     Default = Spell(1),
     Blind = Spell(2094),
@@ -23,7 +26,6 @@ RubimRH.Spell[4] = {
     Ambush = Spell(48691),
     CheapShot = Spell(1833),
     DeadlyThrow = Spell(48674),
-    Envenom = Spell(57993),
     DeadlyPoison = Spell(27187),
     Eviscerate = Spell(6761),
     ExposeArmor = Spell(26866),
@@ -137,57 +139,103 @@ local function TargetInRange(spellName)
 end
 
 
-local function aoeTTD()
-    local currHealth = {}
-    local currHealthMax = {}
-    local allGUID = {}
-    local areaTTD = {}
-    local count = 1
 
-    for id = 1, 40 do
-        local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID)
-            and ((UnitHealth(unitID) / UnitHealthMax(unitID)) * 100) < 100 then
-            if UnitGUID('Target') and UnitAffectingCombat('Target') then
-                currTarget = UnitGUID('Target')
-            end
-            table.insert(allGUID, UnitGUID(unitID))
-            table.insert(currHealth, UnitHealth(unitID))
-            table.insert(currHealthMax, UnitHealthMax(unitID))
-            if #currHealthMax >= 1 then
-                for id = 1, #currHealthMax do
-                    dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) /
-                    HL.CombatTime("nameplate" .. #currHealthMax)
-                    areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
-                end
-            end
-        end
-    end
 
-    if #allGUID >= 1 and UnitGUID('Target') then
-        while (UnitGUID('Target') ~= allGUID[count]) do
-            count = count + 1
-            break
-        end
-    end
 
-    if #currHealthMax >= 1 then
-        return areaTTD[count]
-    else
-        return nil
-    end
-end
 
-local function ruptureTime()
-    local _, _, _, _, _, expirationTime = AuraUtil.FindAuraByName("Rupture", "target", "PLAYER|HARMFUL")
 
-    if AuraUtil.FindAuraByName("Rupture", "target", "PLAYER|HARMFUL") then
-        timer = expirationTime - HL.GetTime()
-    else
-        timer = 0
-    end
-    return timer
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local function IsReady(spell, range_check, aoe_check)
     local start, duration, enabled = GetSpellCooldown(tostring(spell))
@@ -249,9 +297,97 @@ local function IsReady(spell, range_check, aoe_check)
     end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local initialTotalMaxHealth = 0
+local combatStartTime = 0
+local inCombat = false
+
+local function getTotalHealthOfCombatMobs()
+    local totalMaxHealth = 0
+    local totalCurrentHealth = 0
+
+    for i = 1, 40 do
+        local unitID = "nameplate" .. i
+        if UnitExists(unitID) and UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) then
+            totalMaxHealth = totalMaxHealth + UnitHealthMax(unitID)
+            totalCurrentHealth = totalCurrentHealth + UnitHealth(unitID)
+        end
+    end
+
+    return totalMaxHealth, totalCurrentHealth
+end
+
+-- Event Frame for tracking combat state
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
+
+eventFrame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        inCombat = true
+        combatStartTime = GetTime()
+        initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        inCombat = false
+    end
+end)
+
+local function getCurrentDPS()
+    if inCombat and combatStartTime > 0 then
+        local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
+        if totalMaxHealth > initialTotalMaxHealth then
+            initialTotalMaxHealth = totalMaxHealth
+        end
+
+        local totalDamageDone = initialTotalMaxHealth - totalCurrentHealth
+        local combatDuration = GetTime() - combatStartTime
+        return math.max(0, totalDamageDone / combatDuration)
+    else
+        return 0
+    end
+end
+
+
+
+local function aoeTTD()
+    local currentDPS = getCurrentDPS()
+    local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
+
+    if currentDPS and currentDPS > 0 then
+        local TTD = totalCurrentHealth / currentDPS
+        return TTD
+    else
+       return 8888
+    end
+end
+
+
+
+
+
+
+
 local function APL()
-    -- print(IsReady('Stealth'))
-    -- print(GetSpellCooldown(tostring('Saber Slash')))
+
     inRange5 = RangeCount("Sinister Strike")
  
     targetRange5 = TargetInRange("Sinister Strike")
@@ -265,6 +401,8 @@ for i = 1, 40 do
 end
 
 
+
+-- print(getSingleTargetTTD())
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
     local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
@@ -277,17 +415,17 @@ end
 
     local castchannelTime = math.random(275, 500) / 1000
 
-    if Target:Exists() and Player:CanAttack(Target) then
-        mydps = ((UnitHealthMax('target') - UnitHealth('target')) / HL.CombatTime())
-        STttd = Target:TimeToDie()
-        if STttd > 9999 or STttd == nil then
-            STttd = UnitHealth('target') / mydps
-        end
-        AOEttd = aoeTTD()
-        if AOEttd == nil then
-            AOEttd = STttd
-        end
-    end
+  
+        -- mydps = ((UnitHealthMax('target') - UnitHealth('target')) / HL.CombatTime())
+        -- STttd = Target:TimeToDie()
+        -- if STttd > 7777 or STttd == nil then
+        --     STttd = UnitHealth('target') / mydps
+        -- end
+        -- AOEttd = aoeTTD()
+        -- if AOEttd == nil then
+        --     AOEttd = 8888
+        -- end
+
 
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
@@ -412,36 +550,55 @@ end
 
 
 
+
         --Slice1
         if
         --   S.SliceandDice:CanCast()
             IsReady('Slice and Dice')
-            and (Player:BuffRemains(S.SliceandDice) < 3 and ((Player:ComboPoints() >= 2 or Player:ComboPoints() >= 4 or AOEttd < 5 and inRange25 > 1)
+            and (Player:BuffRemains(S.SliceandDice) < 3 and ((Player:ComboPoints() >= 2 or Player:ComboPoints() >= 4 or aoeTTD() < 5 and inRange25 > 1)
             or (inRange25==1 and (
-            Player:ComboPoints() >= 2 and (UnitHealth('target') > 75 or AOEttd>3)
+            Player:ComboPoints() >= 2 and (UnitHealth('target') > 75 or aoeTTD()>3)
             or
-            Player:ComboPoints() >= 3 and (UnitHealth('target') > 100 or AOEttd>5)
+            Player:ComboPoints() >= 3 and (UnitHealth('target') > 100 or aoeTTD()>5)
             or
-            Player:ComboPoints() >= 4 and (UnitHealth('target') > 125 or AOEttd>7)))))
+            Player:ComboPoints() >= 4 and (UnitHealth('target') > 125 or aoeTTD()>7)))))
             
 
         then
             return S.SliceandDice:Cast()
         end
 
-        if
+        if IsReady('Envenom')
+                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) and Player:BuffRemains(S.SliceandDice)>STttd
+                and
+                (
+                    Player:ComboPoints() >= 1 and (UnitHealth('target') < 60 or aoeTTD() <3)
+                    or
+                    Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or aoeTTD() <4)
+                    or
+                    Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or aoeTTD() <5)
+                    or
+                    Player:ComboPoints() >= 4 and (UnitHealth('target') < 90 or aoeTTD() <6)
+                    or
+                    Player:ComboPoints() >= 5
+    
+                )
+            then
+                return S.envenom:Cast()
+            end
+    
         -- S.Eviscerate:CanCast()
-            IsReady('Eviscerate')
+            if IsReady('Eviscerate')
             and targetRange5 
             and
             (
-                Player:ComboPoints() >= 1 and (UnitHealth('target') < 60 or STttd <3)
+                Player:ComboPoints() >= 1 and (UnitHealth('target') < 60 or aoeTTD() <3)
                 or
-                Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or STttd <4)
+                Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or aoeTTD() <4)
                 or
-                Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or STttd <5)
+                Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or aoeTTD() <5)
                 or
-                Player:ComboPoints() >= 4 and (UnitHealth('target') < 90 or STttd <6)
+                Player:ComboPoints() >= 4 and (UnitHealth('target') < 90 or aoeTTD() <6)
                 or
                 Player:ComboPoints() >= 5
 
