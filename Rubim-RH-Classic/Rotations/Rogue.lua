@@ -401,7 +401,7 @@ for i = 1, 40 do
 end
 
 
-print(aoeTTD())
+-- print(aoeTTD())
 -- print(getSingleTargetTTD())
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
@@ -547,13 +547,13 @@ print(aoeTTD())
         if
         --   S.SliceandDice:CanCast()
             IsReady('Slice and Dice')
-            and (Player:BuffRemains(S.SliceandDice) < 3 and ((Player:ComboPoints() >= 2 or Player:ComboPoints() >= 4 or aoeTTD() < 5 and inRange25 > 1)
+            and (Player:BuffRemains(S.SliceandDice) < 3 and aoeTTD()>5 and ((Player:ComboPoints() >= 2 or Player:ComboPoints() >= 4 or aoeTTD() < 5 and inRange25 > 1)
             or (inRange25==1 and (
-            Player:ComboPoints() >= 2 and (UnitHealth('target') > 75 or aoeTTD()>3)
+            Player:ComboPoints() >= 2 and (UnitHealth('target') > 75 or aoeTTD()>7)
             or
-            Player:ComboPoints() >= 3 and (UnitHealth('target') > 100 or aoeTTD()>5)
+            Player:ComboPoints() >= 3 and (UnitHealth('target') > 100 or aoeTTD()>9)
             or
-            Player:ComboPoints() >= 4 and (UnitHealth('target') > 125 or aoeTTD()>7)))))
+            Player:ComboPoints() >= 4 and (UnitHealth('target') > 125 or aoeTTD()>11)))))
             
 
         then
