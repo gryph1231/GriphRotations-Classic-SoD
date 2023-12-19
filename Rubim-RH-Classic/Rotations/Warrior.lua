@@ -16,17 +16,18 @@ RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
-    ragingblow = Spell(20594), --stoneform
+    ragingblow = Spell(20594),--taunt
     Charge = Spell(100),
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
     Execute = Spell(5308),
     Rend1 = Spell(772),
     Rend2 = Spell(6546),
+
     Rend3 = Spell(6547),
-    Hamstring = Spell(1715),
+
     QuickStrike = Spell(429765),
-    quickStrike = Spell(20549), --war stomp
+    quickStrike = Spell(20560), --mocking blow
     HeroicStrike4 = Spell(1608),
     HeroicStrike2 = Spell(284),
     HeroicStrike3 = Spell(285),
@@ -40,7 +41,10 @@ RubimRH.Spell[1] = {
 	Slam = Spell(11605),
 	BattleShout1 = Spell(6673),
     BattleShout2 = Spell(5242),
+
     BattleShout3 = Spell(6192),
+
+	
 	ThunderClap = Spell(11581),
 	
 };
@@ -273,9 +277,8 @@ local function APL()
 -- 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 	
-        if S.BattleShout1:CanCast() 
-        and Player:IsMoving() and not AuraUtil.FindAuraByName("Battle Shout", "player") 
-        and Player:BuffRemains(S.BattleShout1)<45 then
+        if IsReady("Battle Shout")
+        and Player:IsMoving() and not AuraUtil.FindAuraByName("Battle Shout", "player") then
             return S.BattleShout1:Cast()
         end
         -- if S.BattleShout2:CanCast(Player) 
@@ -289,77 +292,51 @@ local function APL()
         --     return S.BattleShout3:Cast()
         -- end
 		
-    if S.Bloodrage:CanCast(Player) and not Player:Buff(S.Bloodrage) and targetRange25 and not Player:Buff(S.Enrage) and Player:Rage()<25 and RubimRH.CDsON() then
+    if IsReady("Bloodrage") and not Player:Buff(S.Bloodrage) and targetRange25 and not Player:Buff(S.Enrage) and Player:Rage()<25 and RubimRH.CDsON() then
 		return S.Bloodrage:Cast()
 	end
 
 	if not IsCurrentSpell(6603) and HL.CombatTime()>1 and targetRange5 then
 		return I.autoattack:ID()
 	end
-
-    --Uncomment once Execute becomes viable after 25
-    --if S.Execute:CanCast() and Target:HealthPercentage()<=10 then
-    --    return S.Execute:Cast()
-    --end
-
+    
     if IsReady('Raging Blow') and targetRange5 then
         return S.ragingblow:Cast()
     end
 
-    if S.Overpower:CanCast(Target) and targetRange5 then
+    if IsReady("Overpower") and targetRange5 then
         return S.Overpower:Cast()
-    end
+    end	
 
-    --LUA Error for Rend is line 316 "attempt to compare number with nil"
+	if IsReady("Sunder Armor") and targetRange5 and TargetTTD()>60 and TargetTTD()<1000 and Target:DebuffStack(S.SunderArmor)<5 then
+        return S.SunderArmor:Cast()
+    end	
 
-    --if IsReady('Rend') and targetRange5 
-    --and expirationTime <3
-   -- and TargetTTD()>15
-    --then
-    --    return S.Rend3:Cast()
-   -- end
 
-   --use at <99 rage to proc deep wounds + WF
-    if (Player:Rage()>=99) and IsReady('Hamstring') and targetRange5 then
-        return S.Hamstring:Cast()
-    end
+    if IsReady('Rend')  and targetRange5 and expirationTime<3 and TargetTTD()>15 then
+        return S.Rend1:Cast()
+    end	
 
-    -->80 to maintain CBR
-    if (Player:Rage()>=80) and IsReady('Quick Strike') and targetRange5 then
-        return S.quickStrike:Cast()
-    end
-
-    --Uncomment once Bosses live longer
-	--if S.SunderArmor:CanCast(Target) and targetRange5 and TargetTTD()>60 and TargetTTD()<1000 and Target:DebuffStack(S.SunderArmor)<5 then
-    --    return S.SunderArmor:Cast()
-    --end
-    
---Not sure what broke below - come back to it
-
-   -- if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or UnitLevel('player')<20) and targetRange5 then
+    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or UnitLevel('player')<20) and targetRange5 then
 	
-       -- if S.Execute:CanCast() and Target:HealthPercentage()<=20 then
-      --      return S.Execute:Cast()
-     --   end
+        if IsReady("Execute") and Target:HealthPercentage()<=20 then
+            return S.Execute:Cast()
+        end
 
-  	--if S.Cleave:CanCast() and inRange5>=2 then
-    --   return S.Cleave:Cast()
-    --    end
+    	if IsReady("Cleave") and inRange5>=2 then
+        return S.Cleave:Cast()
+        end
 
-    --    if IsReady('Quick Strike') and targetRange5 then
-    --        return S.quickStrike:Cast()
-   --     end
+        if IsReady("Quick Strike") and (inRange5 == 1 or not RubimRH.AOEON()) then
+        return S.quickStrike:Cast()
+        end
 
-        --if S.QuickStrike:CanCast() then
-        --return S.quickStrike:Cast()
-        --end
-
-     --   if IsReady('Heroic Strike') then
-    --    return S.HeroicStrike1:Cast()
-     --   end
+        if IsReady('Heroic Strike') and (inRange5 == 1 or not RubimRH.AOEON()) then
+        return S.HeroicStrike1:Cast()
+        end
 
 
-   -- end
+    end
 
 
 

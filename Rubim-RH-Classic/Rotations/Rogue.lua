@@ -561,16 +561,15 @@ end
         end
 
         if IsReady('Envenom')
-                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) and Player:BuffRemains(S.SliceandDice)> 
-                aoeTTD()
-                and
+                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) and Player:BuffRemains(S.SliceandDice)> aoeTTD()
+                and Player:ComboPoints() >= 2 and
                 (
 
-                    Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or aoeTTD() <4)
+                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=1 and (UnitHealth('target') < 70 or aoeTTD() <4)
                     or
-                    Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or aoeTTD() <5)
+                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=2 and (UnitHealth('target') < 80 or aoeTTD() <5)
                     or
-                    Player:ComboPoints() >= 4 and (UnitHealth('target') < 90 or aoeTTD() <6)
+                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=3 and (UnitHealth('target') < 90 or aoeTTD() <6)
                     or
                     Player:ComboPoints() >= 5
     
@@ -581,7 +580,7 @@ end
     
         -- S.Eviscerate:CanCast()
             if IsReady('Eviscerate')
-            and targetRange5 
+            and targetRange5 and Player:BuffRemains(S.SliceandDice)> aoeTTD()
             and
             (
 
