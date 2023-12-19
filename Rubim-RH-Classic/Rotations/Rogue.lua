@@ -401,7 +401,7 @@ for i = 1, 40 do
 end
 
 
-
+print(aoeTTD())
 -- print(getSingleTargetTTD())
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
@@ -416,15 +416,7 @@ end
     local castchannelTime = math.random(275, 500) / 1000
 
   
-        -- mydps = ((UnitHealthMax('target') - UnitHealth('target')) / HL.CombatTime())
-        -- STttd = Target:TimeToDie()
-        -- if STttd > 7777 or STttd == nil then
-        --     STttd = UnitHealth('target') / mydps
-        -- end
-        -- AOEttd = aoeTTD()
-        -- if AOEttd == nil then
-        --     AOEttd = 8888
-        -- end
+
 
 
     if Player:IsCasting() or Player:IsChanneling() then
@@ -569,11 +561,11 @@ end
         end
 
         if IsReady('Envenom')
-                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) and Player:BuffRemains(S.SliceandDice)>STttd
+                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) and Player:BuffRemains(S.SliceandDice)> 
+                aoeTTD()
                 and
                 (
-                    Player:ComboPoints() >= 1 and (UnitHealth('target') < 60 or aoeTTD() <3)
-                    or
+
                     Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or aoeTTD() <4)
                     or
                     Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or aoeTTD() <5)
@@ -592,8 +584,7 @@ end
             and targetRange5 
             and
             (
-                Player:ComboPoints() >= 1 and (UnitHealth('target') < 60 or aoeTTD() <3)
-                or
+
                 Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or aoeTTD() <4)
                 or
                 Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or aoeTTD() <5)
