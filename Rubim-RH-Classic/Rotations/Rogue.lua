@@ -396,7 +396,8 @@ for i = 1, 40 do
     end
 end
 
-local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<150)
+local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300)
+
 -- print(aoeTTD())
 -- print(getSingleTargetTTD())
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
@@ -546,33 +547,21 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<150)
             and (Player:BuffRemains(S.SliceandDice) < 5 and ((Player:ComboPoints() >= 2 and HL.CombatTime()<3 
             or aoeTTD()>6 and Player:ComboPoints() >= 4 or targetdying and inRange25 > 1)
             or (inRange25==1 and (
-            Player:ComboPoints() >= 2 and  Target:TimeToDie()>6
+            Player:ComboPoints() >= 2 and  Target:TimeToDie()>6 + Player:GCD()
             or
-            Player:ComboPoints() >= 3 and Target:TimeToDie()>8)
+            Player:ComboPoints() >= 3 and Target:TimeToDie()>8 + Player:GCD())
             or
-            Player:ComboPoints() >= 4 and  Target:TimeToDie()>10)))
+            Player:ComboPoints() >= 4 and  Target:TimeToDie()>10 + Player:GCD())))
             
 
         then
             return S.SliceandDice:Cast()
         end
 
-        if IsReady('Envenom')
-                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) 
-                and Player:ComboPoints() >=2 and not Player:Buff(S.EnvenomBuff) and 
-                 
-
-                --     Target:DebuffStack(S.DeadlyPoisonDebuff)>=1 and aoeTTD() <4
-                    ( Target:TimeToDie()<5 and inRange25==1 and Target:DebuffStack(S.DeadlyPoisonDebuff)>=2 
-                    or
-                    aoeTTD()*1.5 >=5 and targetdying and Player:ComboPoints()>=3
-                    or
-                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=2 and targetdying  and (Player:ComboPoints()>=3 or inRange25==1)
-                    
-                    or
-                    Player:ComboPoints() >= 5)
-    
-                
+        if IsReady('Envenom')  and
+                not Player:Buff(S.EnvenomBuff) and targetRange5 and Player:ComboPoints()>=3 
+                and (Target:DebuffStack(S.DeadlyPoisonDebuff)>=3 and targetdying or Target:Debuff(S.DeadlyPoisonDebuff) and Player:ComboPoints()>=5)
+              
             then
                 return S.envenom:Cast()
             end
@@ -580,7 +569,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<150)
             if IsReady('Eviscerate')
             and targetRange5 and (not Target:Debuff(S.DeadlyPoisonDebuff) 
             or Target:DebuffStack(S.DeadlyPoisonDebuff)<=2) 
-            and (targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=5) 
+            and (targetdying and Player:ComboPoints()>=2 or Player:ComboPoints()>=5) 
         then
             return S.Eviscerate:Cast()
         end

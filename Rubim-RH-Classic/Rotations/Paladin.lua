@@ -16,18 +16,20 @@ local Item = HL.Item;
 RubimRH.Spell[2] = {
 	AutoAttack = Spell(6603),
 		Default = Spell(1),
+		DevotionAura = Spell(465),
+		HolyLight = Spell(639),
+SealoftheCrusader = Spell(21082),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
 Consecration = Spell(27173),
 ArcaneTorrent = Spell(28730),
 RighteousFury = Spell(25780),
-HolyLight = Spell(27136),
 SealofCommand = Spell(20375),
-SealofRighteousness = Spell(20154),
+SealofRighteousness = Spell(21084),
 Exorcism = Spell(27138),
 Judgement = Spell(20271),
-BlessingofMight = Spell(27140),
-DivineProtection = Spell(5573),
+BlessingofMight = Spell(19740),
+DivineProtection = Spell(498),
 BlessingofProtection = Spell(10278),
 HammerofJustice = Spell(10308),
 Forbearance = Spell(25771),
@@ -50,7 +52,7 @@ BlessingofWisdom = Spell(25290),
 HammerofWrath = Spell(27180),
 Repentance = Spell(20066),
 BlessingofSacrifice = Spell(27148),
-CrusaderStrike = Spell(35395),
+CrusaderStrike = Spell(20594),
 HolyWrath = Spell(27139),
 GreaterBlessingofWisdom = Spell(25894),
 GreaterBlessingofMight = Spell(27141),
@@ -68,7 +70,6 @@ SealofBlood = Spell(31892),
 -- StopAttack = Spell(20594),
 SealofCorruption = Spell(348704),
 thyartiswar = Spell(59578),
-BlessingofMight = Spell(20594),
 TurnEvil = Spell(10326),
 JoJ = Spell(53407),
 HammeroftheRighteous = Spell(53595),
@@ -93,7 +94,182 @@ local I = Item.Paladin.Protection;
 
 
 
+local function IsReady(spell, range_check, aoe_check)
+    local start, duration, enabled = GetSpellCooldown(tostring(spell))
+    local usable, noMana = IsUsableSpell(tostring(spell))
+    local range_counter = 0
+
+    if duration and start then
+        cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
+        --gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
+    end
+
+    if cooldown_remains and cooldown_remains < 0 then
+        cooldown_remains = 0
+    end
+
+    -- if gcd_remains and gcd_remains < 0 then
+    -- gcd_remains = 0
+    -- end
+
+    if aoe_check then
+        if Spell then
+            for i = 1, 40 do
+                local unitID = "nameplate" .. i
+                if UnitExists(unitID) then
+                    local nameplate_guid = UnitGUID(unitID)
+                    local npc_id = select(6, strsplit("-", nameplate_guid))
+                    if npc_id ~= '120651' and npc_id ~= '161895' then
+                        if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                            range_counter = range_counter + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+
+    -- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
+    if usable and enabled and cooldown_remains < 0.5 then
+        if range_check then
+            if IsSpellInRange(tostring(spell), "target") then
+                return true
+            else
+                return false
+            end
+        elseif aoe_check then
+            if range_counter >= aoe_check then
+                return true
+            else
+                return false
+            end
+        elseif range_check and aoe_check then
+            return 'Input range check or aoe check, not both'
+        elseif not range_check and not aoe_check then
+            return true
+        end
+    else
+        return false
+    end
+end
+
+
+
+
+
+local initialTotalMaxHealth = 0
+local combatStartTime = 0
+local inCombat = false
+
+local function getTotalHealthOfCombatMobs()
+    local totalMaxHealth = 0
+    local totalCurrentHealth = 0
+
+    for i = 1, 40 do
+        local unitID = "nameplate" .. i
+        if UnitExists(unitID) and UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) then
+            totalMaxHealth = totalMaxHealth + UnitHealthMax(unitID)
+            totalCurrentHealth = totalCurrentHealth + UnitHealth(unitID)
+        end
+    end
+
+    return totalMaxHealth, totalCurrentHealth
+end
+
+-- Event Frame for tracking combat state
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
+
+eventFrame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        inCombat = true
+        combatStartTime = GetTime()
+        initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        inCombat = false
+    end
+end)
+
+local function getCurrentDPS()
+    if inCombat and combatStartTime > 0 then
+        local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
+        if totalMaxHealth > initialTotalMaxHealth then
+            initialTotalMaxHealth = totalMaxHealth
+        end
+
+        local totalDamageDone = initialTotalMaxHealth - totalCurrentHealth
+        local combatDuration = GetTime() - combatStartTime
+        return math.max(0, totalDamageDone / combatDuration)
+    else
+        return 0
+    end
+end
+
+
+
+local function aoeTTD()
+    local currentDPS = getCurrentDPS()
+    local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
+
+    if currentDPS and currentDPS > 0 then
+        local TTD = totalCurrentHealth / currentDPS
+        return TTD
+    else
+       return 8888
+    end
+end
+
+local function RangeCount(spellName)
+    local range_counter = 0
+
+    if spellName then
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then
+                local nameplate_guid = UnitGUID(unitID)
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end
+                end
+            end
+        end
+    end
+
+    return range_counter
+end
+
+local function TargetInRange(spellName)
+    if spellName and IsSpellInRange(spellName, "target") == 1 then
+        return true
+    else
+        return false
+    end
+end
+
+
+
 local function APL()
+	-- inRange5 = RangeCount("Crusader Strike")
+
+    inRange10 = RangeCount("Judgement")
+    targetRange10 = TargetInRange("Judgement")
+	
+--range checks with nameplate
+local _,_,_,_,_,expirationTimeBoM = AuraUtil.FindAuraByName("Blessing of Might","PLAYER")
+local _,_,_,_,_,expirationTimeSoR = AuraUtil.FindAuraByName("Seal of Righteousness","PLAYER")
+local _,_,_,_,_,expirationTimeSotC = AuraUtil.FindAuraByName("Seal of the Crusader","PLAYER")
+
+
+local inRange25 = 0
+for i = 1, 40 do
+    if UnitExists('nameplate' .. i)  then
+        inRange25 = inRange25 + 1
+    end
+end
 
 
 
@@ -101,28 +277,62 @@ local function APL()
         return RubimRH.QueuedSpell():Cast()
 	end
 	
+	if Player:IsCasting() or Player:IsChanneling() then
+		return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
+	elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player")  then
+		return "Interface\\Addons\\Rubim-RH-Classic\\Media\\prot.tga", false
+	end 
+	
+
+	-- print(IsReady("Devotion Aura") )
 
 -- -- -- Out of combat
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
-	if not IsCurrentSpell(6603) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-		return I.autoattack:ID()
+	if IsReady("Blessing of Might") and (not AuraUtil.FindAuraByName("Blessing of Might", "player") or expirationTimeBoM<45) and Player:IsMoving() then
+		return S.BlessingofMight:Cast()
 	end
-
-	-- if S.SealofRighteousness:CanCast() and not Player:Buff(S.SealofRighteousness) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-	-- 	return S.SealofRighteousness:Cast()
-	-- end
+	if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
+		return S.DevotionAura:Cast()
+	end
 	
-	if S.CrusaderStrike:CanCast(Target) then
-		return S.CrusaderStrike:Cast()
-	end
+	if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()then
+		return I.autoattack:ID()
+		end
 
-	if S.DivineStorm:CanCast(Target) then
-		return S.DivineStorm:Cast()
-	end
 
-	if S.SealofCommand:CanCast() and Player:BuffRemains(S.SealofCommand) then
-		return S.DivineStorm:Cast()
-	end
+
+
+		if IsReady("Judgement") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+			return S.Judgement:Cast()
+		end
+
+		if IsReady("Crusader Strike") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not S.Judgement:CooldownUp() then
+			return S.CrusaderStrike:Cast()
+		end
+	
+
+
+		if IsReady("Divine Storm")  and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+			return S.DivineStorm:Cast()
+		end
+	
+		if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+			return S.SealofCommand:Cast()
+		end
+
+		if IsReady("Seal of the Crusader") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of the Crusader", "player") or expirationTimeSotC<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+			return S.SealoftheCrusader:Cast()
+		end
+
+
+		-- if IsReady("Seal of Righteousness") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of Righteousness", "player") or expirationTimeSoR<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+		-- 	return S.SealofRighteousness:Cast()
+		-- end
+
+
+
+
+
 
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\prot.tga", false
 end
@@ -131,30 +341,46 @@ end
 
 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-			if not IsCurrentSpell(6603) then
+		if IsReady("Blessing of Might") and (not AuraUtil.FindAuraByName("Blessing of Might", "player") or expirationTimeBoM<45) and Player:IsMoving() then
+			return S.BlessingofMight:Cast()
+		end
+		if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
+			return S.DevotionAura:Cast()
+		end
+		
+		if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()then
 			return I.autoattack:ID()
 			end
-
-
-	
-
-	-- if S.SealofRighteousness:CanCast() and not Player:Buff(S.SealofRighteousness) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-	-- 	return S.SealofRighteousness:Cast()
-	-- end
-	
-	if S.CrusaderStrike:CanCast(Target) then
-		return S.CrusaderStrike:Cast()
-	end
-
-	if S.DivineStorm:CanCast(Target) then
-		return S.DivineStorm:Cast()
-	end
-
-	if S.SealofCommand:CanCast() and Player:BuffRemains(S.SealofCommand) then
-		return S.DivineStorm:Cast()
-	end
 	
 	
+
+	
+			if IsReady("Judgement") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+				return S.Judgement:Cast()
+			end
+	
+			if IsReady("Crusader Strike") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not S.Judgement:CooldownUp() then
+				return S.CrusaderStrike:Cast()
+			end
+		
+
+
+			if IsReady("Divine Storm")  and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+				return S.DivineStorm:Cast()
+			end
+		
+			if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+				return S.SealofCommand:Cast()
+			end
+	
+			if IsReady("Seal of the Crusader") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of the Crusader", "player") or expirationTimeSotC<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+				return S.SealoftheCrusader:Cast()
+			end
+	
+
+			-- if IsReady("Seal of Righteousness") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of Righteousness", "player") or expirationTimeSoR<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+			-- 	return S.SealofRighteousness:Cast()
+			-- end
 	
 
 
@@ -168,31 +394,7 @@ end
 end
 
 
-local function PASSIVE()
-    return AutomataRH.Shared()
-end
 
-local function PvP()
-end
 RubimRH.Rotation.SetAPL(2, APL);
-RubimRH.Rotation.SetPvP(2, PvP)
-RubimRH.Rotation.SetPASSIVE(2, PASSIVE);
 
 
-local lastUpdate = 27082019
-local function CONFIG()
-    local function setVariables()
-        RubimRH.db.profile[RubimRH.playerClass] = {}
-        RubimRH.db.profile[RubimRH.playerClass].version = lastUpdate
-        RubimRH.db.profile[RubimRH.playerClass].cooldown = true
-    end
-
-    if not RubimRH.db.profile[RubimRH.playerClass] then
-       setVariables()
-    end
-
-    if RubimRH.db.profile[RubimRH.playerClass] and RubimRH.db.profile[RubimRH.playerClass].version ~= lastUpdate then
-        setVariables()
-    end
-end
--- RubimRH.Rotation.SetCONFIG(7, CONFIG)

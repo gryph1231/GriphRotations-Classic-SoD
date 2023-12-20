@@ -314,17 +314,17 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if not Player:AffectingCombat() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) then
+if not Player:AffectingCombat() and not Player:Buff(S.CatForm) then
 	if RubimRH.InterruptsON() then
 		if IsReady('Omen of Clarity') and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
 			return S.OmenofClarity:Cast()
 		end
 		
-		if IsReady('Mark of the Wild') and not Player:Buff(S.MarkoftheWild) and Player:Mana() > 263 + 75 then
+		if IsReady('Mark of the Wild') and (not Player:Buff(S.MarkoftheWild) or (not AuraUtil.FindAuraByName("Mark of the Wild", "target") and Target:IsAPlayer() and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 75 then
 			return S.MarkoftheWild:Cast()
 		end	
 		
-		-- if IsReady('Thorns') and not Player:Buff(S.Thorns) and Player:Mana() > 263 + 60 then
+		-- if IsReady('Thorns') and not (Player:Buff(S.Thorns) or (not AuraUtil.FindAuraByName("Thorns", "target") and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 60 then
 			-- return S.Thorns:Cast()
 		-- end
 	end
@@ -332,10 +332,9 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-	if IsReady('Omen of Clarity') and RubimRH.InterruptsON() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) 
-	and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
-		return S.OmenofClarity:Cast()
-	end
+if IsReady('Omen of Clarity') and RubimRH.InterruptsON() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
+	return S.OmenofClarity:Cast()
+end
 
 if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
 	if IsReady('Cat Form') and not Player:Buff(S.CatForm) then
@@ -358,7 +357,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
 			if IsReady('Savage Roar') then
 				return S.SavageRoar:Cast()
-			elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 5 and RubimRH.CDsON() then
+			elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and TargetinRange(37) and Player:Energy() < 5 and RubimRH.CDsON() then
 				return S.Powershift:Cast()
 			end
 		end
@@ -366,7 +365,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		if Player:ComboPoints() >= 5 and TargetTTD() > 12 and not Target:Debuff(S.Rip) then
 			if IsReady('Rip',true) then
 				return S.Rip:Cast()
-			elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 10 and RubimRH.CDsON() then
+			elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and TargetinRange(37) and Player:Energy() < 10 and RubimRH.CDsON() then
 				return S.Powershift:Cast()
 			end
 		end
@@ -383,7 +382,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		
 		if IsReady('Claw',true) then
 			return S.Claw:Cast()
-		elseif IsReady('Cat Form') and not finisher_condition and TargetinRange(37) and Player:Energy() < 20 and RubimRH.CDsON() then
+		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and TargetinRange(37) and Player:Energy() < 20 and RubimRH.CDsON() then
 			return S.Powershift:Cast()
 		end
 		
