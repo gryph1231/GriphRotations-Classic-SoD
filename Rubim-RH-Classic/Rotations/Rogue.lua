@@ -12,8 +12,9 @@ local Nameplate = Unit.Nameplate;
 
 RubimRH.Spell[4] = {
     Evasion = Spell(5277),
+    EnvenomBuff = Spell(399963),
     Envenom = Spell(399963),
-    envenom = Spell(20580),
+    envenom = Spell(20580),-- shadowmeld
     DeadlyPoisonDebuff = Spell(434312),
     SliceandDice = Spell(5171),
     Default = Spell(1),
@@ -44,21 +45,16 @@ RubimRH.Spell[4] = {
     WilloftheForsaken = Spell(7744),
     AdrenalineRush = Spell(13750),
     BladeFlurry = Spell(13877),
-    mainhandpoison_instant = Spell(6495), -- sentry totem
-    offhandpoison_instant = Spell(370), -- purge
-    mainhandpoison_instant1 = Spell(25500), -- frostbrand weapon
-    offhandpoison_instant1 = Spell(8017), -- rockbiter weapon
+
     KillingSpree = Spell(51690),
     FanofKnives = Spell(51723),
     ColdBlood = Spell(14177),
-    SB = Spell(20777),         -- ascestral spirit --/use [@player] Saronite Bomb
-    GTSC = Spell(20549),       -- war stomp--/use [@player] Global Thermal Sapper Charge
-    trinket_gloves = Spell(52127), --water shield
+
     HungerforBlood = Spell(51662),
     HungerforBloodBuff = Spell(63848),
     Mutilate = Spell(1329),
     Shadowstrike = Spell(399985),
-    shadowstrike = Spell(20594), --human racials
+    shadowstrike = Spell(20594), --stone form
     Default = Spell(1),
 };
 local S = RubimRH.Spell[4]
@@ -400,7 +396,7 @@ for i = 1, 40 do
     end
 end
 
-
+local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<150)
 -- print(aoeTTD())
 -- print(getSingleTargetTTD())
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
@@ -416,7 +412,7 @@ end
     local castchannelTime = math.random(275, 500) / 1000
 
   
-
+-- print(aoeTTD())
 
 
     if Player:IsCasting() or Player:IsChanneling() then
@@ -541,19 +537,20 @@ end
         end
 
 
-
+-- if Player:ComboPoints()>Target:DebuffStack(S.DeadlyPoisonDebuff)
 
         --Slice1
         if
         --   S.SliceandDice:CanCast()
-            IsReady('Slice and Dice')
-            and (Player:BuffRemains(S.SliceandDice) < 3 and aoeTTD()>5 and ((Player:ComboPoints() >= 2 or Player:ComboPoints() >= 4 or aoeTTD() < 5 and inRange25 > 1)
+            IsReady('Slice and Dice') and (not targetdying or targetdying and inRange25>1)
+            and (Player:BuffRemains(S.SliceandDice) < 5 and ((Player:ComboPoints() >= 2 and HL.CombatTime()<3 
+            or aoeTTD()>6 and Player:ComboPoints() >= 4 or targetdying and inRange25 > 1)
             or (inRange25==1 and (
-            Player:ComboPoints() >= 2 and (UnitHealth('target') > 75 or aoeTTD()>7)
+            Player:ComboPoints() >= 2 and  Target:TimeToDie()>6
             or
-            Player:ComboPoints() >= 3 and (UnitHealth('target') > 100 or aoeTTD()>9)
+            Player:ComboPoints() >= 3 and Target:TimeToDie()>8)
             or
-            Player:ComboPoints() >= 4 and (UnitHealth('target') > 125 or aoeTTD()>11)))))
+            Player:ComboPoints() >= 4 and  Target:TimeToDie()>10)))
             
 
         then
@@ -561,38 +558,29 @@ end
         end
 
         if IsReady('Envenom')
-                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) and Player:BuffRemains(S.SliceandDice)> aoeTTD()
-                and Player:ComboPoints() >= 2 and
-                (
+                and targetRange5 and Target:Debuff(S.DeadlyPoisonDebuff) 
+                and Player:ComboPoints() >=2 and not Player:Buff(S.EnvenomBuff) and 
+                 
 
-                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=1 and (UnitHealth('target') < 70 or aoeTTD() <4)
+                --     Target:DebuffStack(S.DeadlyPoisonDebuff)>=1 and aoeTTD() <4
+                    ( Target:TimeToDie()<5 and inRange25==1 and Target:DebuffStack(S.DeadlyPoisonDebuff)>=2 
                     or
-                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=2 and (UnitHealth('target') < 80 or aoeTTD() <5)
+                    aoeTTD()*1.5 >=5 and targetdying and Player:ComboPoints()>=3
                     or
-                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=3 and (UnitHealth('target') < 90 or aoeTTD() <6)
+                    Target:DebuffStack(S.DeadlyPoisonDebuff)>=2 and targetdying  and (Player:ComboPoints()>=3 or inRange25==1)
+                    
                     or
-                    Player:ComboPoints() >= 5
+                    Player:ComboPoints() >= 5)
     
-                )
+                
             then
                 return S.envenom:Cast()
             end
     
-        -- S.Eviscerate:CanCast()
             if IsReady('Eviscerate')
-            and targetRange5 and Player:BuffRemains(S.SliceandDice)> aoeTTD()
-            and
-            (
-
-                Player:ComboPoints() >= 2 and (UnitHealth('target') < 70 or aoeTTD() <4)
-                or
-                Player:ComboPoints() >= 3 and (UnitHealth('target') < 80 or aoeTTD() <5)
-                or
-                Player:ComboPoints() >= 4 and (UnitHealth('target') < 90 or aoeTTD() <6)
-                or
-                Player:ComboPoints() >= 5
-
-            )
+            and targetRange5 and (not Target:Debuff(S.DeadlyPoisonDebuff) 
+            or Target:DebuffStack(S.DeadlyPoisonDebuff)<=2) 
+            and (targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=5) 
         then
             return S.Eviscerate:Cast()
         end
