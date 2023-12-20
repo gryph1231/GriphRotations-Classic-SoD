@@ -15,7 +15,22 @@ RubimRH.Spell[1] = {
 
 }
 
-
+RubimRH.Spell[3] = {
+	Wrath = Spell(5177),
+	CatForm = Spell(768),
+	BearForm = Spell(5487),
+	Mangle = Spell(407993),
+	Claw = Spell(1082),
+	MarkoftheWild = Spell(6756),
+	Thorns = Spell(782),
+	OmenofClarity = Spell(16864),
+	Shred = Spell(5221),
+	Clearcasting = Spell(16870),
+	Prowl = Spell(5215),
+	SavageRoar = Spell(407988),
+	Rip = Spell(1079),
+	Powershift = Spell(5225), -- track humanoids
+}
 
 
 
