@@ -197,10 +197,12 @@ RubimRH.Spell[4] = {
 
 
 RubimRH.Spell[2] = {
-	AutoAttack = Spell(6603),
-		Default = Spell(1),
-		DevotionAura = Spell(465),
-		HolyLight = Spell(639),
+    AutoAttack = Spell(6603),
+    Default = Spell(1),
+    DevotionAura = Spell(465),
+    HolyLight = Spell(639),
+    Purify = Spell(1152),
+    
 SealoftheCrusader = Spell(21082),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
@@ -213,10 +215,10 @@ Exorcism = Spell(27138),
 Judgement = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
-BlessingofProtection = Spell(10278),
-HammerofJustice = Spell(10308),
+BlessingofProtection = Spell(1022),
+HammerofJustice = Spell(853),
 Forbearance = Spell(25771),
-LayonHands = Spell(27154),
+LayonHands = Spell(633),
 RetributionAura = Spell(10301),
 BlessingofFreedom = Spell(1044),
 FlashofLight = Spell(27137),
@@ -241,7 +243,7 @@ GreaterBlessingofWisdom = Spell(25894),
 GreaterBlessingofMight = Spell(27141),
 trinket = Spell(28880),
 AvengingWrath = Spell(31884),
-DivineStorm = Spell(53385),
+DivineStorm = Spell(5502),--sense undead
 AvengersShield = Spell(32699),
 BlessingofSanctuary = Spell(20914),
 GreaterBlessingofKings = Spell(25898),
@@ -259,7 +261,6 @@ HammeroftheRighteous = Spell(53595),
 HammeroftheRighteousz= Spell(27151), -- seal of the crusader
 Cleanse = Spell(4987),
 ShieldofRighteousness = Spell(53600),
-
 }
 
 --ELE
