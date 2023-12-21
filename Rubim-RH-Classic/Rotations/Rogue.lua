@@ -396,7 +396,7 @@ for i = 1, 40 do
     end
 end
 
-local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300)
+local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Target:Exists())
 
 -- print(aoeTTD())
 -- print(getSingleTargetTTD())

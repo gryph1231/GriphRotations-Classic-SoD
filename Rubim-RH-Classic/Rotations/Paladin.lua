@@ -258,6 +258,7 @@ local function APL()
     inRange10 = RangeCount("Judgement")
     targetRange10 = TargetInRange("Judgement")
 	
+    -- print(Target:TimeToDie())
 --range checks with nameplate
 local _,_,_,_,_,expirationTimeBoM = AuraUtil.FindAuraByName("Blessing of Might","PLAYER")
 local _,_,_,_,_,expirationTimeSoR = AuraUtil.FindAuraByName("Seal of Righteousness","PLAYER")
@@ -271,7 +272,13 @@ for i = 1, 40 do
     end
 end
 
+if RubimRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:CooldownRemains()>Player:GCD() then
+    RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
+end
 
+if RubimRH.QueuedSpell():ID() == S.HolyLight:ID() and Player:IsMoving() then
+    RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
+end
 
  	if RubimRH.QueuedSpell():IsReadyQueue() then
         return RubimRH.QueuedSpell():Cast()
@@ -295,14 +302,19 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 		return S.DevotionAura:Cast()
 	end
 	
-	if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()then
+
+
+
+	if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 		return I.autoattack:ID()
 		end
 
 
+		if IsReady("Seal of Righteousness") and S.Judgement:CooldownRemains()<Player:GCD() and (Player:IsMoving() or Player:AffectingCombat()) and (not AuraUtil.FindAuraByName("Seal of Righteousness", "player") or expirationTimeSoR<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+			return S.SealofRighteousness:Cast()
+		end
 
-
-		if IsReady("Judgement") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+		if IsReady("Judgement") and AuraUtil.FindAuraByName("Seal of Righteousness", "player") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 			return S.Judgement:Cast()
 		end
 
@@ -320,14 +332,13 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 			return S.SealofCommand:Cast()
 		end
 
-		if IsReady("Seal of the Crusader") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of the Crusader", "player") or expirationTimeSotC<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+		if IsReady("Seal of the Crusader") and S.Judgement:CooldownRemains()>Player:GCD() and (Player:IsMoving() or Player:AffectingCombat()) and (not AuraUtil.FindAuraByName("Seal of the Crusader", "player") or expirationTimeSotC<Player:GCD()) and (Target:Exists() or inRange25>=1 or targetRange10) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 			return S.SealoftheCrusader:Cast()
 		end
 
 
-		-- if IsReady("Seal of Righteousness") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of Righteousness", "player") or expirationTimeSoR<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-		-- 	return S.SealofRighteousness:Cast()
-		-- end
+
+
 
 
 
@@ -342,45 +353,47 @@ end
 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 		if IsReady("Blessing of Might") and (not AuraUtil.FindAuraByName("Blessing of Might", "player") or expirationTimeBoM<45) and Player:IsMoving() then
-			return S.BlessingofMight:Cast()
-		end
-		if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
-			return S.DevotionAura:Cast()
-		end
-		
-		if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()then
-			return I.autoattack:ID()
-			end
-	
-	
-
-	
-			if IsReady("Judgement") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-				return S.Judgement:Cast()
-			end
-	
-			if IsReady("Crusader Strike") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not S.Judgement:CooldownUp() then
-				return S.CrusaderStrike:Cast()
-			end
-		
-
-
-			if IsReady("Divine Storm")  and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-				return S.DivineStorm:Cast()
-			end
-		
-			if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-				return S.SealofCommand:Cast()
-			end
-	
-			if IsReady("Seal of the Crusader") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of the Crusader", "player") or expirationTimeSotC<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-				return S.SealoftheCrusader:Cast()
-			end
-	
-
-			-- if IsReady("Seal of Righteousness") and Player:IsMoving() and (not AuraUtil.FindAuraByName("Seal of Righteousness", "player") or expirationTimeSoR<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-			-- 	return S.SealofRighteousness:Cast()
-			-- end
+            return S.BlessingofMight:Cast()
+        end
+        if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
+            return S.DevotionAura:Cast()
+        end
+        
+    
+    
+    
+        if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            return I.autoattack:ID()
+            end
+    
+    
+            if IsReady("Seal of Righteousness") and S.Judgement:CooldownRemains()<Player:GCD() and (Player:IsMoving() or Player:AffectingCombat()) and (not AuraUtil.FindAuraByName("Seal of Righteousness", "player") or expirationTimeSoR<Player:GCD()) and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.SealofRighteousness:Cast()
+            end
+    
+            if IsReady("Judgement") and AuraUtil.FindAuraByName("Seal of Righteousness", "player") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.Judgement:Cast()
+            end
+    
+            if IsReady("Crusader Strike") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not S.Judgement:CooldownUp() then
+                return S.CrusaderStrike:Cast()
+            end
+        
+    
+    
+            if IsReady("Divine Storm")  and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.DivineStorm:Cast()
+            end
+        
+            if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.SealofCommand:Cast()
+            end
+    
+            if IsReady("Seal of the Crusader") and S.Judgement:CooldownRemains()>Player:GCD() and (Player:IsMoving() or Player:AffectingCombat()) and (not AuraUtil.FindAuraByName("Seal of the Crusader", "player") or expirationTimeSotC<Player:GCD()) and (Target:Exists() or inRange25>=1 or targetRange10) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.SealoftheCrusader:Cast()
+            end
+    
+    
 	
 
 
