@@ -23,9 +23,14 @@ RubimRH.Spell[11] = {
 	Thorns = Spell(782),
 	OmenofClarity = Spell(16864),
 	Shred = Spell(5221),
+	HealingTouch = Spell(5188),
 	Clearcasting = Spell(16870),
 	Prowl = Spell(5215),
 	SavageRoar = Spell(407988),
+	WildGrowth = Spell(408120),
+	WildGrowthz = Spell(18562), --swiftmend
+	Starsurge = Spell(417157),
+	Starsurgez = Spell(2912), --starfire
 	Rip = Spell(1079),
 	Powershift = Spell(5225), -- track humanoids
 };
@@ -34,6 +39,8 @@ local S = RubimRH.Spell[11]
 
 S.Claw.TextureSpellID = { 16827 }
 S.SavageRoar.TextureSpellID = { 5209 }
+
+S.Wrath:RegisterInFlight()
 
 -- if not Item.Druid then
     -- Item.Druid = {}
@@ -149,7 +156,6 @@ local function IsReady(spell,range_check,aoe_check)
 		end
 	end
 
-
 	-- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
 	if usable and enabled and cooldown_remains < 0.5 then
 		if range_check then
@@ -262,39 +268,87 @@ frame:SetScript("OnEvent", function(self,event,errorType,message)
 	end	
 end)
 
+local function MissingHealth(healthPercent)
+	--GetNumGroupMembers()
+	if healthPercent then
+	check =
+	num(IsActionInRange(39,"player") and not AuraUtil.FindAuraByName("Wild Growth","player") and ((UnitHealth("player") / UnitHealthMax("player")) * 100) <= healthPercent) +
+	num(IsActionInRange(39,"party1") and not AuraUtil.FindAuraByName("Wild Growth","party1") and ((UnitHealth("party1") / UnitHealthMax("party1")) * 100) <= healthPercent) +
+	num(IsActionInRange(39,"party2") and not AuraUtil.FindAuraByName("Wild Growth","party2") and ((UnitHealth("party2") / UnitHealthMax("party2")) * 100) <= healthPercent) +
+	num(IsActionInRange(39,"party3") and not AuraUtil.FindAuraByName("Wild Growth","party3") and ((UnitHealth("party3") / UnitHealthMax("party3")) * 100) <= healthPercent) +
+	num(IsActionInRange(39,"party4") and not AuraUtil.FindAuraByName("Wild Growth","party4") and ((UnitHealth("party4") / UnitHealthMax("party4")) * 100) <= healthPercent)
+
+	-- num(IsActionInRange(39,"player") and not AuraUtil.FindAuraByName("Wild Growth","player") and ((UnitHealth("player") / UnitHealthMax("player")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid1") and not AuraUtil.FindAuraByName("Wild Growth","raid1") and ((UnitHealth("raid1") / UnitHealthMax("raid1")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid2") and not AuraUtil.FindAuraByName("Wild Growth","raid2") and ((UnitHealth("raid2") / UnitHealthMax("raid2")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid3") and not AuraUtil.FindAuraByName("Wild Growth","raid3") and ((UnitHealth("raid3") / UnitHealthMax("raid3")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid4") and not AuraUtil.FindAuraByName("Wild Growth","raid4") and ((UnitHealth("raid4") / UnitHealthMax("raid4")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid5") and not AuraUtil.FindAuraByName("Wild Growth","raid5") and ((UnitHealth("raid5") / UnitHealthMax("raid5")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid6") and not AuraUtil.FindAuraByName("Wild Growth","raid6") and ((UnitHealth("raid6") / UnitHealthMax("raid6")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid7") and not AuraUtil.FindAuraByName("Wild Growth","raid7") and ((UnitHealth("raid7") / UnitHealthMax("raid7")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid8") and not AuraUtil.FindAuraByName("Wild Growth","raid8") and ((UnitHealth("raid8") / UnitHealthMax("raid8")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid9") and not AuraUtil.FindAuraByName("Wild Growth","raid9") and ((UnitHealth("raid9") / UnitHealthMax("raid9")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid10") and not AuraUtil.FindAuraByName("Wild Growth","raid10") and ((UnitHealth("raid10") / UnitHealthMax("raid10")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid11") and not AuraUtil.FindAuraByName("Wild Growth","raid11") and ((UnitHealth("raid11") / UnitHealthMax("raid11")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid12") and not AuraUtil.FindAuraByName("Wild Growth","raid12") and ((UnitHealth("raid12") / UnitHealthMax("raid12")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid13") and not AuraUtil.FindAuraByName("Wild Growth","raid13") and ((UnitHealth("raid13") / UnitHealthMax("raid13")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid14") and not AuraUtil.FindAuraByName("Wild Growth","raid14") and ((UnitHealth("raid14") / UnitHealthMax("raid14")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid15") and not AuraUtil.FindAuraByName("Wild Growth","raid15") and ((UnitHealth("raid15") / UnitHealthMax("raid15")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid16") and not AuraUtil.FindAuraByName("Wild Growth","raid16") and ((UnitHealth("raid16") / UnitHealthMax("raid16")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid17") and not AuraUtil.FindAuraByName("Wild Growth","raid17") and ((UnitHealth("raid17") / UnitHealthMax("raid17")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid18") and not AuraUtil.FindAuraByName("Wild Growth","raid18") and ((UnitHealth("raid18") / UnitHealthMax("raid18")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid19") and not AuraUtil.FindAuraByName("Wild Growth","raid19") and ((UnitHealth("raid19") / UnitHealthMax("raid19")) * 100) <= healthPercent) +
+	-- num(IsActionInRange(39,"raid20") and not AuraUtil.FindAuraByName("Wild Growth","raid20") and ((UnitHealth("raid20") / UnitHealthMax("raid20")) * 100) <= healthPercent)
+
+	else
+		check = 0
+	end
+	
+	return check
+end
 
 local function APL()
 RangeCount()
 TargetTTD()
 TargetinRange()
+MissingHealth()
 IsReady()
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or Player:Buff(S.Prowl) then
+elseif not AuraUtil.FindAuraByName("Cat Form", "player") and (Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or Player:Buff(S.Prowl)) then
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
 end 
 
-local BehindTimer = GetTime() - BehindCheckTimer
-local FrontTimer = GetTime() - FrontCheckTimer
-local Behind
-local Front
+if BehindCheckTimer then 
+	BehindTimer = GetTime() - BehindCheckTimer
+end
 
-if BehindTimer < Player:GCD() then
+if FrontTimer then
+	FrontTimer = GetTime() - FrontCheckTimer
+end
+
+local Behind = true
+local Front = true
+
+if BehindTimer and BehindTimer < Player:GCD() then
 	Behind = false
 end
 
-if FrontTimer < Player:GCD() then
+if FrontTimer and FrontTimer < Player:GCD() then
 	Front = false
 end
+
+local _,_,WildGrowthEnabled = GetSpellCooldown("Wild Growth")
 
 local finisher_condition = 
 	(Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
 	or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
 	or Player:ComboPoints() >= 4 and Player:BuffRemains(S.SavageRoar) < 4)
-	or (TargetTTD() < 2 and 
+	or (TargetTTD() < 3 and 
 	   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
 	or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
 	or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
@@ -304,7 +358,8 @@ local finisher_condition =
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if not RubimRH.queuedSpell[1]:CanCast() or not RubimRH.queuedSpell[1]:IsAvailable() then
+if not RubimRH.queuedSpell[1]:CanCast() or not RubimRH.queuedSpell[1]:IsAvailable()
+or (S.CatForm:ID() == RubimRH.queuedSpell[1]:ID() and Player:Buff(S.CatForm)) then
 	RubimRH.queuedSpell = { RubimRH.Spell[3].Default, 0 }
 end
 
@@ -336,7 +391,12 @@ if IsReady('Omen of Clarity') and RubimRH.InterruptsON() and (not Player:Buff(S.
 	return S.OmenofClarity:Cast()
 end
 
-if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
+if IsReady('Wild Growth') and not AuraUtil.FindAuraByName("Cat Form", "player") and (MissingHealth(85) >= 2 or MissingHealth(90) >= 3 or (MissingHealth(75) >= 1 and MissingHealth(95) >= 2) 
+or (Player:Buff(S.Clearcasting) and MissingHealth(99) >= 1)) then
+	return S.WildGrowthz:Cast()
+end
+
+if Player:CanAttack(Target) and Player:AffectingCombat() and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
 	if IsReady('Cat Form') and not Player:Buff(S.CatForm) then
 		return S.CatForm:Cast()
 	end
@@ -344,12 +404,22 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	if not IsCurrentSpell(6603) and TargetinRange(37) then
 		return Item(135274, { 13, 14 }):ID()
 	end
+	
+	if not AuraUtil.FindAuraByName("Cat Form", "player") then
+		if IsReady('Starsurge') and TargetinRange(40) and not Player:Buff(S.Clearcasting) then
+			return S.Starsurgez:Cast()
+		end
 
-	if Player:Buff(S.CatForm)then
+		if IsReady('Wrath',true) and RubimRH.CDsON() and (not Player:Buff(S.Clearcasting) or MissingHealth(95) == 0) then
+			return S.Wrath:Cast()
+		end
+	end
+
+	if Player:Buff(S.CatForm) then
 		if (Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
 		or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
 		or Player:ComboPoints() >= 4 and Player:BuffRemains(S.SavageRoar) < 4)
-		or (TargetTTD() < 2 and 
+		or (TargetTTD() < 3 and 
 		   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
 		or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
 		or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
@@ -361,6 +431,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 				return S.Powershift:Cast()
 			end
 		end
+
 
 		if Player:ComboPoints() >= 5 and TargetTTD() > 12 and not Target:Debuff(S.Rip) then
 			if IsReady('Rip',true) then
@@ -382,16 +453,15 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		
 		if IsReady('Claw',true) then
 			return S.Claw:Cast()
-		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and TargetinRange(37) and Player:Energy() < 20 and RubimRH.CDsON() then
+		elseif IsReady('Cat Form')and not Player:Buff(S.Clearcasting) and not finisher_condition and TargetinRange(37) and Player:Energy() < 20 and RubimRH.CDsON() then
 			return S.Powershift:Cast()
 		end
 		
-		-- if IsReady('Cat Form') and RubimRH.CDsON() and Player:Energy() < 10 then
-			-- return S.Powershift:Cast()
-		-- end
+		if IsReady('Cat Form') and RubimRH.CDsON() and Player:Energy() < 10 then
+			return S.Powershift:Cast()
+		end
 	end
 end
-
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
 end
 

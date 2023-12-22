@@ -197,12 +197,12 @@ RubimRH.Spell[4] = {
 
 
 RubimRH.Spell[2] = {
-    AutoAttack = Spell(6603),
-    Default = Spell(1),
-    DevotionAura = Spell(465),
-    HolyLight = Spell(639),
-    Purify = Spell(1152),
-    
+	AutoAttack = Spell(6603),
+		Default = Spell(1),
+		DevotionAura = Spell(465),
+		HolyLight = Spell(639),
+        Purify = Spell(1152),
+        
 SealoftheCrusader = Spell(21082),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
@@ -233,7 +233,7 @@ HolyShield = Spell(20928),
 SealofWisdom = Spell(20166),
 SealofWisdomDebuff = Spell(20355),
 SanctityAura = Spell(20218),
-BlessingofWisdom = Spell(25290),
+BlessingofWisdom = Spell(19742),
 HammerofWrath = Spell(27180),
 Repentance = Spell(20066),
 BlessingofSacrifice = Spell(27148),
@@ -244,7 +244,7 @@ GreaterBlessingofMight = Spell(27141),
 trinket = Spell(28880),
 AvengingWrath = Spell(31884),
 DivineStorm = Spell(5502),--sense undead
-AvengersShield = Spell(32699),
+AvengersShield = Spell(19898),-- frost resist aura
 BlessingofSanctuary = Spell(20914),
 GreaterBlessingofKings = Spell(25898),
 RighteousDefense = Spell(31789),
