@@ -312,7 +312,9 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
     if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
         return S.DevotionAura:Cast()
     end
-    
+    if IsReady("Blessing of Might") and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+        return S.BlessingofMight:Cast()
+    end
 
 
 
@@ -381,7 +383,9 @@ end
             return S.DevotionAura:Cast()
         end
         
-    
+        if IsReady("Blessing of Might") and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+            return S.BlessingofMight:Cast()
+        end
     
     
         if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
