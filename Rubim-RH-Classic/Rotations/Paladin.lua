@@ -23,12 +23,12 @@ RubimRH.Spell[2] = {
 SealoftheCrusader = Spell(21082),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
-Consecration = Spell(27173),
+Consecration = Spell(26573),
 ArcaneTorrent = Spell(28730),
 RighteousFury = Spell(25780),
 SealofCommand = Spell(20375),
 SealofRighteousness = Spell(21084),
-Exorcism = Spell(27138),
+Exorcism = Spell(879),
 Judgement = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
@@ -54,13 +54,14 @@ BlessingofWisdom = Spell(19742),
 HammerofWrath = Spell(27180),
 Repentance = Spell(20066),
 BlessingofSacrifice = Spell(27148),
-CrusaderStrike = Spell(20594),
+
 HolyWrath = Spell(27139),
 GreaterBlessingofWisdom = Spell(25894),
 GreaterBlessingofMight = Spell(27141),
 trinket = Spell(28880),
 AvengingWrath = Spell(31884),
-DivineStorm = Spell(5502),--sense undead
+CrusaderStrike = Spell(20594), --stoneform
+chestrune = Spell(5502),--sense undead
 AvengersShield = Spell(19898),-- frost resist aura
 BlessingofSanctuary = Spell(20914),
 GreaterBlessingofKings = Spell(25898),
@@ -268,7 +269,7 @@ for i = 1, 40 do
     end
 end
 
-if inRange10==0 and  not AuraUtil.FindAuraByName("Forbearance","player","PLAYER|HARMFUL") 
+if inRange10==0 and AuraUtil.FindAuraByName("Forbearance","player","PLAYER|HARMFUL") 
 and (RubimRH.QueuedSpell():ID() == S.BlessingofProtection:ID() and S.BlessingofProtection:CooldownRemains()>Player:GCD() 
 or RubimRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:CooldownRemains()>Player:GCD()) then
     RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
@@ -286,7 +287,7 @@ end
         return RubimRH.QueuedSpell():Cast()
 	end
 	
-	if Player:IsCasting() or Player:IsChanneling() then
+	if Player:IsCasting() or Player:IsChanneling() or AuraUtil.FindAuraByName("First Aid", "player") then
 		return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
 	elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player")  then
 		return "Interface\\Addons\\Rubim-RH-Classic\\Media\\prot.tga", false
@@ -322,29 +323,36 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return I.autoattack:ID()
         end
 
+        if IsReady("Seal of Martyrdom")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            return S.chestrune:Cast()
+        end
 
-        if IsReady("Seal of Righteousness")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Righteousness", "player")  and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+        if IsReady("Seal of Righteousness")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.SealofRighteousness:Cast()
         end
 
-        if IsReady("Judgement") and AuraUtil.FindAuraByName("Seal of Righteousness", "player") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+        if IsReady("Judgement") and (AuraUtil.FindAuraByName("Seal of Righteousness", "player") or AuraUtil.FindAuraByName("Seal of Martyrdom", "player")) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.Judgement:Cast()
         end
-
-    
-        if IsReady("Avenger's Shield") and IsActionInRange(62) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+        if IsReady("Avenger's Shield") and RubimRH.CDsON() and IsActionInRange(62) and Target:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.AvengersShield:Cast()
         end
 
+        if IsReady("Exorcism") and UnitCreatureType('target')=="Undead" and IsActionInRange(62) and Target:AffectingCombat() and  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            return S.Exorcism:Cast()
+        end
 
-        if IsReady("Crusader Strike") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not S.Judgement:CooldownUp() then
+  
+
+
+        if IsReady("Crusader Strike") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
             return S.CrusaderStrike:Cast()
         end
-    
-
-
         if IsReady("Divine Storm") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-            return S.DivineStorm:Cast()
+            return S.chestrune:Cast()
+        end
+        if IsReady("Consecration") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            return S.Consecration:Cast()
         end
         if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.SealofCommand:Cast()
@@ -369,6 +377,7 @@ end
 	-- In combat
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
        
+     
         if IsReady("Righteous Fury") and not AuraUtil.FindAuraByName("Righteous Fury", "player") and IsReady("Avenger's Shield") then
             return S.RighteousFury:Cast()
         end
@@ -382,48 +391,50 @@ end
         if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
             return S.DevotionAura:Cast()
         end
-        
         if IsReady("Blessing of Might") and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
             return S.BlessingofMight:Cast()
         end
+    
     
     
         if not IsCurrentSpell(6603) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return I.autoattack:ID()
             end
     
+            if IsReady("Seal of Martyrdom")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.chestrune:Cast()
+            end
     
-            if IsReady("Seal of Righteousness")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Righteousness", "player")  and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            if IsReady("Seal of Righteousness")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.SealofRighteousness:Cast()
             end
     
-            if IsReady("Judgement") and AuraUtil.FindAuraByName("Seal of Righteousness", "player") and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            if IsReady("Judgement") and (AuraUtil.FindAuraByName("Seal of Righteousness", "player") or AuraUtil.FindAuraByName("Seal of Martyrdom", "player")) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.Judgement:Cast()
             end
- 
-        
-            if IsReady("Avenger's Shield") and IsActionInRange(62) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            if IsReady("Avenger's Shield") and RubimRH.CDsON() and IsActionInRange(62) and Target:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.AvengersShield:Cast()
             end
     
+            if IsReady("Exorcism") and UnitCreatureType('target')=="Undead" and IsActionInRange(62) and Target:AffectingCombat() and  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.Exorcism:Cast()
+            end
     
-            if IsReady("Crusader Strike") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not S.Judgement:CooldownUp() then
+      
+    
+    
+            if IsReady("Crusader Strike") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
                 return S.CrusaderStrike:Cast()
             end
-        
-    
-    
             if IsReady("Divine Storm") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-                return S.DivineStorm:Cast()
+                return S.chestrune:Cast()
+            end
+            if IsReady("Consecration") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.Consecration:Cast()
             end
             if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.SealofCommand:Cast()
             end
-    
-
-    
-	
-
 
 
 
