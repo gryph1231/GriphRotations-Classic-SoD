@@ -29,7 +29,7 @@ ArcaneTorrent = Spell(28730),
 RighteousFury = Spell(25780),
 SealofCommand = Spell(20375),
 SealofRighteousness = Spell(21084),
-Exorcism = Spell(415068),
+Exorcism = Spell(879),
 Judgement = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
@@ -270,7 +270,6 @@ for i = 1, 40 do
     end
 end
 
-
 -- print(S.impblessingofmight:IsAvailable())
 if inRange10==0 and AuraUtil.FindAuraByName("Forbearance","player","PLAYER|HARMFUL") 
 and (RubimRH.QueuedSpell():ID() == S.BlessingofProtection:ID() and S.BlessingofProtection:CooldownRemains()>Player:GCD() 
@@ -344,6 +343,9 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
             return S.AvengersShield:Cast()
         end
 
+        if IsReady("Exorcism") and UnitCreatureType('target')=="Undead" and IsActionInRange(62) and Target:AffectingCombat() and  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            return S.Exorcism:Cast()
+        end
 
         if IsReady("Crusader Strike") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
             return S.gloverune:Cast()
@@ -352,14 +354,6 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         if IsReady("Divine Storm") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.chestrune:Cast()
         end
-        if IsReady('Exorcism') and targetRange10
-        and Target:AffectingCombat() 
-        and Target:Exists() 
-        and Player:CanAttack(Target) 
-         then
-           return S.Exorcism:Cast()
-       end
-
 
 
     
@@ -464,8 +458,9 @@ end
                 return S.AvengersShield:Cast()
             end
     
- 
-
+            if IsReady("Exorcism") and UnitCreatureType('target')=="Undead" and IsActionInRange(62) and Target:AffectingCombat() and  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.Exorcism:Cast()
+            end
     
             if IsReady("Crusader Strike") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
                 return S.gloverune:Cast()
@@ -474,13 +469,7 @@ end
             if IsReady("Divine Storm") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.chestrune:Cast()
             end
-            if IsReady('Exorcism') and targetRange10
-            and Target:AffectingCombat() 
-            and Target:Exists() 
-            and Player:CanAttack(Target) 
-             then
-               return S.Exorcism:Cast()
-           end
+    
 
             if IsReady("Judgement") and Player:ManaPercentage()>20 and (AuraUtil.FindAuraByName("Seal of the Crusader", "player") or AuraUtil.FindAuraByName("Seal of Righteousness", "player") or AuraUtil.FindAuraByName("Seal of Martyrdom", "player") or AuraUtil.FindAuraByName("Seal of Command", "player")) and targetRange10 and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.Judgement:Cast()
