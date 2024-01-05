@@ -27,6 +27,7 @@ Modules\Quest.lua
 Modules\MiniMap.lua
 Rotations\Shared.lua
 Rotations\Rogue.lua
+Rotations\Hunter.lua
 Rotations\Shaman.lua
 Rotations\Paladin.lua
 Rotations\Warrior.lua
