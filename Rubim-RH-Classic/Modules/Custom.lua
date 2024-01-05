@@ -433,7 +433,22 @@ end
     end
 end
 
+local lastMoveTime = GetTime()  -- Initialize with the current time
 
+-- Function to get the time since last moved
+function TimeSinceLastMoved()
+    return GetTime() - lastMoveTime
+end
+
+-- Frame to track player movement
+local moveFrame = CreateFrame("Frame")
+moveFrame:SetScript("OnUpdate", function(self, elapsed)
+    local currentSpeed = GetUnitSpeed("player")
+    if currentSpeed > 0 then
+        -- Update the last move time to the current time if the player is moving
+        lastMoveTime = GetTime()
+    end
+end)
 
 
 function RubimRH.lasthit()

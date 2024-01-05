@@ -317,7 +317,7 @@ local function APL()
         return S.Rend1:Cast()
     end	
 
-    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or UnitLevel('player')<20) and targetRange5 then
+    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or not IsReady('Raging Blow') ) and targetRange5 then
 	
         if IsReady("Execute") and Target:HealthPercentage()<=20 then
             return S.Execute:Cast()

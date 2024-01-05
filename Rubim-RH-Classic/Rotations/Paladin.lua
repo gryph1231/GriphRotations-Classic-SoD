@@ -34,7 +34,7 @@ Judgement = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
 BlessingofProtection = Spell(1022),
-HammerofJustice = Spell(853),
+HammerofJustice = Spell(5588),
 Forbearance = Spell(25771),
 LayonHands = Spell(633),
 RetributionAura = Spell(7294),
@@ -99,13 +99,9 @@ local I = Item.Paladin.Protection;
 
 
 
-
-
-
 local function APL()
 
     -- local start, duration = GetSpellCooldown(61304) -- 61304 is a dummy spell used to represent the GCD
-
 
 
         inRange10 = RangeCount("Judgement")
@@ -208,7 +204,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
                 return S.AvengersShield:Cast()
             end
     
-            if IsReady("Crusader Strike") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15  then
+            if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
                 return S.gloverune:Cast()
             end
     
@@ -253,7 +249,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
     
     
             if IsReady('Exorcism') and targetRange10 
-            and Target:AffectingCombat() 
+            and Target:AffectingCombat() and RubimRH.CDsON() 
             and Target:Exists() 
             and Player:CanAttack(Target) 
              then
@@ -320,7 +316,7 @@ end
                 return S.AvengersShield:Cast()
             end
     
-            if IsReady("Crusader Strike") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15  then
+            if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
                 return S.gloverune:Cast()
             end
     
@@ -365,7 +361,7 @@ end
     
     
             if IsReady('Exorcism') and IsActionInRange(62)
-            and Target:AffectingCombat() 
+            and Target:AffectingCombat() and RubimRH.CDsON()  
             and Target:Exists() 
             and Player:CanAttack(Target) 
              then
