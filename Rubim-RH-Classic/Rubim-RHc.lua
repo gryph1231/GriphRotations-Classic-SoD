@@ -125,134 +125,7 @@ function RubimRH.CCToggle()
     print("|cFF69CCF0CC Break" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.ccbreak))
 end
 
-function RubimRH.PerfectPull()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile.mainOption.PerfectPull == false then
-        RubimRH.db.profile.mainOption.PerfectPull = true
 
-    else
-        RubimRH.db.profile.mainOption.PerfectPull = false
-    end
-    print("|cFF69CCF0Perfect Pull" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.PerfectPull))
-end
-
--- Prot Paladin checkbox value change handler
-function RubimRH.ASInterrupt()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[66].ASInterrupt == false then
-        RubimRH.db.profile[66].ASInterrupt = true
-
-    else
-        RubimRH.db.profile[66].ASInterrupt = false
-    end
-    print("|cFF69CCF0Avenger's Shield interrupt" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[66].ASInterrupt))
-end
-
--- Shadow priest Auto AoE
-function RubimRH.ShadowAutoAoE()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[258].AutoAoE == false then
-        RubimRH.db.profile[258].AutoAoE = true
-
-    else
-        RubimRH.db.profile[258].AutoAoE = false
-    end
-    print("|cFF69CCF0Automatic AoE" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[258].AutoAoE))
-end
-
--- Affliction warlock Auto AoE
-function RubimRH.AffliAutoAoE()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[265].AutoAoE == false then
-        RubimRH.db.profile[265].AutoAoE = true
-
-    else
-        RubimRH.db.profile[265].AutoAoE = false
-    end
-    print("|cFF69CCF0Automatic AoE" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[265].AutoAoE))
-end
-
--- Assasination Rogue Auto AoE
-function RubimRH.AssaAutoAoE()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[259].AutoAoE == false then
-        RubimRH.db.profile[259].AutoAoE = true
-
-    else
-        RubimRH.db.profile[259].AutoAoE = false
-    end
-    print("|cFF69CCF0Automatic AoE" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[259].AutoAoE))
-end
-
--- Balance Druid auto morph checkbox handler
-function RubimRH.AutoMorph()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[102].AutoMorph == false then
-        RubimRH.db.profile[102].AutoMorph = true
-
-    else
-        RubimRH.db.profile[102].AutoMorph = false
-    end
-    print("|cFF69CCF0Auto morph to Moonkin form" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[102].AutoMorph))
-end
-
--- Prot Warrior 
-function RubimRH.UseShieldBlockDef()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[102].UseShieldBlockDef == false then
-        RubimRH.db.profile[102].UseShieldBlockDef = true
-
-    else
-        RubimRH.db.profile[102].UseShieldBlockDef = false
-    end
-    print("|cFF69CCF0Use Shield Block Defensively " .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[73].UseShieldBlockDef))
-end
-
-function RubimRH.UseRageDef()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[102].UseRageDef == false then
-        RubimRH.db.profile[102].UseRageDef = true
-
-    else
-        RubimRH.db.profile[102].UseRageDef = false
-    end
-    print("|cFF69CCF0Use your Rage Defensively " .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[73].UseRageDef))
-end
-
--- Resto druid Force Rejuv handler
-function RubimRH.ForceRejuv()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[105].force_rejuv == false then
-        RubimRH.db.profile[105].force_rejuv = true
-
-    else
-        RubimRH.db.profile[105].force_rejuv = false
-    end
-    print("|cFF69CCF0Force Rejuvenation on everyone" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[105].force_rejuv))
-end
-
--- Resto Druid Sync DBM Cds
-function RubimRH.DBMSync()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile[105].dbm_sync == false then
-        RubimRH.db.profile[105].dbm_sync = true
-
-    else
-        RubimRH.db.profile[105].dbm_sync = false
-    end
-    print("|cFF69CCF0CDs Synchronization with DBM events " .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile[105].dbm_sync))
-end
-
-function RubimRH.PrecombatToggle()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile.mainOption.Precombat == false then
-        RubimRH.db.profile.mainOption.Precombat = true
-
-    else
-        RubimRH.db.profile.mainOption.Precombat = false
-    end
-    print("|cFF69CCF0Precombat" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.Precombat))
-end
 
 function RubimRH.InstantInterruptToggle()
     RubimRH.playSoundR(891);
@@ -276,17 +149,7 @@ function RubimRH.InterruptEverythingToggle()
     print("|cFF69CCF0Interrupt Everything" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.InterruptEverything))
 end
 
-function RubimRH.RacialToggle()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile.mainOption.useRacial == false then
-        RubimRH.db.profile.mainOption.useRacial = true
-
-    else
-        RubimRH.db.profile.mainOption.useRacial = false
-    end
-    print("|cFF69CCF0Racial" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.useRacial))
-end
-
+RubimRH.config.cooldown = true
 function RubimRH.CDToggle()
     RubimRH.playSoundR(891);
     if RubimRH.config.cooldown == false then
@@ -299,15 +162,6 @@ function RubimRH.CDToggle()
     print("|cFF69CCF0CD" .. "|r: |cFF00FF00" .. tostring(RubimRH.config.cooldown))
 end
 
-function RubimRH.AttackToggle()
-    RubimRH.playSoundR(891);
-    if RubimRH.db.profile.mainOption.startattack == false then
-        RubimRH.db.profile.mainOption.startattack = true
-    else
-        RubimRH.db.profile.mainOption.startattack = false
-    end
-    print("|cFF69CCF0Auto-Skill: " .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.startattack))
-end
 
 RubimRH.useAoE = true
 function RubimRH.AoEToggle()
@@ -343,7 +197,8 @@ function RubimRH.CDsON()
                 return true
             end
 
-            if UnitExists("target") and (UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "rare") then
+            if UnitExists("target") and (UnitClassification("target") == "worldboss" 
+            or UnitClassification("target") == "rareelite" or UnitClassification("target") == "rare") then
                 return true
             end
         end

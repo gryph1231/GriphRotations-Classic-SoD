@@ -271,6 +271,171 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(...)
 end
 
 
+
+function RangeCount(spellName)
+    local range_counter = 0
+
+    if spellName then
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then
+                local nameplate_guid = UnitGUID(unitID)
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end
+                end
+            end
+        end
+    end
+
+    return range_counter
+end
+
+
+
+ function TargetInRange(spellName)
+    if spellName and IsSpellInRange(spellName, "target") == 1 then
+        return true
+    else
+        return false
+    end
+end
+
+
+
+
+
+local initialTotalMaxHealth = 0
+local combatStartTime = 0
+local inCombat = false
+
+local function getTotalHealthOfCombatMobs()
+    local totalMaxHealth = 0
+    local totalCurrentHealth = 0
+
+    for i = 1, 40 do
+        local unitID = "nameplate" .. i
+        if UnitExists(unitID) and UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) then
+            totalMaxHealth = totalMaxHealth + UnitHealthMax(unitID)
+            totalCurrentHealth = totalCurrentHealth + UnitHealth(unitID)
+        end
+    end
+
+    return totalMaxHealth, totalCurrentHealth
+end
+
+-- Event Frame for tracking combat state
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
+
+eventFrame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        inCombat = true
+        combatStartTime = GetTime()
+        initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        inCombat = false
+    end
+end)
+
+local function getCurrentDPS()
+    if inCombat and combatStartTime > 0 then
+        local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
+        if totalMaxHealth > initialTotalMaxHealth then
+            initialTotalMaxHealth = totalMaxHealth
+        end
+
+        local totalDamageDone = initialTotalMaxHealth - totalCurrentHealth
+        local combatDuration = GetTime() - combatStartTime
+        return math.max(0, totalDamageDone / combatDuration)
+    else
+        return 0
+    end
+end
+
+
+
+ function aoeTTD()
+    local currentDPS = getCurrentDPS()
+    local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
+
+    if currentDPS and currentDPS > 0 then
+        local TTD = totalCurrentHealth / currentDPS
+        return TTD
+    else
+       return 8888
+    end
+end
+
+
+
+
+ function IsReady(spell, range_check, aoe_check)
+    local start, duration, enabled = GetSpellCooldown(tostring(spell))
+    local usable, noMana = IsUsableSpell(tostring(spell))
+    local range_counter = 0
+
+    if duration and start then
+        cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
+        --gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
+    end
+
+    if cooldown_remains and cooldown_remains < 0 then
+        cooldown_remains = 0
+    end
+
+    -- if gcd_remains and gcd_remains < 0 then
+    -- gcd_remains = 0
+    -- end
+
+    if aoe_check then
+        if Spell then
+            for i = 1, 40 do
+                local unitID = "nameplate" .. i
+                if UnitExists(unitID) then
+                    local nameplate_guid = UnitGUID(unitID)
+                    local npc_id = select(6, strsplit("-", nameplate_guid))
+                    if npc_id ~= '120651' and npc_id ~= '161895' then
+                        if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                            range_counter = range_counter + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+
+    -- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
+    if usable and enabled and cooldown_remains < 0.5 then
+        if range_check then
+            if IsSpellInRange(tostring(spell), "target") then
+                return true
+            else
+                return false
+            end
+        elseif aoe_check then
+            if range_counter >= aoe_check then
+                return true
+            else
+                return false
+            end
+        elseif range_check and aoe_check then
+            return 'Input range check or aoe check, not both'
+        elseif not range_check and not aoe_check then
+            return true
+        end
+    else
+        return false
+    end
+end
+
+
+
+
 function RubimRH.lasthit()
 if not Player:AffectingCombat() then
 return 1000000
@@ -522,3 +687,37 @@ function RubimRH.print(text, color)
     print("|cff828282RRH: |r" .. text)
 end
 
+
+local lastGCDTime = nil
+local gcdDuration = 1.5  -- Typical GCD duration, may need adjustment for haste
+
+-- Function to print the remaining GCD
+ function GCDRemaining()
+    if lastGCDTime then
+        local remainingTime = (lastGCDTime + gcdDuration) - GetTime()
+        return math.max(0, remainingTime)
+    else
+        return 0
+    end
+end
+
+-- Round helper function
+local function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+end
+
+-- Event Frame to track spell casts and GCD
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+
+eventFrame:SetScript("OnEvent", function()
+    local _, eventType, _, sourceGUID, _, _, _, _, _, _, _, spellID = CombatLogGetCurrentEventInfo()
+    if eventType == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
+        local start, duration = GetSpellCooldown(spellID)
+        if start and duration and duration > 0 then
+            lastGCDTime = start  -- Record the start time of the GCD
+            gcdDuration = duration  -- Update the GCD duration which can change with haste
+        end
+    end
+end)

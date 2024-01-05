@@ -113,21 +113,6 @@ local function TargetinRange(range_check)
 	end
 end
 
-local function SwingTime()
-	haste = 1.15 * (1 + GetRangedHaste()/100)
-	ASCast = 0.5/haste
-
-	-- FD resets swing timer**
-	if S.FeignDeath:CooldownRemains() >= 30 - (UnitRangedDamage("player") - ASCast) then 
-		Swing = (UnitRangedDamage("player") - ASCast) - (30 - S.FeignDeath:CooldownRemains()) 
-	else
-		Swing = (UnitRangedDamage("player") - ASCast) - S.AutoShot:TimeSinceLastCast()
-	end
-	
-	if Swing <= 0 then Swing = 0 end
-	
-	return Swing
-end
 
 local function IsReady(spell,range_check,aoe_check)
 	local start,duration,enabled = GetSpellCooldown(tostring(spell))
