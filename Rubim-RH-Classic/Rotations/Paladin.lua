@@ -23,6 +23,7 @@ RubimRH.Spell[2] = {
 SealoftheCrusader = Spell(21082),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
+SealoftheCrusaderDebuff = Spell(20300),
 Consecration = Spell(26573),
 ArcaneTorrent = Spell(28730),
 RighteousFury = Spell(25780),
@@ -255,6 +256,7 @@ end
 
 
 
+
 local function APL()
 	-- inRange5 = RangeCount("Crusader Strike")
     inRange10 = RangeCount("Judgement")
@@ -275,7 +277,7 @@ or RubimRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:
     RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
 end
 
-if RubimRH.QueuedSpell():ID() == S.HammerofJustice:ID() and not targetRange10 then
+if RubimRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not targetRange10 or Player:ManaPercentage()<5) then
     RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
 end
 
@@ -323,7 +325,8 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return I.autoattack:ID()
         end
 
-        if IsReady("Seal of Martyrdom")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+        if IsReady("Seal of Martyrdom")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") 
+        and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.chestrune:Cast()
         end
 
@@ -354,7 +357,10 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         if IsReady("Consecration") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.Consecration:Cast()
         end
-        if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+        if IsReady("Seal of the Crusader") and not Target:Debuff(S.SealoftheCrusaderDebuff) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            return S.SealoftheCrusader:Cast()
+        end
+        if IsReady("Seal of Command") and Target:Debuff(S.SealoftheCrusaderDebuff) and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             return S.SealofCommand:Cast()
         end
 
@@ -401,7 +407,8 @@ end
             return I.autoattack:ID()
             end
     
-            if IsReady("Seal of Martyrdom")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            if IsReady("Seal of Martyrdom")  and (Player:IsMoving() or Player:AffectingCombat()) and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and not AuraUtil.FindAuraByName("Seal of Righteousness", "player") 
+            and (Target:Exists() or inRange25>=1) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.chestrune:Cast()
             end
     
@@ -432,10 +439,12 @@ end
             if IsReady("Consecration") and IsActionInRange(61) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.Consecration:Cast()
             end
-            if IsReady("Seal of Command") and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+            if IsReady("Seal of the Crusader") and not Target:Debuff(S.SealoftheCrusaderDebuff) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                return S.SealoftheCrusader:Cast()
+            end
+            if IsReady("Seal of Command") and Target:Debuff(S.SealoftheCrusaderDebuff) and not Player:Buff(S.SealofCommand) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
                 return S.SealofCommand:Cast()
             end
-
 
 
 	
