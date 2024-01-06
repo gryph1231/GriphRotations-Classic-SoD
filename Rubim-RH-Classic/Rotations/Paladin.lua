@@ -139,7 +139,7 @@ or RubimRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:
     RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
 end
 
-if RubimRH.QueuedSpell():ID() == S.HammerofJustice:ID() and not targetRange10 then
+if RubimRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not targetRange10 or S.HammerofJustice:CooldownRemains()>3) then
     RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
 end
 
@@ -215,20 +215,30 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
       
         
             if IsReady("Judgement")
-            and RubimRH.CDsON() and 
+            and (RubimRH.CDsON() or UnitIsPlayer('target'))
             (
                 nextauto+0.15>GCDRemaining()
-            or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER")
+            or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
             )
             and targetRange10 then
                 return S.Judgement:Cast()
             end
+
+
+            if IsReady('Exorcism') and targetRange10 and UnitIsPlayer('target')
+            and Target:AffectingCombat() and RubimRH.CDsON() 
+            and Target:Exists() 
+            and Player:CanAttack(Target) 
+             then
+               return S.Exorcism:Cast()
+            end
+
     
             if sealbuffremains<Player:GCD()+nextauto + 0.15 then 
     
                 if IsReady("Seal of the Crusader") 
                 and TTDlong
-                and not Target:Debuff(S.SealoftheCrusaderDebuff) then
+                and not Target:Debuff(S.SealoftheCrusaderDebuff) and not UnitIsPlayer('target') then
                     return S.SealoftheCrusader:Cast()
                 end
         
@@ -247,8 +257,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
                 end
     
     
-    
-            if IsReady('Exorcism') and targetRange10 
+                if IsReady('Exorcism') and targetRange10
             and Target:AffectingCombat() and RubimRH.CDsON() 
             and Target:Exists() 
             and Player:CanAttack(Target) 
@@ -303,78 +312,87 @@ end
             return S.BlessingofMight:Cast()
         end
     
-    
-        if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then 
 
           
-        if not IsCurrentSpell(6603) and targetRange10 then
-            return I.autoattack:ID()
-            end
+            if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then 
+
+                if not IsCurrentSpell(6603) and targetRange10 then
+                    return I.autoattack:ID()
+                    end
+                
+                    
+                    if IsReady("Avenger's Shield") and RubimRH.CDsON() and targetRange10  then
+                        return S.AvengersShield:Cast()
+                    end
+            
+                    if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
+                        return S.gloverune:Cast()
+                    end
+            
+                    if IsReady("Divine Storm") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15 then
+                        return S.chestrune:Cast()
+                    end
+            
+              
+                
+                    if IsReady("Judgement")
+                    and (RubimRH.CDsON() or UnitIsPlayer('target'))
+                    (
+                        nextauto+0.15>GCDRemaining()
+                    or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
+                    )
+                    and targetRange10 then
+                        return S.Judgement:Cast()
+                    end
+        
+        
+                    if IsReady('Exorcism') and targetRange10 and UnitIsPlayer('target')
+                    and Target:AffectingCombat() and RubimRH.CDsON() 
+                    and Target:Exists() 
+                    and Player:CanAttack(Target) 
+                     then
+                       return S.Exorcism:Cast()
+                    end
         
             
-            if IsReady("Avenger's Shield") and RubimRH.CDsON() and targetRange10  then
-                return S.AvengersShield:Cast()
-            end
-    
-            if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
-                return S.gloverune:Cast()
-            end
-    
-            if IsReady("Divine Storm") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15 then
-                return S.chestrune:Cast()
-            end
-    
-      
-        
-            if IsReady("Judgement")
-            and RubimRH.CDsON() and  
-            (
-                nextauto+0.15>GCDRemaining()
-            or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER")
-            )
-            and targetRange10 then
-                return S.Judgement:Cast()
-            end
-    
-            if sealbuffremains<Player:GCD()+nextauto + 0.15 then 
-    
-                if IsReady("Seal of the Crusader") 
-                and TTDlong
-                and not Target:Debuff(S.SealoftheCrusaderDebuff) then
-                    return S.SealoftheCrusader:Cast()
-                end
-        
-                if IsReady("Seal of Command") then
-                    return S.SealofCommand:Cast()
-                end
-        
-                if IsReady("Seal of Martyrdom") then
-                    return S.chestrune:Cast()
-                end
+                    if sealbuffremains<Player:GCD()+nextauto + 0.15 then 
+            
+                        if IsReady("Seal of the Crusader") 
+                        and TTDlong
+                        and not Target:Debuff(S.SealoftheCrusaderDebuff) and not UnitIsPlayer('target') then
+                            return S.SealoftheCrusader:Cast()
+                        end
                 
-                if IsReady("Seal of Righteousness") then
-                    return S.SealofRighteousness:Cast()
-                end
-    
-                end
-    
-    
-    
-            if IsReady('Exorcism') and IsActionInRange(62)
-            and Target:AffectingCombat() and RubimRH.CDsON()  
-            and Target:Exists() 
-            and Player:CanAttack(Target) 
-             then
-               return S.Exorcism:Cast()
-            end
-    
+                        if IsReady("Seal of Command") then
+                            return S.SealofCommand:Cast()
+                        end
                 
-     
-                if IsReady("Consecration") and IsActionInRange(61) and not Player:IsMoving() then
-                    return S.Consecration:Cast()
-                end
-    
-            end
+                        if IsReady("Seal of Martyrdom") then
+                            return S.chestrune:Cast()
+                        end
+                        
+                        if IsReady("Seal of Righteousness") then
+                            return S.SealofRighteousness:Cast()
+                        end
+            
+                        end
+            
+            
+                        if IsReady('Exorcism') and targetRange10
+                    and Target:AffectingCombat() and RubimRH.CDsON() 
+                    and Target:Exists() 
+                    and Player:CanAttack(Target) 
+                     then
+                       return S.Exorcism:Cast()
+                    end
+            
+                        
+             
+                        if IsReady("Consecration") and IsActionInRange(61) and not Player:IsMoving() then
+                            return S.Consecration:Cast()
+                        end
+            
+                    end
 
 
 return 135328
