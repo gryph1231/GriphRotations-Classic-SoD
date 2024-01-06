@@ -317,13 +317,13 @@ local function APL()
         return S.Rend1:Cast()
     end	
 
-    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage) or not IsReady('Raging Blow') ) and targetRange5 then
+    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage)) and targetRange5 then
 	
         if IsReady("Execute") and Target:HealthPercentage()<=20 then
             return S.Execute:Cast()
         end
 
-    	if IsReady("Cleave") and inRange5>=2 then
+    	if IsReady("Cleave") and inRange5>=2 and RubimRH.AoEON() and Player:Rage()>25 then
         return S.Cleave:Cast()
         end
 
@@ -331,7 +331,7 @@ local function APL()
         return S.quickStrike:Cast()
         end
 
-        if IsReady('Heroic Strike') and (inRange5 == 1 or not RubimRH.AOEON()) and Player:Rage()>17 then
+        if IsReady('Heroic Strike') and (inRange5 == 1 or not RubimRH.AOEON()) and Player:Rage()>25 then
         return S.HeroicStrike1:Cast()
         end
 
