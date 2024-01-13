@@ -188,7 +188,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return S.RetributionAura:Cast()
     end
 
-    if IsReady("Blessing of Might") and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() then
+    if IsReady("Blessing of Might") and not UnitIsPlayer('target') and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
         return S.BlessingofMight:Cast()
     end
 
@@ -215,7 +215,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
       
         
             if IsReady("Judgement")
-            and (RubimRH.CDsON() or UnitIsPlayer('target'))
+            and (RubimRH.CDsON() or UnitIsPlayer('target')) and
             (
                 nextauto+0.15>GCDRemaining()
             or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
@@ -308,7 +308,7 @@ end
             return S.RetributionAura:Cast()
         end
     
-        if IsReady("Blessing of Might") and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+        if IsReady("Blessing of Might") and not UnitIsPlayer('target') and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
             return S.BlessingofMight:Cast()
         end
     
@@ -336,7 +336,7 @@ end
               
                 
                     if IsReady("Judgement")
-                    and (RubimRH.CDsON() or UnitIsPlayer('target'))
+                    and (RubimRH.CDsON() or UnitIsPlayer('target')) and
                     (
                         nextauto+0.15>GCDRemaining()
                     or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')

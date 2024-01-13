@@ -323,15 +323,15 @@ local function APL()
             return S.Execute:Cast()
         end
 
-    	if IsReady("Cleave") and inRange5>=2 and RubimRH.AoEON() and Player:Rage()>25 then
+    	if IsReady("Cleave") and inRange5>=2 and RubimRH.AoEON() and Player:Rage()>45 then
         return S.Cleave:Cast()
         end
 
-        if IsReady("Quick Strike") and (inRange5 == 1 or not RubimRH.AOEON())  then
+        if IsReady("Quick Strike") and inRange5 == 1 then
         return S.quickStrike:Cast()
         end
 
-        if IsReady('Heroic Strike') and (inRange5 == 1 or not RubimRH.AOEON()) and Player:Rage()>25 then
+        if IsReady('Heroic Strike') and inRange5 == 1 and Player:Rage()>45 then
         return S.HeroicStrike1:Cast()
         end
 

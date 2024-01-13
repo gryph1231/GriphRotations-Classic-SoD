@@ -113,6 +113,21 @@ local function TargetinRange(range_check)
 	end
 end
 
+local function SwingTime()
+	haste = 1.15 * (1 + GetRangedHaste()/100)
+	ASCast = 0.5/haste
+
+	-- FD resets swing timer**
+	if S.FeignDeath:CooldownRemains() >= 30 - (UnitRangedDamage("player") - ASCast) then 
+		Swing = (UnitRangedDamage("player") - ASCast) - (30 - S.FeignDeath:CooldownRemains()) 
+	else
+		Swing = (UnitRangedDamage("player") - ASCast) - S.AutoShot:TimeSinceLastCast()
+	end
+	
+	if Swing <= 0 then Swing = 0 end
+	
+	return Swing
+end
 
 local function IsReady(spell,range_check,aoe_check)
 	local start,duration,enabled = GetSpellCooldown(tostring(spell))
@@ -265,7 +280,7 @@ stingTime()
 if Player:IsCasting() or Player:IsChanneling() then
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
+	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
 end 
 
 local MultiShotTime = 0.5 / (1.15 * (1 + GetRangedHaste()/100))
@@ -325,7 +340,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	end
 end
 
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
+	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
 end
 
 -- TimeSinceLastCast() <= gcd + casttime?
@@ -335,3 +350,5 @@ end
 
 
 RubimRH.Rotation.SetAPL(3, APL);
+RubimRH.Rotation.SetPvP(3, PvP)
+RubimRH.Rotation.SetPASSIVE(3, PASSIVE);
