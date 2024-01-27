@@ -16,7 +16,7 @@ RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
-    ragingblow = Spell(20594),--stoneform
+    ragingblow = Spell(1464),--slam
     Charge = Spell(100),
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
@@ -27,7 +27,7 @@ RubimRH.Spell[1] = {
     Rend3 = Spell(6547),
 
     QuickStrike = Spell(429765),
-    quickStrike = Spell(20560), --mocking blow
+    quickStrike = Spell(20572), --blood fury
     HeroicStrike4 = Spell(1608),
     HeroicStrike2 = Spell(284),
     HeroicStrike3 = Spell(285),
@@ -317,7 +317,7 @@ local function APL()
         return S.Rend1:Cast()
     end	
 
-    if (Player:Rage()>=80 or Player:Buff(S.Enrage) or Player:Buff(S.Bloodrage)) and targetRange5 then
+    if (Player:Rage()>=80 or AuraUtil.FindAuraByName("Enrage", "player") or AuraUtil.FindAuraByName("Bloodrage", "player")) and targetRange5 then
 	
         if IsReady("Execute") and Target:HealthPercentage()<=20 then
             return S.Execute:Cast()
