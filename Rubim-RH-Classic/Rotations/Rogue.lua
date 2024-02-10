@@ -105,276 +105,6 @@ local I = Item.Rogue;
 -- --S.ColdBlood.TextureSpellID = {135863} --natures swiftness
 
 
-local function RangeCount(spellName)
-    local range_counter = 0
-
-    if spellName then
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then
-                local nameplate_guid = UnitGUID(unitID)
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end
-                end
-            end
-        end
-    end
-
-    return range_counter
-end
-
-local function TargetInRange(spellName)
-    if spellName and IsSpellInRange(spellName, "target") == 1 then
-        return true
-    else
-        return false
-    end
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local function IsReady(spell, range_check, aoe_check)
-    local start, duration, enabled = GetSpellCooldown(tostring(spell))
-    local usable, noMana = IsUsableSpell(tostring(spell))
-    local range_counter = 0
-
-    if duration and start then
-        cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
-        --gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
-    end
-
-    if cooldown_remains and cooldown_remains < 0 then
-        cooldown_remains = 0
-    end
-
-    -- if gcd_remains and gcd_remains < 0 then
-    -- gcd_remains = 0
-    -- end
-
-    if aoe_check then
-        if Spell then
-            for i = 1, 40 do
-                local unitID = "nameplate" .. i
-                if UnitExists(unitID) then
-                    local nameplate_guid = UnitGUID(unitID)
-                    local npc_id = select(6, strsplit("-", nameplate_guid))
-                    if npc_id ~= '120651' and npc_id ~= '161895' then
-                        if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
-                            range_counter = range_counter + 1
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-
-    -- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
-    if usable and enabled and cooldown_remains < 0.5 then
-        if range_check then
-            if IsSpellInRange(tostring(spell), "target") then
-                return true
-            else
-                return false
-            end
-        elseif aoe_check then
-            if range_counter >= aoe_check then
-                return true
-            else
-                return false
-            end
-        elseif range_check and aoe_check then
-            return 'Input range check or aoe check, not both'
-        elseif not range_check and not aoe_check then
-            return true
-        end
-    else
-        return false
-    end
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local initialTotalMaxHealth = 0
-local combatStartTime = 0
-local inCombat = false
-
-local function getTotalHealthOfCombatMobs()
-    local totalMaxHealth = 0
-    local totalCurrentHealth = 0
-
-    for i = 1, 40 do
-        local unitID = "nameplate" .. i
-        if UnitExists(unitID) and UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) then
-            totalMaxHealth = totalMaxHealth + UnitHealthMax(unitID)
-            totalCurrentHealth = totalCurrentHealth + UnitHealth(unitID)
-        end
-    end
-
-    return totalMaxHealth, totalCurrentHealth
-end
-
--- Event Frame for tracking combat state
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
-eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
-
-eventFrame:SetScript("OnEvent", function(_, event)
-    if event == "PLAYER_REGEN_DISABLED" then
-        inCombat = true
-        combatStartTime = GetTime()
-        initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
-    elseif event == "PLAYER_REGEN_ENABLED" then
-        inCombat = false
-    end
-end)
-
-local function getCurrentDPS()
-    if inCombat and combatStartTime > 0 then
-        local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
-        if totalMaxHealth > initialTotalMaxHealth then
-            initialTotalMaxHealth = totalMaxHealth
-        end
-
-        local totalDamageDone = initialTotalMaxHealth - totalCurrentHealth
-        local combatDuration = GetTime() - combatStartTime
-        return math.max(0, totalDamageDone / combatDuration)
-    else
-        return 0
-    end
-end
-
-
-
-local function aoeTTD()
-    local currentDPS = getCurrentDPS()
-    local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
-
-    if currentDPS and currentDPS > 0 then
-        local TTD = totalCurrentHealth / currentDPS
-        return TTD
-    else
-       return 8888
-    end
-end
 
 
 
@@ -396,7 +126,7 @@ for i = 1, 40 do
     end
 end
 
-local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Target:Exists())
+local targetdying = (aoeTTD()<=4 or UnitHealth('target')<300 and Target:Exists())
 
 -- print(aoeTTD())
 -- print(getSingleTargetTTD())
@@ -479,7 +209,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
             -- if not IsCurrentSpell(6603)  and targetRange5 then
             --     return I.autoattack:ID()
             -- end
-
+            if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
             if
             -- S.Stealth:CanCast()
                 IsReady('Stealth') and IsReady('Shadowstrike') and not IsReady('Saber Slash')
@@ -490,7 +220,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
             if
             -- S.Backstab:CanCast()
                 IsReady('Backstab')
-                and targetRange5 and not Player:IsTanking(Target)
+                and CheckInteractDistance("target",3) and not Player:IsTanking(Target)
             then
                 return S.Backstab:Cast()
             end
@@ -506,15 +236,15 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
             if
             -- S.SinisterStrike:CanCast()
                 (IsReady('Sinister Strike') or IsReady('Saber Slash'))
-                and targetRange5 and Player:ComboPoints() < 5
+                and CheckInteractDistance("target",3)and Player:ComboPoints() < 5
             then
                 return S.SinisterStrike:Cast()
             end
 
-            if not IsCurrentSpell(6603) and targetRange5 and Player:Energy() < 45 then
+            if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) and Player:Energy() < 45 then
                 return I.autoattack:ID()
             end
-
+        end
             return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
         end
     end
@@ -533,7 +263,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
         and
         not Target:IsDeadOrGhost()
     then -- In combat
-        if not IsCurrentSpell(6603) and targetRange5 then
+        if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
             return I.autoattack:ID()
         end
 
@@ -543,15 +273,15 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
         --Slice1
         if
         --   S.SliceandDice:CanCast()
-            IsReady('Slice and Dice') and (not targetdying or targetdying and inRange25>1)
+            IsReady('Slice and Dice') and (not targetdying or targetdying and RangeCount11()>1)
             and (Player:BuffRemains(S.SliceandDice) < 5 and ((Player:ComboPoints() >= 2 and HL.CombatTime()<3 
-            or aoeTTD()>6 and Player:ComboPoints() >= 4 or targetdying and inRange25 > 1)
-            or (inRange25==1 and (
-            Player:ComboPoints() >= 2 and  Target:TimeToDie()>6 + Player:GCD()
+            or aoeTTD()>6 and Player:ComboPoints() >= 4 or targetdying and RangeCount11() > 1)
+            or (RangeCount11()==1 and (
+            Player:ComboPoints() >= 2 and  aoeTTD()>6 + Player:GCD()
             or
-            Player:ComboPoints() >= 3 and Target:TimeToDie()>8 + Player:GCD())
+            Player:ComboPoints() >= 3 and aoeTTD()>8 + Player:GCD())
             or
-            Player:ComboPoints() >= 4 and  Target:TimeToDie()>10 + Player:GCD())))
+            Player:ComboPoints() >= 4 and  aoeTTD()>10 + Player:GCD())))
             
 
         then
@@ -559,7 +289,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
         end
 
         if IsReady('Envenom')  and
-                not Player:Buff(S.EnvenomBuff) and targetRange5 and Player:ComboPoints()>=3 
+                not Player:Buff(S.EnvenomBuff) and CheckInteractDistance("target",3)  and Player:ComboPoints()>=3 
                 and (Target:DebuffStack(S.DeadlyPoisonDebuff)>=3 and targetdying or Target:Debuff(S.DeadlyPoisonDebuff) and Player:ComboPoints()>=5)
               
             then
@@ -567,9 +297,9 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
             end
     
             if IsReady('Eviscerate')
-            and targetRange5 and (not Target:Debuff(S.DeadlyPoisonDebuff) 
+            and CheckInteractDistance("target",3)  and (not Target:Debuff(S.DeadlyPoisonDebuff) 
             or Target:DebuffStack(S.DeadlyPoisonDebuff)<=2) 
-            and (targetdying and Player:ComboPoints()>=2 or Player:ComboPoints()>=5) 
+            and (targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=5) 
         then
             return S.Eviscerate:Cast()
         end
@@ -579,7 +309,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
             IsReady('Backstab')
 
             -- S.Backstab:CanCast()
-            and targetRange5 and not Player:IsTanking(Target)
+            and CheckInteractDistance("target",3)  and not Player:IsTanking(Target)
         then
             return S.Backstab:Cast()
         end
@@ -587,7 +317,7 @@ local targetdying = (Target:TimeToDie()<=4 or UnitHealth('target')<300 and Targe
         if
         -- S.SinisterStrike:CanCast()
             (IsReady('Sinister Strike') or IsReady('Saber Slash'))
-            and targetRange5 and Player:ComboPoints() < 5
+            and CheckInteractDistance("target",3)  and Player:ComboPoints() < 5
         then
             return S.SinisterStrike:Cast()
         end
