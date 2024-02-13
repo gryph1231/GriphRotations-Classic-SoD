@@ -14,24 +14,24 @@ RubimRH.Spell[4] = {
     Evasion = Spell(5277),
     EnvenomBuff = Spell(399963),
     Envenom = Spell(399963),
-    envenom = Spell(20580),-- shadowmeld
+    envenom = Spell(20580), -- shadowmeld
     DeadlyPoisonDebuff = Spell(434312),
     SliceandDice = Spell(5171),
     Default = Spell(1),
     Blind = Spell(2094),
     CloakofShadows = Spell(31224),
-    Distract = Spell(2836),
+    Distract = Spell(1725),
     Sap = Spell(11297),
     Stealth = Spell(1784),
     Vanish = Spell(26889),
-    Ambush = Spell(48691),
+    Ambush = Spell(8724),
     CheapShot = Spell(1833),
     DeadlyThrow = Spell(48674),
     DeadlyPoison = Spell(27187),
     Eviscerate = Spell(6761),
     ExposeArmor = Spell(26866),
     Garrote = Spell(48676),
-    KidneyShot = Spell(8643),
+    KidneyShot = Spell(408),
     Rupture = Spell(48672),
     SnD = Spell(6774),
     Backstab = Spell(53),
@@ -45,7 +45,7 @@ RubimRH.Spell[4] = {
     WilloftheForsaken = Spell(7744),
     AdrenalineRush = Spell(13750),
     BladeFlurry = Spell(13877),
-
+    Beltrune = Spell(20554), -- berserking
     KillingSpree = Spell(51690),
     FanofKnives = Spell(51723),
     ColdBlood = Spell(14177),
@@ -55,7 +55,7 @@ RubimRH.Spell[4] = {
     Mutilate = Spell(1329),
     Shadowstrike = Spell(399985),
     shadowstrike = Spell(20594), --stone form
-    Default = Spell(1),
+    
 };
 local S = RubimRH.Spell[4]
 
@@ -113,23 +113,42 @@ local I = Item.Rogue;
 
 
 local function APL()
-
     inRange5 = RangeCount("Sinister Strike")
- 
+
     targetRange5 = TargetInRange("Sinister Strike")
     targetRange30 = TargetInRange("Throw")
---range checks with nameplate
-local inRange25 = 0
-for i = 1, 40 do
-    if UnitExists('nameplate' .. i)  then
-        inRange25 = inRange25 + 1
+    --range checks with nameplate
+    local inRange25 = 0
+    for i = 1, 40 do
+        if UnitExists('nameplate' .. i) then
+            inRange25 = inRange25 + 1
+        end
     end
+
+--    if Target:Exists() and Target:AffectingCombat() then
+--     local ttd = UnitHealth('target')/getCurrentDPS()
+--     else ttd = 0
+--     end 
+
+
+if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
+targetTTD = UnitHealth('target')/getCurrentDPS()
+else targetTTD = 8888
 end
 
-local targetdying = (aoeTTD()<=4 or UnitHealth('target')<300 and Target:Exists())
+    local targetdying = (aoeTTD() < 2.5 or targetTTD<2.5)
 
--- print(aoeTTD())
--- print(getSingleTargetTTD())
+if targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=4 then
+    finish = true
+else finish = false
+end
+   
+
+
+
+
+-- print(targetTTD)
+  
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
     local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
@@ -142,8 +161,8 @@ local targetdying = (aoeTTD()<=4 or UnitHealth('target')<300 and Target:Exists()
 
     local castchannelTime = math.random(275, 500) / 1000
 
-  
--- print(aoeTTD())
+
+    -- print(aoeTTD())
 
 
     if Player:IsCasting() or Player:IsChanneling() then
@@ -166,85 +185,83 @@ local targetdying = (aoeTTD()<=4 or UnitHealth('target')<300 and Target:Exists()
     -- elseif hasOffHandEnchant == true then
     -- ohenchantremains = offHandExpiration*0.001
     -- end
-    if inRange25==0 then
+    if inRange25 == 0 then
         RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
     end
 
-    if RubimRH.QueuedSpell():ID() == S.Gouge:ID() and (S.Gouge:CooldownRemains()>Player:GCD() or not Player:AffectingCombat()) then
+    if RubimRH.QueuedSpell():ID() == S.Gouge:ID() and (S.Gouge:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
         RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
     end
 
-    if RubimRH.QueuedSpell():ID() == S.Kick:ID() and (S.Kick:CooldownRemains()>Player:GCD() or not Player:AffectingCombat()) then
+    if RubimRH.QueuedSpell():ID() == S.BladeFlurry:ID() and (S.BladeFlurry:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
         RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
     end
 
-    if RubimRH.QueuedSpell():ID() == S.Gouge:ID()  then
+    if RubimRH.QueuedSpell():ID() == S.KidneyShot:ID() and (S.KidneyShot:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
+        RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
+    end
+
+    if RubimRH.QueuedSpell():ID() == S.Kick:ID() and (S.Kick:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
+        RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
+    end
+
+    if RubimRH.QueuedSpell():ID() == S.Distract:ID() and (S.Distract:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
+        RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
+    end
+
+    if RubimRH.QueuedSpell():ID() == S.Gouge:ID() and Player:Energy()> 35 and CheckInteractDistance("target", 3) then
         return RubimRH.QueuedSpell():Cast()
     end
-    
-    if RubimRH.QueuedSpell():ID() == S.Kick:ID()  then
+
+    if RubimRH.QueuedSpell():ID() == S.KidneyShot:ID() and not Target:Debuff(S.CheapShot) and Player:ComboPoints()>=1 and Player:Energy()> 15 and CheckInteractDistance("target", 3) then
         return RubimRH.QueuedSpell():Cast()
     end
 
-  
-
-    if not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and Player:AffectingCombat() then
-        --Kick
-        if S.Kick:CanCast() and RubimRH.CDsON()
-
-            and targetRange5 and (castTime > castchannelTime + 0.5 or channelTime > castchannelTime + 0.5) and select(8, UnitCastingInfo("target")) == false then
-            return S.Kick:Cast()
-        end
+    if RubimRH.QueuedSpell():ID() == S.Kick:ID() and Player:Energy()> 15 and CheckInteractDistance("target", 3) then
+        return RubimRH.QueuedSpell():Cast()
     end
+
+    if RubimRH.QueuedSpell():ID() == S.Distract:ID() then
+        return RubimRH.QueuedSpell():Cast()
+    end
+
+    if RubimRH.QueuedSpell():ID() == S.BladeFlurry:ID() then
+        return RubimRH.QueuedSpell():Cast()
+    end
+
+
+
     --     -- Out of combat
     if not Player:AffectingCombat() then
         if not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
-            -- --combat
-            -- if mhenchantremains<300 and not Player:IsMoving() and GetItemCount('Instant Poison IX')>=1 then
-            -- return S.mainhandpoison_instant1:Cast()
-            -- end
-            -- if ohenchantremains<300 and not Player:IsMoving() and comb and GetItemCount('Deadly Poison IX')>=1 then
-            -- return S.offhandpoison_instant1:Cast()
-            -- end
-            -- if not IsCurrentSpell(6603)  and targetRange5 then
-            --     return I.autoattack:ID()
-            -- end
-            if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-            if
-            -- S.Stealth:CanCast()
-                IsReady('Stealth') and IsReady('Shadowstrike') and not IsReady('Saber Slash')
-                and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and S.Stealth:TimeSinceLastCast() > 0.5 and Player:IsMoving() and not Player:Buff(S.Stealth) and Target:Exists() then
-                return S.Stealth:Cast()
-            end
+           
+            if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+              
+                -- if IsReady('Stealth') and CheckInteractDistance("target", 2)  and not AuraUtil.FindAuraByName("Stealth", "player") 
+                --     and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and S.Stealth:TimeSinceLastCast() > 0.5 
+                --     and Player:IsMoving() and not Player:Buff(S.Stealth) and Target:Exists() then
+                --     return S.Stealth:Cast()
+                -- end
 
-            if
-            -- S.Backstab:CanCast()
-                IsReady('Backstab')
-                and CheckInteractDistance("target",3) and not Player:IsTanking(Target)
-            then
-                return S.Backstab:Cast()
-            end
+              
+                if IsReady('Ambush')
+                    and CheckInteractDistance("target", 3)  
+                then
+                    return S.Ambush:Cast()
+                end
 
-            if
-            -- S.Shadowstrike:CanCast()
-                IsReady('Shadowstrike')
-                and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-                return S.shadowstrike:Cast()
-            end
+               
+                if (IsReady('Sinister Strike') or IsReady('Saber Slash') or IsReady('Mutilate')) and not AuraUtil.FindAuraByName("Stealth", "player") 
+                    and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and IsCurrentSpell(6603)
+                then
+                    return S.SinisterStrike:Cast()
+                end
 
+                if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Stealth", "player")  then
+                    return I.autoattack:ID()
+                end
 
-            if
-            -- S.SinisterStrike:CanCast()
-                (IsReady('Sinister Strike') or IsReady('Saber Slash'))
-                and CheckInteractDistance("target",3)and Player:ComboPoints() < 5
-            then
-                return S.SinisterStrike:Cast()
             end
-
-            if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) and Player:Energy() < 45 then
-                return I.autoattack:ID()
-            end
-        end
             return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
         end
     end
@@ -252,72 +269,57 @@ local targetdying = (aoeTTD()<=4 or UnitHealth('target')<300 and Target:Exists()
 
 
 
-    if
-        Player:AffectingCombat()
-        and
-        not Player:Buff(S.Stealth)
-        and
-        Target:Exists()
-        and
-        Player:CanAttack(Target)
-        and
-        not Target:IsDeadOrGhost()
-    then -- In combat
-        if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
+    if Player:AffectingCombat() and not Player:Buff(S.Stealth) and Target:Exists() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
+        if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
         end
 
 
--- if Player:ComboPoints()>Target:DebuffStack(S.DeadlyPoisonDebuff)
+        -- if Player:ComboPoints()>Target:DebuffStack(S.DeadlyPoisonDebuff)
 
         --Slice1
-        if
-        --   S.SliceandDice:CanCast()
-            IsReady('Slice and Dice') and (not targetdying or targetdying and RangeCount11()>1)
-            and (Player:BuffRemains(S.SliceandDice) < 5 and ((Player:ComboPoints() >= 2 and HL.CombatTime()<3 
-            or aoeTTD()>6 and Player:ComboPoints() >= 4 or targetdying and RangeCount11() > 1)
-            or (RangeCount11()==1 and (
-            Player:ComboPoints() >= 2 and  aoeTTD()>6 + Player:GCD()
-            or
-            Player:ComboPoints() >= 3 and aoeTTD()>8 + Player:GCD())
-            or
-            Player:ComboPoints() >= 4 and  aoeTTD()>10 + Player:GCD())))
-            
-
-        then
+        if IsReady('Slice and Dice') and aoeTTD()>4 and (not Player:Buff(S.SliceandDice) or Player:BuffRemains(S.SliceandDice)<4 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 or not Player:Buff(S.SliceandDice))) then
             return S.SliceandDice:Cast()
         end
 
-        if IsReady('Envenom')  and
-                not Player:Buff(S.EnvenomBuff) and CheckInteractDistance("target",3)  and Player:ComboPoints()>=3 
-                and (Target:DebuffStack(S.DeadlyPoisonDebuff)>=3 and targetdying or Target:Debuff(S.DeadlyPoisonDebuff) and Player:ComboPoints()>=5)
-              
-            then
-                return S.envenom:Cast()
-            end
-    
-            if IsReady('Eviscerate')
-            and CheckInteractDistance("target",3)  and (not Target:Debuff(S.DeadlyPoisonDebuff) 
-            or Target:DebuffStack(S.DeadlyPoisonDebuff)<=2) 
-            and (targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=5) 
-        then
+        if IsReady('Envenom') and
+            not Player:Buff(S.EnvenomBuff) and CheckInteractDistance("target", 3) and finish then
+            return S.envenom:Cast()
+        end
+
+        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
             return S.Eviscerate:Cast()
         end
 
 
+
+
+        -- if IsReady('Shuriken Toss') and inRange25>4 and CheckInteractDistance("target", 3) and not Player:Buff(S.BladeFlurry)
+        --     and  Player:ComboPoints() < 5
+
+        -- then
+        --     return S.Beltrune:Cast()
+        -- end
+
         if
-            IsReady('Backstab')
+            IsReady('Backstab') and not IsReady('Mutilate')
 
             -- S.Backstab:CanCast()
-            and CheckInteractDistance("target",3)  and not Player:IsTanking(Target)
+            and CheckInteractDistance("target", 3) and not Player:IsTanking(Target)
         then
             return S.Backstab:Cast()
         end
 
-        if
-        -- S.SinisterStrike:CanCast()
-            (IsReady('Sinister Strike') or IsReady('Saber Slash'))
-            and CheckInteractDistance("target",3)  and Player:ComboPoints() < 5
+        if (IsReady('Mutilate'))
+            and CheckInteractDistance("target", 3) and Player:ComboPoints() <=4 
+        then
+            return S.SinisterStrike:Cast()
+        end
+
+
+
+        if (IsReady('Sinister Strike') or IsReady('Saber Slash') )
+            and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5
         then
             return S.SinisterStrike:Cast()
         end

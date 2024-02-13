@@ -294,6 +294,46 @@ function RangeCount(spellName)
 end
 
 
+function RangeCount11()
+    local range_counter = 0
+
+  
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then
+                local nameplate_guid = UnitGUID(unitID)
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,2) and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end
+                end
+            end
+        end
+    
+
+    return range_counter
+end
+function RangeCount10()
+    local range_counter = 0
+
+  
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then
+                local nameplate_guid = UnitGUID(unitID)
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,3) and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end
+                end
+            end
+        end
+    
+
+    return range_counter
+end
 
  function TargetInRange(spellName)
     if spellName and IsSpellInRange(spellName, "target") == 1 then
@@ -341,7 +381,7 @@ eventFrame:SetScript("OnEvent", function(_, event)
     end
 end)
 
-local function getCurrentDPS()
+function getCurrentDPS()
     if inCombat and combatStartTime > 0 then
         local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
         if totalMaxHealth > initialTotalMaxHealth then
@@ -736,3 +776,63 @@ eventFrame:SetScript("OnEvent", function()
         end
     end
 end)
+
+
+
+function SpellRank(spell_name)
+
+    if spell_name then
+        local _,_,_,_,_,_,spellID,_ = GetSpellInfo(spell_name)
+        
+        return spellID
+    else
+        return 0
+    end
+
+end
+
+
+
+
+
+
+-- -- Create a frame for event handling
+-- local eventFrame = CreateFrame("Frame")
+
+-- -- Register events related to spell casting
+-- eventFrame:RegisterEvent("UNIT_SPELLCAST_START")
+-- eventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
+-- eventFrame:RegisterEvent("UNIT_SPELLCAST_FAILED")
+-- eventFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+-- eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+
+-- -- Variable to hold the name of the currently casting spell
+-- local currentlyCasting = false
+
+-- -- Event handling function
+-- eventFrame:SetScript("OnEvent", function(self, event, unit, _, spellID)
+--     if unit == "player" then  -- Check if the event is for the player
+--         if event == "UNIT_SPELLCAST_START" then
+--             local spellName = GetSpellInfo(spellID)
+--             currentlyCasting = spellName
+--         elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_SUCCEEDED" then
+--             currentlyCasting = false
+--         end
+--     end
+-- end)
+
+-- -- Function to get the name of the spell currently being cast, if any, or false if not casting
+-- function GetCurrentSpellBeingCast()
+--     return currentlyCasting
+-- end
+
+ function mhenchant()
+
+    hasMainHandEnchant, mainHandExpiration = GetWeaponEnchantInfo()
+    
+    if (hasMainHandEnchant == true and mainHandExpiration-GetTime()>30) then
+    return true else return false
+    end
+    
+    
+    end

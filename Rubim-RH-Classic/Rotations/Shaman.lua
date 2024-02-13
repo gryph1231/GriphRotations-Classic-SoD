@@ -13,30 +13,37 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 
 RubimRH.Spell[7] = {
-	LightningBolt1 = Spell(403),
+	LightningBolt = Spell(SpellRank('Lightning Bolt')),
+
 	AutoAttack = Spell(6603),
 	Bloodlust = Spell(2825),
-    Rockbiter = Spell(8017),
-	FlameTongueWeapon = Spell(25489),
-
+    RockbiterWeapon = Spell(SpellRank('Rockbiter Weapon')),
+    Purge = Spell(SpellRank('Purge')),
+    CurePoison = Spell(SpellRank('Cure Poison')),
+    AncestralSpirit = Spell(SpellRank('Ancestral Spirit')),
+    HealingWave = Spell(SpellRank('Healing Wave')),
+	FlametongueWeapon = Spell(SpellRank('Flametongue Weapon')),
+    StoneskinTotem = Spell(SpellRank('Stoneskin Totem')),
+    StrengthofEarthTotem = Spell(SpellRank('Strength of Earth Totem')),
+    LightningShield = Spell(SpellRank('Lightning Shield')),
+    EarthbindTotem = Spell(SpellRank('Earthbind Totem')),
+    StoneclawTotem = Spell(SpellRank('Stoneclaw Totem')),
 	trinket = Spell(33697), -- Blood Fury
 	trinket2 = Spell(26296), -- berserking
-	EarthElementalTotem = Spell(2062),
-	FireElementalTotem = Spell(2894),
+
 	Drink = Spell(27089),
 	TotemofWrathBuff = Spell(30708),
 	TotemofWrath = Spell(30706),
 	Default = Spell(1),
-	FireNovaTotem = Spell(25547),
-	ElementalMastery = Spell(16166),
-	LesserHealingWave = Spell(25420),
-    ChainLightning = Spell(25442),
-    LightningBolt = Spell(25449),
-    WaterShield = Spell(33736),
-	EarthShock = Spell(25454),
-	FlameShock = Spell(25457),
-	FrostShock = Spell(25464),
-	GroundingTotem = Spell(8177),
+	FireNovaTotem = Spell(SpellRank('Fire Nova Totem')),
+	-- ElementalMastery = Spell(SpellRank('Elemental Mastery')),
+	-- LesserHealingWave = Spell(SpellRank('Lesser Healing Wave')),
+    -- ChainLightning = Spell(SpellRank('Chain Lightning')),
+    -- WaterShield = Spell(33736),
+	EarthShock = Spell(SpellRank('Earth Shock')),
+	FlameShock = Spell(SpellRank('Flame Shock')),
+	-- FrostShock =  Spell(SpellRank('Frost Shock')),
+	-- GroundingTotem = Spell(SpellRank('Grounding Totem')),
 };
 
 local S = RubimRH.Spell[7]
@@ -56,19 +63,10 @@ local I = Item.Shaman.Elemental;
 
 
 S.AutoAttack.TextureSpellID = { 8017 }
-
-S.LightningBolt1:RegisterInFlight()
-
-local function mhenchant()
-
-hasMainHandEnchant, mainHandExpiration = GetWeaponEnchantInfo()
-
-if (hasMainHandEnchant == true) then
-return true else return false
-end
+S.LightningBolt:RegisterInFlight()
 
 
-end
+
 
 
 
@@ -86,8 +84,8 @@ end
 
 
 local function APL()
-
-
+    targetRange25 = TargetInRange("Earth Shock")
+    targetRange30 = TargetInRange("Lightning Bolt")
 
 if Player:IsCasting() or Player:IsChanneling() then
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
@@ -96,29 +94,74 @@ or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & 
     return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
 end
 
-    if RubimRH.QueuedSpell():IsReadyQueue() then
-       return RubimRH.QueuedSpell():Cast()
-   end
-   
+
+  
+--    print(RubimRH.QueuedSpell():ID())
+   if RubimRH.QueuedSpell():ID() == S.HealingWave:ID() and (not IsReady('Healing Wave') or Player:MovingFor()>1 or not Player:AffectingCombat()) then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+if RubimRH.QueuedSpell():ID() == S.CurePoison:ID() and (not IsReady('Cure Poison') or not Player:AffectingCombat()) then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and (not IsReady('Earthbind Totem') or not Player:AffectingCombat() or S.EarthbindTotem:CooldownRemains() > Player:GCD())  then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+if RubimRH.QueuedSpell():ID() == S.FireNovaTotem:ID() and (not IsReady('Fire Nova Totem') or not Player:AffectingCombat() or S.FireNovaTotem:CooldownRemains() > Player:GCD())  then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+if RubimRH.QueuedSpell():ID() == S.StoneclawTotem:ID() and (not IsReady('Stoneclaw Totem') or not Player:AffectingCombat() or S.StoneclawTotem:CooldownRemains() > Player:GCD())  then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+if RubimRH.QueuedSpell():ID() == S.Purge:ID() and (not IsReady('Purge') or not Player:AffectingCombat() or S.Purge:CooldownRemains() > Player:GCD()) then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and (not IsReady('Earth Shock') or not Player:AffectingCombat() or S.EarthShock:CooldownRemains() > Player:GCD()) then
+    RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+end
+
+
+if RubimRH.QueuedSpell():ID() == S.HealingWave:ID() then
+    return RubimRH.QueuedSpell():Cast()
+end
+
+if RubimRH.QueuedSpell():ID() == S.CurePoison:ID() then
+    return RubimRH.QueuedSpell():Cast()
+end
+if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() then
+    return RubimRH.QueuedSpell():Cast()
+end
+if RubimRH.QueuedSpell():ID() == S.FireNovaTotem:ID() then
+    return RubimRH.QueuedSpell():Cast()
+end
+if RubimRH.QueuedSpell():ID() == S.StoneclawTotem:ID() then
+    return RubimRH.QueuedSpell():Cast()
+end
+if RubimRH.QueuedSpell():ID() == S.Purge:ID() and Target:Exists() then
+    return RubimRH.QueuedSpell():Cast()
+end
+if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and Target:Exists() then
+    return RubimRH.QueuedSpell():Cast()
+end
+
 
 -- -- -- Out of combat
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
-    if not mhenchant() then
-        return S.Rockbiter:Cast()
+    if not mhenchant() and IsReady('Flametongue Weapon') then
+        return S.FlametongueWeapon:Cast()
+    end
+    if  IsReady('Lightning Shield') and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and  Player:IsMoving() and Player:ManaPercentage()>50 then
+        return S.LightningShield:Cast()
     end
 
-    if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt1:InFlight()) and not Target:IsDeadOrGhost() then 
-        if not IsCurrentSpell(6603)  then
-            return Item(135274, { 13, 14 }):ID()
-        end
-    
-        if S.LightningBolt1:CanCast(Target) and not Player:IsMoving() then
-            return S.LightningBolt1:Cast()
+    -- if Player:CanAttack(Target) and not Target:IsDeadOrGhost() then 
+
+ 
+        if  IsReady('Lightning Bolt') and targetRange30 and not Player:IsMoving() then
+            return S.LightningBolt:Cast()
         end
 
 
-
-    end
+    -- end
 
 
 
@@ -131,20 +174,20 @@ end
 
    -- In combat
    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-    if not mhenchant() then
-        return S.Rockbiter:Cast()
-    end
 
-    if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt1:InFlight()) and not Target:IsDeadOrGhost() then 
-        if not IsCurrentSpell(6603) then
+
+    if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight()) and not Target:IsDeadOrGhost() then 
+        if not IsCurrentSpell(6603)  and CheckInteractDistance("target", 3) then
             return Item(135274, { 13, 14 }):ID()
         end
     
-        if S.LightningBolt1:CanCast(Target) and not Player:IsMoving() then
-            return S.LightningBolt1:Cast()
+        if IsReady('Lightning Bolt') and targetRange30 and not Player:IsMoving() then
+            return S.LightningBolt:Cast()
         end
 
-
+        -- if IsReady('Earth Shock') and targetRange25  and Player:IsMoving() then
+        --     return S.EarthShock:Cast()
+        -- end
 
     end
 
@@ -158,143 +201,5 @@ return 135328
 end
 end
 
--- local function APL()
---  UpdateRanges()
 
-   
-	-- if Player:IsMoving() and Cache.EnemiesCount[20]>=1 then print('enemies in 20yd') 
-      -- else print('no enemies in 20yd') end
-	  
-	-- if Player:IsMoving() then
-	 -- print(Cache.EnemiesCount[20]>=1)
--- end 
-
---  	if RubimRH.QueuedSpell():IsReadyQueue() then
---         return RubimRH.QueuedSpell():Cast()
--- 	end
-
-	
-	
-	
-
--- 	if not Player:AffectingCombat() or RubimRH.queuedSpell[1]:CooldownRemains()>1.5 or (S.FlameShock:ID() ==  RubimRH.queuedSpell[1]:ID() and not IsSpellInRange(GetSpellInfo(25454), "target")) or (S.EarthShock:ID() ==  RubimRH.queuedSpell[1]:ID() and not IsSpellInRange(GetSpellInfo(25454), "target")) or (S.FrostShock:ID() ==  RubimRH.queuedSpell[1]:ID() and not IsSpellInRange(GetSpellInfo(25454), "target")) or (S.TotemofWrath:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:Buff(S.TotemofWrathBuff)) or (S.LesserHealingWave:ID() ==  RubimRH.queuedSpell[1]:ID() and S.LesserHealingWave:CooldownRemains()>=1) then
--- 		RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
--- 	end
-	
-
-
--- --add in HL get time for pvp
-
-
-
-
--- 	-- In combat
---     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) then
-
-
-
-
--- if RubimRH.AoEON() and not Player:IsMoving() then 
---         if S.ChainLightning:CanCast(Target) and not RubimRH.CDsON()	then
---             return S.ChainLightning:Cast()
---         end
---         if S.ChainLightning:CanCast(Target) and S.ElementalMastery:CooldownRemains()>5 and RubimRH.CDsON() then
---             return S.ChainLightning:Cast()
---         end
--- 		 if S.ChainLightning:CanCast(Target) and Player:Buff(S.ElementalMastery) then
---             return S.ChainLightning:Cast()
---         end
--- 	end
-	
---         if S.LightningBolt:CanCast(Target) and not Player:IsMoving() and (not RubimRH.AoEON() or (not RubimRH.CDsON() or S.ElementalMastery:CooldownRemains()>0 or Player:Buff(S.ElementalMastery) and S.ChainLightning:CooldownRemains()>2)) then
---             return S.LightningBolt:Cast()
---         end
-
---         if S.WaterShield:CanCast() and not Player:Buff(S.WaterShield) and Player:ManaPercentage()<10  then
---             return S.WaterShield:Cast()
---         end
-
-	
--- 		if not IsCurrentSpell(6603) then
--- 		return S.AutoAttack:Cast()
--- 	end
-    
-
---     end
-	
-	
-	
-	
-	
-	
-	
-	-- if Player:IsMoving() then
-	 -- print(mhenchant())
--- end
-	
-	
-	
-	
-	
-	
--- -- Out of combat
--- if not Player:AffectingCombat() then
-
-
--- 		-- if S.FlameTongueWeapon:CanCast() and (not Player:Buff(S.FlameTongueBuff) or Player:BuffRemains(S.FlameTongueBuff)<300) and not Player:Buff(S.Drink) then
---             -- return S.flametongue:Cast()
---         -- end
-		
--- 	if not Player:IsMoving() then 
-		
--- 		if S.ChainLightning:CanCast(Target) and Player:Buff(S.ElementalMastery) and RubimRH.AoEON() then
---             return S.ChainLightning:Cast()
---         end
-
---         if S.LightningBolt:CanCast(Target) then
---             return S.LightningBolt:Cast()
---         end
-		
--- 	end
-
---         if S.WaterShield:CanCast() and (Player:BuffRemains(S.WaterShield)<120 or Player:BuffStack(S.WaterShield)<2) and not Player:Buff(S.Drink) then
---             return S.WaterShield:Cast()
---         end
-		
---    if mhenchant() == false and not Player:Buff(S.Drink) then
---    return S.FlameTongueWeapon:Cast()
---    end
--- return 135600
--- end
-	
-	
--- end
-
-local function PASSIVE()
-    return AutomataRH.Shared()
-end
-
-local function PvP()
-end
 RubimRH.Rotation.SetAPL(7, APL);
--- RubimRH.Rotation.SetPvP(7, PvP)
--- RubimRH.Rotation.SetPASSIVE(7, PASSIVE);
-
-
-local lastUpdate = 27082019
-local function CONFIG()
-    local function setVariables()
-        RubimRH.db.profile[RubimRH.playerClass] = {}
-        RubimRH.db.profile[RubimRH.playerClass].version = lastUpdate
-        RubimRH.db.profile[RubimRH.playerClass].cooldown = true
-    end
-
-    if not RubimRH.db.profile[RubimRH.playerClass] then
-       setVariables()
-    end
-
-    if RubimRH.db.profile[RubimRH.playerClass] and RubimRH.db.profile[RubimRH.playerClass].version ~= lastUpdate then
-        setVariables()
-    end
-end
--- RubimRH.Rotation.SetCONFIG(7, CONFIG)
