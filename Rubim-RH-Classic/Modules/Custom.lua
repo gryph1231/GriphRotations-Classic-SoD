@@ -826,13 +826,56 @@ end
 --     return currentlyCasting
 -- end
 
- function mhenchant()
 
-    hasMainHandEnchant, mainHandExpiration = GetWeaponEnchantInfo()
-    
-    if (hasMainHandEnchant == true and mainHandExpiration-GetTime()>30) then
-    return true else return false
+
+        
+        -- Function to check for an offhand weapon
+function HasOffhandWeapon()
+    local offhandItemID = GetInventoryItemID("player", 17) -- 17 is the slot ID for the offhand
+    if offhandItemID then
+        -- An item is equipped in the offhand slot. This could be a weapon, shield, or held-in-offhand item.
+        -- To ensure it's a weapon, you might need additional checks, such as item class and subclass.
+        local _, _, _, _, _, itemType, itemSubType = GetItemInfo(offhandItemID)
+        if itemType == "Weapon" then
+            -- This confirms an offhand weapon is equipped. Shields and off-hand items like tomes are not considered here.
+            return true
+        else
+            -- This means the item is not a weapon. It could be a shield or an off-hand item.
+            return false
+        end
+    else
+        -- No item is equipped in the offhand slot.
+        return false
     end
+end
+
+function CheckActiveElementalTotems()
+    local isFireTotemActive, isEarthTotemActive, isWaterTotemActive, isAirTotemActive = false, false, false, false
     
-    
+    -- Fire Totem
+    local haveTotem, name, startTime, duration = GetTotemInfo(1)
+    if haveTotem and duration > 0 then
+        isFireTotemActive = true
     end
+
+    -- Earth Totem
+    haveTotem, name, startTime, duration = GetTotemInfo(2)
+    if haveTotem and duration > 0 then
+        isEarthTotemActive = true
+    end
+
+    -- Water Totem
+    haveTotem, name, startTime, duration = GetTotemInfo(3)
+    if haveTotem and duration > 0 then
+        isWaterTotemActive = true
+    end
+
+    -- Air Totem
+    haveTotem, name, startTime, duration = GetTotemInfo(4)
+    if haveTotem and duration > 0 then
+        isAirTotemActive = true
+    end
+
+    return isFireTotemActive, isEarthTotemActive, isWaterTotemActive, isAirTotemActive
+end
+

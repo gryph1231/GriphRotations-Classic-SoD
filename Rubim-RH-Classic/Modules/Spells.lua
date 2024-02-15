@@ -266,6 +266,7 @@ ShieldofRighteousness = Spell(53600),
 
 --ELE
 RubimRH.Spell[7] = {
+    --SearingTotem = Spell(3599),
     LightningBolt1 = Spell(403),
     LightningBolt2 = Spell(529),
 	AutoAttack = Spell(6603),

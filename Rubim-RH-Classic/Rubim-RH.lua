@@ -249,5 +249,5 @@ function RubimRH.mainRotation(option)
     if Player:AffectingCombat() then
         return 135328, false
     end
-    return 136090, false
+    return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
 end
