@@ -49,12 +49,12 @@ RubimRH.Spell[4] = {
     KillingSpree = Spell(51690),
     FanofKnives = Spell(51723),
     ColdBlood = Spell(14177),
-
+    betweentheeyes = Spell(921), -- pick pocket
     HungerforBlood = Spell(51662),
     HungerforBloodBuff = Spell(63848),
     Mutilate = Spell(1329),
     Shadowstrike = Spell(399985),
-    shadowstrike = Spell(20594), --stone form
+    handrune = Spell(20594), --stone form - bind is for mutilate, shadowstrike, saber slash, etc.
     
 };
 local S = RubimRH.Spell[4]
@@ -249,6 +249,11 @@ end
                 then
                     return S.Ambush:Cast()
                 end
+                if IsReady('Shadowstrike') and AuraUtil.FindAuraByName("Stealth", "player") 
+               
+                then
+                return S.handrune:Cast()
+                end
 
                
                 if (IsReady('Sinister Strike') or IsReady('Saber Slash') or IsReady('Mutilate')) and not AuraUtil.FindAuraByName("Stealth", "player") 
@@ -290,7 +295,9 @@ end
         if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
             return S.Eviscerate:Cast()
         end
-
+        if IsReady('Between the Eyes') and finish then
+            return S.betweentheeyes:Cast()
+        end
 
 
 
