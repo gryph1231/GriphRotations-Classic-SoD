@@ -120,7 +120,7 @@ end
 
 
 
-    if (Player:Rage()>=80 or AuraUtil.FindAuraByName("Enrage", "player") or AuraUtil.FindAuraByName("Bloodrage", "player"))  then
+    if (Player:Rage()>=80 or AuraUtil.FindAuraByName("Enrage", "player"))  then
 
 
 
