@@ -54,6 +54,7 @@ RubimRH.Spell[4] = {
     HungerforBloodBuff = Spell(63848),
     Mutilate = Spell(1329),
     Shadowstrike = Spell(399985),
+  
     handrune = Spell(20594), --stone form - bind is for mutilate, shadowstrike, saber slash, etc.
     
 };
@@ -278,6 +279,11 @@ end
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
         end
+
+        if IsReady('Adrenaline Rush') and
+        RubimRH.CDsON() and CheckInteractDistance("target", 3) and finish then
+        return S.AdrenalineRush:Cast()
+    end
 
 
         -- if Player:ComboPoints()>Target:DebuffStack(S.DeadlyPoisonDebuff)
