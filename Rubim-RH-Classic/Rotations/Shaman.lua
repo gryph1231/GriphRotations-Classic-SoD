@@ -209,6 +209,17 @@ local function APL()
     
         local castchannelTime = math.random(275, 500) / 1000
 
+        inRangeParty1 = (CheckInteractDistance("party1", 4))
+        inRangeParty2 = (CheckInteractDistance("party2", 4));
+        inRangeParty3 = (CheckInteractDistance("party3", 4));
+        inRangeParty4 = (CheckInteractDistance("party4", 4));
+     if inRangeParty1 == true or inRangeParty2 == true or inRangeParty3 == true or inRangeParty4 == true then
+        partymemberinrange = true
+     else
+        partymemberinrange = false
+     end
+        -- if inrange and (not IsBuffActive("Arcane Intellect","party1")) and (not UnitClass("party1")=="Rogue") and (not UnitClass("party1")=="Warrior") then
+        -- TargetUnit("party1")
 
 -- print(S.ElementalMastery:IsAvailable())
         -- print('namelavalash== "Lava Lash":',namelavalash== 'Lava Lash' )
@@ -337,28 +348,28 @@ local function APL()
         -- print('IsReady("Earth Shock(rank 1)"):',IsReady('Earth Shock(rank 1)') )
         -- print('CheckInteractDistance:',CheckInteractDistance("target", 3))
 
-
+-- 'Drained of Blood'
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------IN COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
    and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  
-   and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
+   and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) and not AuraUtil.FindAuraByName('Drained of Blood', "player") then 
     -- print('true')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ENHDPS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    if namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() then
+    if namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
 
 
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
             return I.autoattack:ID()
         end
 
-        if IsReady('Shamanistic Rage') and Player:ManaPercentage()<65 and RubimRH.CDsON() and targetRange30  then
+        if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Target:IsAPlayer()) and RubimRH.CDsON() and targetRange30  then
             return S.legrune:Cast()
         end
 
@@ -543,14 +554,14 @@ local function APL()
             return S.MagmaTotem:Cast()
         end
 
-        if IsReady(SpellRank('Windfury Totem')) and (aoeTTD() > 5 or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and haveTotem4 == false and IsInGroup() then
+        if IsReady(SpellRank('Windfury Totem')) and (aoeTTD() > 5 or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and haveTotem4 == false and partymemberinrange == true then
             return S.WindfuryTotem:Cast()
         end
         if IsReady(SpellRank('Strength of Earth Totem')) and aoeTTD() >5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
             return S.StrengthofEarthTotem:Cast()
         end
 
-        if IsReady(SpellRank('Mana Spring Totem')) and aoeTTD() > 5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and IsInInstance() and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if IsReady(SpellRank('Mana Spring Totem')) and aoeTTD() > 5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partymemberinrange == true and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
 
@@ -562,7 +573,7 @@ local function APL()
 ---------------------------------OUT OF COMBAT ROTATION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     if (not Player:AffectingCombat() or Target:IsCasting() and not Player:AffectingCombat() or Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  then
-        if namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() then
+        if namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() and not AuraUtil.FindAuraByName('Drained of Blood', "player") then
 
         if (mhenchantseconds <30 or mainHandEnchantID ~=284) and not S.ElementalMastery:IsAvailable() and not IsEquippedItemType("Shield") and IsReady('Windfury Weapon') and HasMainhandWeapon() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryWeapon:Cast()
