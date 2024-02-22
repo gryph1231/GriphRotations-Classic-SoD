@@ -218,6 +218,7 @@ local function APL()
      else
         partymemberinrange = false
      end
+    --  print(totemName3)
         -- if inrange and (not IsBuffActive("Arcane Intellect","party1")) and (not UnitClass("party1")=="Rogue") and (not UnitClass("party1")=="Warrior") then
         -- TargetUnit("party1")
 
@@ -401,23 +402,23 @@ local function APL()
             return S.ChainLightning:Cast()
         end
 
-        if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
-            return S.LightningBolt:Cast()
-        end
+        -- if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+        --     return S.LightningBolt:Cast()
+        -- end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=50 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()<50 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
+        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=50 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()<50 and IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.flameshock1:Cast()
         end
 
@@ -513,19 +514,19 @@ local function APL()
         if IsReady('Chain Lightning') and targetRange30 then
             return S.ChainLightning:Cast()
         end
-        if Player:ManaPercentage()>=50 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or Target:TimeToDie()<3) and IsReady('Earth Shock') and targetRange25 then
+        if Player:ManaPercentage()>=30 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or Target:TimeToDie()<3) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
 
-        if Player:ManaPercentage()<50 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL")) and IsReady('Earth Shock(rank 1)') and targetRange25 then
+        if Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL")) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
 
-        if Player:ManaPercentage()>=50 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if Player:ManaPercentage()>=30 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
 
-        if Player:ManaPercentage()<50 and IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.flameshock1:Cast()
         end
 
@@ -546,22 +547,22 @@ local function APL()
         return S.totemicprojection:Cast()
         end
 
-        if IsReady('Searing Totem') and aoeTTD() > 5 and (RangeCount11()==1 or targetRange30) and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.SearingTotem:Cast()
-        end
-
-        if not Target:IsAPlayer() and IsReady('Magma Totem') and aoeTTD() > 5  and Player:ManaPercentage()>=50 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if not Target:IsAPlayer() and IsReady('Magma Totem') and (Player:ManaPercentage()>=50 or aodTTD()<5) and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.MagmaTotem:Cast()
         end
 
-        if IsReady(SpellRank('Windfury Totem')) and (aoeTTD() > 5 or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and haveTotem4 == false and partymemberinrange == true then
+        if IsReady('Searing Totem') and (RangeCount11()==1 or targetRange25) and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.SearingTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Windfury Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and haveTotem4 == false and partymemberinrange == true then
             return S.WindfuryTotem:Cast()
         end
-        if IsReady(SpellRank('Strength of Earth Totem')) and aoeTTD() >5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
+        if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
             return S.StrengthofEarthTotem:Cast()
         end
 
-        if IsReady(SpellRank('Mana Spring Totem')) and aoeTTD() > 5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partymemberinrange == true and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if IsReady(SpellRank('Mana Spring Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partymemberinrange == true and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
 
@@ -574,7 +575,7 @@ local function APL()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     if (not Player:AffectingCombat() or Target:IsCasting() and not Player:AffectingCombat() or Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  then
         if namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() and not AuraUtil.FindAuraByName('Drained of Blood', "player") then
-
+            if  Player:IsMoving() then
         if (mhenchantseconds <30 or mainHandEnchantID ~=284) and not S.ElementalMastery:IsAvailable() and not IsEquippedItemType("Shield") and IsReady('Windfury Weapon') and HasMainhandWeapon() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryWeapon:Cast()
         end
@@ -605,7 +606,7 @@ local function APL()
             return S.FlametongueWeapon:Cast()
         end
     end
-
+end
 
 
         if  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and CheckInteractDistance("target", 2) then 
