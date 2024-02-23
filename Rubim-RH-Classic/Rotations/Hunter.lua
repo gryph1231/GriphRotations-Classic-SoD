@@ -20,7 +20,8 @@ RubimRH.Spell[3] = {
 	RaptorStrike = Spell(14262),
 	AutoShot = Spell(75),
 	AimedShot = Spell(19434),
-	Multishot = Spell(2643),
+	Multishot = Spell(14288),
+	ExplosiveShot = Spell(409552),
 	HeartoftheLion = Spell(409580),
 	HeartoftheLionz = Spell(20190), --aspect of the wild
 	AutoShotz = Spell(19263), --deterrence
@@ -30,6 +31,7 @@ RubimRH.Spell[3] = {
 	Carve = Spell(425711),
     WyvernSting = Spell(19386),
 	AspectoftheViper = Spell(415423),
+	AspectoftheMonkey = Spell(13163),
 	AspectoftheViperz = Spell(13161), --aspect of the beast
 	AspectoftheCheetah = Spell(5118),
 	AspectoftheCheetahCancel = Spell(19878), --track demons
@@ -46,6 +48,8 @@ RubimRH.Spell[3] = {
 	Flare = Spell(1543),
 	FeedPetBuff = Spell(1539),
 	FeignDeath = Spell(5384),
+	FrostTrap = Spell(409520),
+	ExplosiveTrap = Spell(409532),
 	Disengage = Spell(14272),
 	BloodFury = Spell(20572),
 };
@@ -204,7 +208,6 @@ local function IsReady(spell,range_check,aoe_check)
 		return false
 	end
 end
-
 local function APL()
 CleaveCount()
 IsReady()
@@ -212,6 +215,7 @@ ManaPct()
 PetActive()
 PetHapiness()
 StingTime()
+--/dump GetMouseFocus().skillLineAbilityID
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -234,14 +238,26 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if RubimRH.queuedSpell[1]:CooldownRemains() > 2 or not RubimRH.queuedSpell[1]:IsAvailable() or not UnitAffectingCombat('player')
+if RubimRH.queuedSpell[1]:CooldownRemains() > 2 or not UnitAffectingCombat('player')
 	or (S.AspectoftheCheetah:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player"))
-	or (S.ConcussiveShot:ID() == RubimRH.queuedSpell[1]:ID() and CheckInteractDistance("target",3))	then
+	or (S.ConcussiveShot:ID() == RubimRH.queuedSpell[1]:ID() and IsSpellInRange('Auto Shot', 'target') == 0)
+	or (S.WingClip:ID() == RubimRH.queuedSpell[1]:ID() and not CheckInteractDistance("target",3)) 
+	or ((S.FrostTrap:ID() == RubimRH.queuedSpell[1]:ID() or S.ExplosiveTrap:ID() == RubimRH.queuedSpell[1]:ID()) and (AuraUtil.FindAuraByName("Silence","HARMFUL") or AuraUtil.FindAuraByName("Sonic Burst","HARMFUL"))) then
 	RubimRH.queuedSpell = { RubimRH.Spell[3].Default, 0 }
 end
 
 if S.Flare:ID() == RubimRH.queuedSpell[1]:ID() and S.Flare:CooldownRemains() < 2 then
 	return S.Flare:Cast()
+end
+
+if not (AuraUtil.FindAuraByName("Silence","player","PLAYER|HARMFUL") and AuraUtil.FindAuraByName("Sonic Burst","player","PLAYER|HARMFUL")) then
+	if S.FrostTrap:ID() == RubimRH.queuedSpell[1]:ID() and S.FrostTrap:CooldownRemains() < 2 then
+		return S.FrostTrap:Cast()
+	end
+
+	if S.ExplosiveTrap:ID() == RubimRH.queuedSpell[1]:ID() and S.ExplosiveTrap:CooldownRemains() < 2 then
+		return S.ExplosiveTrap:Cast()
+	end
 end
 
 if S.AspectoftheCheetah:ID() == RubimRH.queuedSpell[1]:ID() and S.AspectoftheCheetah:CooldownRemains() < 2 then
@@ -260,9 +276,9 @@ if S.WingClip:ID() == RubimRH.queuedSpell[1]:ID() and S.WingClip:CooldownRemains
 	return S.WingClip:Cast()
 end
 
-if RubimRH.QueuedSpell():CanCast() then
-	return RubimRH.QueuedSpell():Cast()
-end
+-- if RubimRH.QueuedSpell():CanCast() then
+	-- return RubimRH.QueuedSpell():Cast()
+-- end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -274,9 +290,9 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:AffectingCombat() and CleaveCount() >= 1 
-and (AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") 
-or (AuraUtil.FindAuraByName("Dazed", "player") and UnitAffectingCombat('player'))) then
+if Player:AffectingCombat() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
+and ((AuraUtil.FindAuraByName("Dazed", "player") and UnitAffectingCombat('player'))
+or CleaveCount() >= 1 or S.AutoShot:InFlight()) then
 	return S.AspectoftheCheetahCancel:Cast()
 end
 
@@ -284,7 +300,7 @@ if IsReady('Heart of the Lion') and not Player:Buff(S.HeartoftheLion) then
 	return S.HeartoftheLionz:Cast()
 end
 
-if IsReady('Aspect of the Viper') and ManaPct() < 10 and not AuraUtil.FindAuraByName("Aspect of the Viper", "player") 
+if IsReady('Aspect of the Viper') and ManaPct() < 25 and not AuraUtil.FindAuraByName("Aspect of the Viper", "player") 
 and ((not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")) 
 or (UnitAffectingCombat('player') and CheckInteractDistance("target",3))) then
 	return S.AspectoftheViperz:Cast()
@@ -319,27 +335,53 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 		return S.Carvez:Cast()
 	end
 
-	if IsReady('Aspect of the Hawk') and ManaPct() > 20 and (S.RaptorStrike:CooldownRemains() > 1 and S.FlankingStrike:CooldownRemains() > 1 and (S.Carve:CooldownRemains() > 1 or CleaveCount() < 3))
-	and not AuraUtil.FindAuraByName("Aspect of the Hawk", "player")
-	and not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
-	and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")
-	and (not AuraUtil.FindAuraByName("Aspect of the Viper", "player") or ManaPct() == 100)
-	and not AuraUtil.FindAuraByName("Aspect of the Monkey", "player") then
-		return S.AspectoftheHawk:Cast()
+	if CheckInteractDistance("target",3) then
+		if IsReady('Aspect of the Hawk') and ManaPct() > 20 and (S.RaptorStrike:CooldownRemains() > 1 and S.FlankingStrike:CooldownRemains() > 1 and (S.Carve:CooldownRemains() > 1 or CleaveCount() < 3))
+		and not AuraUtil.FindAuraByName("Aspect of the Hawk", "player")
+		and not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
+		and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")
+		and (not AuraUtil.FindAuraByName("Aspect of the Viper", "player") or ManaPct() == 100)
+		and not AuraUtil.FindAuraByName("Aspect of the Monkey", "player") then
+			if PetActive() or IsAutoRepeatAction(AutoShot) or not UnitIsPlayer('target') then
+				return S.AspectoftheHawk:Cast()
+			elseif not PetActive() and (IsCurrentSpell(6603) or UnitIsPlayer('target')) then
+				return S.AspectoftheMonkey:Cast()
+			end
+		end
+	elseif not CheckInteractDistance("target",3) then
+		if IsReady('Aspect of the Hawk') and ManaPct() > 20 
+		and ((S.Multishot:CooldownRemains() > 1 or Player:IsMoving() and not RubimRH.CDsON()) 
+		or ((S.Multishot:CooldownRemains() > 1 or Player:IsMoving()) and (S.SerpentSting:CooldownRemains() > 1 
+		or AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL")) and S.ArcaneShot:CooldownRemains() > 1 and RubimRH.CDsON()))
+		and not AuraUtil.FindAuraByName("Aspect of the Hawk", "player")
+		and not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
+		and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")
+		and (not AuraUtil.FindAuraByName("Aspect of the Viper", "player") or ManaPct() == 100)
+		and not AuraUtil.FindAuraByName("Aspect of the Monkey", "player") then
+			if PetActive() or IsAutoRepeatAction(AutoShot) or not UnitIsPlayer('target') then
+				return S.AspectoftheHawk:Cast()
+			elseif not PetActive() and (IsCurrentSpell(6603) or UnitIsPlayer('target')) then
+				return S.AspectoftheMonkey:Cast()
+			end
+		end
+	end
+
+	-- if IsReady('Concussive Shot',1) then
+		-- return S.ConcussiveShot:Cast()
+	-- end
+
+	if IsReady('Chimera Shot',1) or IsReady('Explosive Shot',1) then
+		return S.ChimeraShotz:Cast()
 	end
 
 	if IsReady('Multi-Shot',1) and not Player:IsMoving() then
 		return S.Multishot:Cast()
 	end
 
-	if IsReady('Serpent Sting',1) and not S.SerpentSting:InFlight() and RubimRH.CDsON() 
+	if IsReady('Serpent Sting',1) and UnitName('target') ~= "Incendiary Bomb" and not S.SerpentSting:InFlight() and RubimRH.CDsON() 
 	and (not AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") 
 	or (AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") and StingTime() <= Player:GCD())) then
 		return S.SerpentSting:Cast()
-	end
-
-	if IsReady('Chimera Shot',1) then
-		return S.ChimeraShotz:Cast()
 	end
 
 	if IsReady('Arcane Shot',1) and RubimRH.CDsON() then
