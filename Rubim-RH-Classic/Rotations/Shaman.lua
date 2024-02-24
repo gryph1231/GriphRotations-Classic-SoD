@@ -395,7 +395,7 @@ local function APL()
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
 
-        if RubimRH.QueuedSpell():ID() == S.Purge:ID() and GetAppropriateCureSpell() ~= "Poison" 
+        if RubimRH.QueuedSpell():ID() == S.Purge:ID() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and GetAppropriateCureSpell() ~= "Poison" 
         and GetAppropriateCureSpell() ~= "Disease" and Target:Exists() and not Target:IsDeadOrGhost() 
         and Player:CanAttack(Target) and CanTargetBePurged() and IsUsableSpell("Purge") then
             return RubimRH.QueuedSpell():Cast()
@@ -419,7 +419,7 @@ local function APL()
             return RubimRH.QueuedSpell():Cast()
         end
 
-        if RubimRH.QueuedSpell():ID() == S.GroundingTotem:ID() and IsUsableSpell("Grounding Totem") then
+        if RubimRH.QueuedSpell():ID() == S.GroundingTotem:ID() and IsUsableSpell("Grounding Totem") and totemName4 ~= 'Grounding Totem' and S.GroundingTotem:TimeSinceLastCast()>2 then
             return RubimRH.QueuedSpell():Cast()
         end
         if RubimRH.QueuedSpell():ID() == S.MagmaTotem:ID() and IsUsableSpell("Magma Totem") then
@@ -438,11 +438,11 @@ local function APL()
               RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
 
-        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and S.EarthShock:CooldownRemains()<2 and namelavalash== 'Lava Lash' and IsUsableSpell("Earth Shock") then
+        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and S.EarthShock:CooldownRemains()<2 and namelavalash== 'Lava Lash' and IsUsableSpell("Earth Shock") then
             return RubimRH.QueuedSpell():Cast()
         end
 
-        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and S.esr1:CooldownRemains()<2 and IsUsableSpell(8042) and ( namelavalash~= 'Lava Lash' or not IsUsableSpell("Earth Shock")) then 
+        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and S.esr1:CooldownRemains()<2 and IsUsableSpell(8042) and ( namelavalash~= 'Lava Lash' or not IsUsableSpell("Earth Shock")) then 
             return S.earthshock1:Cast()
         end
 
@@ -456,7 +456,7 @@ local function APL()
 -- WFweaponenchantIDs = {283, 284}
 -- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=1663)) then
+if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
     return S.RockbiterWeapon:Cast()
 end
 if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
