@@ -16,14 +16,14 @@ RubimRH.Spell[7] = {
 	LightningBolt = Spell(10391),
     ChainLightning = Spell(930),
     earthshock = Spell(8042),
-    earthshock1 = Spell(20549), --war stomp
+    earthshock1 = Spell(10595), --war stomp
     TotemicProjection = Spell(437009),    
     totemicprojection = Spell(6495), --sentry totem
 	AutoAttack = Spell(6603),
     HealingStreamTotem = Spell(6377),
     ManaSpringTotem = Spell(10495),
     RockbiterWeapon = Spell(16314),
-    beltrune = Spell(10595), -- nature resist totem
+    -- beltrune = Spell(10595), -- nature resist totem
     Purge = Spell(8012),
     CurePoison = Spell(526),
     CureDisease = Spell(2870),
@@ -251,7 +251,7 @@ local function APL()
         elemental = true
         enhdps = false
         enhtank = false
-     elseif IsEquippedItemType("Shield") or namemoltenblast == 'Molten Blast' or nameWayofEarth == 'Way of Earth' then
+     elseif IsEquippedItemType("Shield") then
         elemental = false
         enhdps = false
         enhtank = true
