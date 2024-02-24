@@ -334,6 +334,7 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.HealingWave:ID() and (not IsUsableSpell("Healing Wave") or Player:MovingFor()>0.5) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
+        
         if RubimRH.QueuedSpell():ID() == S.LesserHealingWave:ID() and (not IsUsableSpell("Lesser Healing Wave") or Player:MovingFor()>0.5 ) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
@@ -381,6 +382,10 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.MagmaTotem:ID() and (not IsUsableSpell(S.MagmaTotem) or S.MagmaTotem:TimeSinceLastCast()<20) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
+        if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and (not IsUsableSpell(S.EarthbindTotem) or S.EarthbindTotem:TimeSinceLastCast()<20) then
+            RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+        end
+
 
         if RubimRH.QueuedSpell():ID() == S.CurePoison:ID() and (not IsUsableSpell("Cure Poison") or GetAppropriateCureSpell() ~= "Poison" ) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
@@ -407,7 +412,16 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.SearingTotem:ID() and IsUsableSpell("Searing Totem") then
             return RubimRH.QueuedSpell():Cast()
         end
+        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and IsUsableSpell("Tremor Totem") then
+            return RubimRH.QueuedSpell():Cast()
+        end
+        if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and IsUsableSpell("Earthbind Totem") then
+            return RubimRH.QueuedSpell():Cast()
+        end
 
+        if RubimRH.QueuedSpell():ID() == S.GroundingTotem:ID() and IsUsableSpell("Grounding Totem") then
+            return RubimRH.QueuedSpell():Cast()
+        end
         if RubimRH.QueuedSpell():ID() == S.MagmaTotem:ID() and IsUsableSpell("Magma Totem") then
             return RubimRH.QueuedSpell():Cast()
         end
@@ -442,19 +456,19 @@ local function APL()
 -- WFweaponenchantIDs = {283, 284}
 -- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-if rockbitermh == true and (hasMainHandEnchant ==false or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=1663)) then
+if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=1663)) then
     return S.RockbiterWeapon:Cast()
 end
-if flametonguemh == true and (hasMainHandEnchant ==false or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
     return S.FlametongueWeapon:Cast()
 end
-if windfurymh == true and (hasMainHandEnchant ==false or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
     return S.WindfuryWeapon:Cast()
 end
-if rockbiteroh == true and (hasOffHandEnchant ==false or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=6 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=6 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
     return S.RockbiterWeapon:Cast()
 end
-if flametongueoh == true and (hasOffHandEnchant ==false or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+if flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
     return S.FlametongueWeapon:Cast()
 end
 end

@@ -849,6 +849,30 @@ function HasOffhandWeapon()
     end
 end
 
+
+
+        
+        -- Function to check for an offhand weapon
+        function HasMainhandWeapon()
+            local mainhandItemID = GetInventoryItemID("player", 16) -- 17 is the slot ID for the offhand
+            if mainhandItemID then
+                -- An item is equipped in the offhand slot. This could be a weapon, shield, or held-in-offhand item.
+                -- To ensure it's a weapon, you might need additional checks, such as item class and subclass.
+                local _, _, _, _, _, itemType, itemSubType = GetItemInfo(mainhandItemID)
+                if itemType == "Weapon" then
+                    -- This confirms an offhand weapon is equipped. Shields and off-hand items like tomes are not considered here.
+                    return true
+                else
+                    -- This means the item is not a weapon. It could be a shield or an off-hand item.
+                    return false
+                end
+            else
+                -- No item is equipped in the offhand slot.
+                return false
+            end
+        end
+
+
 function CheckActiveElementalTotems()
     local isFireTotemActive, isEarthTotemActive, isWaterTotemActive, isAirTotemActive = false, false, false, false
     
@@ -878,4 +902,40 @@ function CheckActiveElementalTotems()
 
     return isFireTotemActive, isEarthTotemActive, isWaterTotemActive, isAirTotemActive
 end
+
+
+function GetAppropriateCureSpell()
+    local debuffTypePoison = "Poison"
+    local debuffTypeDisease = "Disease"
+    
+    for i = 1, 40 do
+        local name, _, _, debuffType = UnitDebuff("player", i)
+        if not name then break end  -- No more debuffs, exit the loop
+
+        if debuffType == debuffTypePoison then
+            return debuffTypePoison
+        elseif debuffType == debuffTypeDisease then
+            return debuffTypeDisease
+        end
+    end
+    
+    return nil  -- No poison or disease found
+end
+
+function CanTargetBePurged()
+    local i = 1
+    while true do
+        local name, _, _, debuffType = UnitBuff("target", i)
+        if not name then
+            return false -- No more buffs, target cannot be purged
+        end
+
+        if debuffType == "Magic" then
+            return true -- Found a Magic buff, target can be purged
+        end
+
+        i = i + 1
+    end
+end
+
 
