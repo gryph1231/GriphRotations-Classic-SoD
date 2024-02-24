@@ -108,7 +108,24 @@ local function bool(val)
     return val ~= 0
 end
 
-
+local function PartyInRange()
+    local party_counter = 0
+    
+            for i=1,40 do
+                local unitID = "party" .. i
+                if UnitExists("party"..i) then           
+                    local member_guid = UnitGUID("party"..i) 
+                    local npc_id = select(6, strsplit("-",member_guid))
+                    if npc_id ~='120651' and npc_id ~='161895' then
+                        if UnitInRange(unitID) then
+                            party_counter = party_counter + 1
+                        end                    
+                    end
+                end
+            end
+        
+        return party_counter
+        end
 
 local function APL()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -126,6 +143,13 @@ local function APL()
             end
         end
 
+        local inRangeparty = 0
+        for i = 1, 40 do
+            if UnitInRange('partyN' .. i) then
+                inRange25 = inRange25 + 1
+            end
+        end
+
 
         if Player:IsCasting() or Player:IsChanneling() then
             return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
@@ -134,11 +158,15 @@ local function APL()
             return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
         end
 
-        local nameshamanisticrage, rank, icon, castTime, minRange, maxRange = GetSpellInfo('Shamanistic Rage' )
-        local namelavalash, rank, icon, castTime, minRange, maxRange = GetSpellInfo('Lava Lash' )
-        local nameWayofEarth, rank, icon, castTime, minRange, maxRange = GetSpellInfo('Way of Earth' )
+        local namemoltenblast = GetSpellInfo('Molten Blast' )
+        local nameshieldmastery = GetSpellInfo('Shield Mastery' )
+        local nameoverload = GetSpellInfo('Overload' )
+        local nameshamanisticrage = GetSpellInfo('Shamanistic Rage' )
+        local namelavalash = GetSpellInfo('Lava Lash' )
+        local nameWayofEarth = GetSpellInfo('Way of Earth' )
         local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
         local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+        
         if hasMainHandEnchant == true then
             mhenchantseconds = mainHandExpiration/1000
             else mhenchantseconds = 0
@@ -219,15 +247,77 @@ local function APL()
      else
         partymemberinrange = false
      end
-    --  print(totemName3)
-        -- if inrange and (not IsBuffActive("Arcane Intellect","party1")) and (not UnitClass("party1")=="Rogue") and (not UnitClass("party1")=="Warrior") then
-        -- TargetUnit("party1")
+     if nameoverload == 'Overload' then
+        elemental = true
+        enhdps = false
+        enhtank = false
+     elseif IsEquippedItemType("Shield") or namemoltenblast == 'Molten Blast' or nameWayofEarth == 'Way of Earth' then
+        elemental = false
+        enhdps = false
+        enhtank = true
+     else 
+        enhdps = true
+        enhtank = false
+        elemental = false
+     end
+     local rockbitermh, rockbiteroh, flametonguemh, flametongueoh, windfurymh, windfuryoh = false, false, false, false, false, false
+     local dualWielding = HasMainhandWeapon() and HasOffhandWeapon() 
+     if not dualWielding then
+        rockbiteroh = false
+        flametongueoh = false
+        windfuryoh = false
+     end
+     if dualWielding and not IsReady("Flametongue Weapon") then
+        rockbitermh = true
+        rockbiteroh = true
+     end
+     if dualWielding and IsReady("Flametongue Weapon") then
+        flametongueoh = true
+        rockbiteroh = false
+        windfuryoh = false
+     end
+        if not HasMainhandWeapon() then
+            rockbitermh = false
+            windfurymh = false
+            flametonguemh = false
+        else
+     
+    
+            if enhdps ==true then
+                if IsReady("Windfury Weapon") then
+                    windfurymh = true
+                else
+                    rockbitermh = true
+                end
+            end
+                    
+            if elemental == true then
+                if IsReady("Flametongue Weapon") then
+                flametonguemh = true
+                else
+                    rockbitermh = true
+                end
+            end
+            
+            if enhtank == true then
+                if  nameWayofEarth == 'Way of Earth' then
+                    rockbitermh = true
+                    elseif IsReady("Windfury Weapon") and nameWayofEarth~= 'Way of Earth' then
+                        windfurymh = true
+                    end
+                end
 
--- print(S.ElementalMastery:IsAvailable())
-        -- print('namelavalash== "Lava Lash":',namelavalash== 'Lava Lash' )
-        -- print('targetrange25:', targetRange25)
-        -- print('castTime:',castTime > 0.25 )
-        -- print(IsReady('Earth Shock(rank 1)'))
+        end
+
+
+
+        -- print('flametongueMH:', flametonguemh)
+        -- print('flametongueOH:', flametongueoh)
+        -- print('rockbiterMH:', rockbitermh)
+        -- print('rockbiterOH:', rockbiteroh)
+        -- print('windfuryMH:', windfurymh)
+        -- print('windfuryOH:', windfuryoh)
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------SPELL QUEUES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -325,7 +415,7 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.FireNovaTotem:ID() and IsUsableSpell("Fire Nova Totem") then
             return RubimRH.QueuedSpell():Cast()
         end
-        if RubimRH.QueuedSpell():ID() == S.WindfuryTotem:ID() and IsUsableSpell("Windfury Totem") and totemName4 ~= 'Windfury Totem'  then
+        if RubimRH.QueuedSpell():ID() == S.WindfuryTotem:ID() and IsUsableSpell("Windfury Totem") and totemName4 ~= 'Windfury Totem' and S.WindfuryTotem:TimeSinceLastCast()>2 then
             return RubimRH.QueuedSpell():Cast()
         end
         if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and S.EarthShock:CooldownRemains()>2 then
@@ -345,39 +435,43 @@ local function APL()
             return RubimRH.QueuedSpell():Cast()
         end
   
---  print(S.ElementalMastery:IsAvailable())
-        -- print('lava lash:',namelavalash~= 'Lava Lash')
-        -- print('IsReady("Earth Shock(rank 1)"):',IsReady('Earth Shock(rank 1)') )
-        -- print('CheckInteractDistance:',CheckInteractDistance("target", 3))
 
--- 'Drained of Blood'
+-- FTweaponenchantIDs = {5, 4, 3, 523}
+-- WFweaponenchantIDs = {283, 284}
+-- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
+if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 then
+if rockbitermh == true and (mhenchantseconds <30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=1663)) then
+    return S.RockbiterWeapon:Cast()
+end
+if flametonguemh == true and (mhenchantseconds <30 or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+    return S.FlametongueWeapon:Cast()
+end
+if windfurymh == true and (mhenchantseconds <30 or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+    return S.WindfuryWeapon:Cast()
+end
+if rockbiteroh == true and (ohenchantseconds <30 or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=6 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+    return S.RockbiterWeapon:Cast()
+end
+if flametongueoh == true and (ohenchantseconds <30 or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+    return S.FlametongueWeapon:Cast()
+end
+end
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------IN COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
-   and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  
-   and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) and not AuraUtil.FindAuraByName('Drained of Blood', "player") then 
+   and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Ghost Wolf", "player")
+   and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) then 
     -- print('true')
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ENHDPS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    if not IsEquippedItemType("Shield") and namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-        if S.WindfuryTotem:CanCast() and haveTotem4 == false and partymemberinrange == true then
-            return S.WindfuryTotem:Cast()
-        end
-       
-        if (mhenchantseconds <30 or mainHandEnchantID ~=284) and not S.ElementalMastery:IsAvailable() and not IsEquippedItemType("Shield") and IsReady('Windfury Weapon') and HasMainhandWeapon() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.WindfuryWeapon:Cast()
-        end
-
-        if (ohenchantseconds <30 or offHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasOffhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
-   
-
+    if enhdps == true  then
 
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
             return I.autoattack:ID()
@@ -394,14 +488,25 @@ local function APL()
         if Target:IsAPlayer() and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
+        if IsReady('Molten Blast') and RangeCount11()>1 then
+            return S.handrune:Cast()
+        end
 
         if IsReady('Stormstrike') and CheckInteractDistance("target", 2) then
             return S.Stormstrike:Cast()
         end
-
+        if IsReady('Molten Blast') and RangeCount11()==1 then
+            return S.handrune:Cast()
+        end
+   
         if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
             return S.handrune:Cast()
         end
+
+        if IsReady('Windfury Totem') and haveTotem4 == false  and PartyInRange()>=1 then
+            return S.WindfuryTotem:Cast()
+        end
+       
 
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
             return S.ChainLightning:Cast()
@@ -440,88 +545,68 @@ local function APL()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ENHTANK-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-if IsEquippedItemType("Shield")  and not S.ElementalMastery:IsAvailable() then 
-    if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
-        return I.autoattack:ID()
-    end    
-    
-    if IsReady('Spirit of the Alpha') and not AuraUtil.FindAuraByName("Spirit of the Alpha", "player") and namelavalash~= 'Lava Lash' then
-            return S.feetrune:Cast()
-        end
-        if (mhenchantseconds <30 or mainHandEnchantID ~=284) and not S.ElementalMastery:IsAvailable() and nameWayofEarth ~= 'Way of Earth' and IsReady('Windfury Weapon') and HasMainhandWeapon() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.WindfuryWeapon:Cast()
-        end
-        if (mhenchantseconds <30 or mainHandEnchantID ~=1663) and IsReady('Rockbiter Weapon') and HasMainhandWeapon() and nameWayofEarth == 'Way of Earth' then
-            return S.RockbiterWeapon:Cast()
-        end
-        if (ohenchantseconds <30 or offHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasOffhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
+        if enhtank  == true then 
+                
+            if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
+                return I.autoattack:ID()
+            end    
+        
+            if IsReady('Spirit of the Alpha') and not AuraUtil.FindAuraByName("Spirit of the Alpha", "player") and namelavalash~= 'Lava Lash' then
+                return S.feetrune:Cast()
+            end
+
+            if IsReady('Shamanistic Rage') and Player:ManaPercentage()<65 and RubimRH.CDsON() and targetRange30 then
+                return S.legrune:Cast()
+            end
+
+            if IsReady('Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
+                return S.HealingWave:Cast()
+            end
+
+            -- if Player:ManaPercentage()>=50 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
+            --     return S.EarthShock:Cast()
+            -- end
+
+            if (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and CheckInteractDistance("target", 2) then
+                return S.earthshock1:Cast()
+            end
+
+            -- if Player:ManaPercentage()>=50 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+            --     return S.FlameShock:Cast()
+            -- end
+            if IsReady('Molten Blast') and rangecheck5 and RangeCount11()>1 then
+                return S.handrune:Cast()
+            end
+
+            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
+                return S.ChainLightning:Cast()
+            end
+            if IsReady('Stormstrike') and CheckInteractDistance("target", 2) then
+                return S.Stormstrike:Cast()
+            end
+            if IsReady('Molten Blast') and rangecheck5  then
+                return S.handrune:Cast()
+            end
+            if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
+                return S.handrune:Cast()
+            end
+            if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
+                return S.handrune:Cast()
+            end
+
+            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+                return S.ChainLightning:Cast()
+            end
+            if IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+                return S.flameshock1:Cast()
+            end
 
 
-        if IsReady('Shamanistic Rage') and Player:ManaPercentage()<65 and RubimRH.CDsON() and targetRange30 then
-            return S.legrune:Cast()
         end
-
-        if IsReady('Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
-            return S.HealingWave:Cast()
-        end
-
-        -- if Player:ManaPercentage()>=50 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
-        --     return S.EarthShock:Cast()
-        -- end
-
-        if (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and CheckInteractDistance("target", 2) then
-            return S.earthshock1:Cast()
-        end
-
-        -- if Player:ManaPercentage()>=50 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
-        --     return S.FlameShock:Cast()
-        -- end
-        if IsReady('Molten Blast') and rangecheck5 and RangeCount11()>1 then
-            return S.handrune:Cast()
-        end
-
-        if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) then
-            return S.ChainLightning:Cast()
-        end
-        if IsReady('Stormstrike') and CheckInteractDistance("target", 2) then
-            return S.Stormstrike:Cast()
-        end
-        if IsReady('Molten Blast') and rangecheck5  then
-            return S.handrune:Cast()
-        end
-        if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
-            return S.handrune:Cast()
-        end
-        if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
-            return S.handrune:Cast()
-        end
-
-        if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
-            return S.ChainLightning:Cast()
-        end
-        if IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
-            return S.flameshock1:Cast()
-        end
-
-
-   
-
-
-
-    end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ELE-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    if S.ElementalMastery:IsAvailable() then
-        if (mhenchantseconds <30 or mainHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasMainhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
-
-        if (ohenchantseconds <30 or offHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasOffhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
+    if elemental == true then
 
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
             return I.autoattack:ID()
@@ -568,9 +653,11 @@ if IsEquippedItemType("Shield")  and not S.ElementalMastery:IsAvailable() then
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------TOTEMS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and partymemberinrange == true and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-    return S.WindfuryTotem:Cast()
-end
+        
+        if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.WindfuryTotem:Cast()
+        end
+
         if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
         and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
         totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
@@ -595,7 +682,7 @@ end
 
 
 
-        if IsReady(SpellRank('Mana Spring Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partymemberinrange == true and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if IsReady(SpellRank('Mana Spring Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
 
@@ -606,48 +693,11 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------OUT OF COMBAT ROTATION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    if (not Player:AffectingCombat() or Target:IsCasting() and not Player:AffectingCombat() or Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-        if namelavalash == 'Lava Lash' and not S.ElementalMastery:IsAvailable() and not AuraUtil.FindAuraByName('Drained of Blood', "player") then
-            if  Player:IsMoving() then
-        if (mhenchantseconds <30 or mainHandEnchantID ~=284) and not S.ElementalMastery:IsAvailable() and (nameWayofEarth ~= 'Way of Earth' and not IsEquippedItemType("Shield")) and IsReady('Windfury Weapon') and HasMainhandWeapon() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.WindfuryWeapon:Cast()
-        end
-
-        if (ohenchantseconds <30 or offHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasOffhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
-    end
-
-
-    if IsEquippedItemType("Shield") and not S.ElementalMastery:IsAvailable() then 
-        if IsReady('Spirit of the Alpha') and not AuraUtil.FindAuraByName("Spirit of the Alpha", "player") and namelavalash~= 'Lava Lash' then
-            return S.feetrune:Cast()
-        end
-        if (mhenchantseconds <30 or mainHandEnchantID ~=284) and not S.ElementalMastery:IsAvailable() and nameWayofEarth ~= 'Way of Earth' and IsReady('Windfury Weapon') and HasMainhandWeapon() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.WindfuryWeapon:Cast()
-        end
-        if (mhenchantseconds <30 or mainHandEnchantID ~=1663) and IsReady('Rockbiter Weapon') and HasMainhandWeapon() and nameWayofEarth == 'Way of Earth' then
-            return S.RockbiterWeapon:Cast()
-        end
-        if (ohenchantseconds <30 or offHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasOffhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
-
-    end
-
-
-    if S.ElementalMastery:IsAvailable() then
-        if (mhenchantseconds <30 or mainHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasMainhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
-
-        if (ohenchantseconds <30 or offHandEnchantID ~=523) and IsReady('Flametongue Weapon') and HasOffhandWeapon() then
-            return S.FlametongueWeapon:Cast()
-        end
-    end
-end
-
-
+    if (not Player:AffectingCombat() or Target:IsCasting() and not Player:AffectingCombat() or Target:AffectingCombat() 
+    or IsCurrentSpell(6603) or S.LightningBolt:InFlight()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") 
+    and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  
+    and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+  
         if  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and CheckInteractDistance("target", 2) then 
             if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
                 return I.autoattack:ID()
@@ -655,25 +705,25 @@ end
        
             if IsReady('Stormstrike') and CheckInteractDistance("target", 2)  then
             return S.Stormstrike:Cast()
-        end
+            end
 
-        if IsReady('Lava Lash') and CheckInteractDistance("target", 2)  then
-            return S.handrune:Cast()
-        end
+            if IsReady('Lava Lash') and CheckInteractDistance("target", 2)  then
+                return S.handrune:Cast()
+            end
 
 
-        if IsReady('Lava Burst') then
-            return S.handrune:Cast()
-        end
+            if IsReady('Lava Burst') then
+                return S.handrune:Cast()
+            end
 
-        if IsReady('Chain Lightning') then
-            return S.ChainLightning:Cast()
-        end
+            if IsReady('Chain Lightning') then
+                return S.ChainLightning:Cast()
+            end
 
-        if IsReady('Lightning Bolt') then
-            return S.LightningBolt:Cast()
+            if IsReady('Lightning Bolt') then
+                return S.LightningBolt:Cast()
+            end
         end
-    end
 
         if IsReady('Lightning Shield') and not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Lightning Shield", "player") and Player:IsMoving() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
