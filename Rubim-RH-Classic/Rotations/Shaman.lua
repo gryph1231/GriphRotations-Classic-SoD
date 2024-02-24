@@ -57,6 +57,8 @@ RubimRH.Spell[7] = {
     -- ChainLightning = Spell(SpellRank('Chain Lightning')),
     DiseaseCleansingTotem = Spell(8170),
     -- WaterShield = Spell(33736),
+    WindfuryWeaponR1 = Spell(8232),
+    FlametongueWeaponR1 = Spell(8024),
     FrostbrandWeapon = Spell(10456),
     MaelstromWeapon = Spell(408505),
 	EarthShock = Spell(10412),
@@ -267,11 +269,11 @@ local function APL()
         flametongueoh = false
         windfuryoh = false
      end
-     if dualWielding and not IsReady("Flametongue Weapon") then
+     if dualWielding and not S.FlametongueWeaponR1:IsAvailable()  then
         rockbitermh = true
         rockbiteroh = true
      end
-     if dualWielding and IsReady("Flametongue Weapon") then
+     if dualWielding and S.FlametongueWeaponR1:IsAvailable()  then
         flametongueoh = true
         rockbiteroh = false
         windfuryoh = false
@@ -284,7 +286,7 @@ local function APL()
      
     
             if enhdps ==true then
-                if IsReady("Windfury Weapon") then
+                if S.WindfuryWeaponR1:IsAvailable() then
                     windfurymh = true
                 else
                     rockbitermh = true
@@ -292,7 +294,7 @@ local function APL()
             end
                     
             if elemental == true then
-                if IsReady("Flametongue Weapon") then
+                if S.FlametongueWeaponR1:IsAvailable()  then
                 flametonguemh = true
                 else
                     rockbitermh = true
@@ -302,7 +304,7 @@ local function APL()
             if enhtank == true then
                 if  nameWayofEarth == 'Way of Earth' then
                     rockbitermh = true
-                    elseif IsReady("Windfury Weapon") and nameWayofEarth~= 'Way of Earth' then
+                    elseif  S.WindfuryWeaponR1:IsAvailable()  and nameWayofEarth~= 'Way of Earth' then
                         windfurymh = true
                     end
                 end
@@ -439,20 +441,20 @@ local function APL()
 -- FTweaponenchantIDs = {5, 4, 3, 523}
 -- WFweaponenchantIDs = {283, 284}
 -- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
-if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 then
-if rockbitermh == true and (mhenchantseconds <30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=1663)) then
+if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+if rockbitermh == true and (hasMainHandEnchant ==false or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=1663)) then
     return S.RockbiterWeapon:Cast()
 end
-if flametonguemh == true and (mhenchantseconds <30 or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+if flametonguemh == true and (hasMainHandEnchant ==false or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
     return S.FlametongueWeapon:Cast()
 end
-if windfurymh == true and (mhenchantseconds <30 or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+if windfurymh == true and (hasMainHandEnchant ==false or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
     return S.WindfuryWeapon:Cast()
 end
-if rockbiteroh == true and (ohenchantseconds <30 or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=6 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+if rockbiteroh == true and (hasOffHandEnchant ==false or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=6 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
     return S.RockbiterWeapon:Cast()
 end
-if flametongueoh == true and (ohenchantseconds <30 or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+if flametongueoh == true and (hasOffHandEnchant ==false or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
     return S.FlametongueWeapon:Cast()
 end
 end
@@ -725,7 +727,7 @@ end
             end
         end
 
-        if IsReady('Lightning Shield') and not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Lightning Shield", "player") and Player:IsMoving() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Lightning Shield", "player") and Player:IsMoving() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
     
