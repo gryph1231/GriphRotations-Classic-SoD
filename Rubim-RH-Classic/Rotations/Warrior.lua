@@ -129,7 +129,7 @@ local function APL()
         end
         
         if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and S.Bloodthirst:CooldownRemains() >= 1.5  then
-            return S.RagingBlow:Cast()
+            return S.ragingblow:Cast()
         end
         
         if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and S.Bloodthirst:CooldownRemains() >= 1.5 then
