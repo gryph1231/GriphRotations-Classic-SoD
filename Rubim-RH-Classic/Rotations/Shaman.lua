@@ -526,11 +526,11 @@ end
         --     return S.LightningBolt:Cast()
         -- end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and aoeTTD()>3 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and aoeTTD()>3 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.flameshock1:Cast()
         end
 
