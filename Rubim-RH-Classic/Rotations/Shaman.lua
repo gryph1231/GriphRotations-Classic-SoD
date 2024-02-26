@@ -13,6 +13,7 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 
 RubimRH.Spell[7] = {
+    PoisonCleansingTotem = Spell(8166),
 	LightningBolt = Spell(10391),
     ChainLightning = Spell(930),
     earthshock = Spell(8042),
@@ -418,8 +419,10 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and IsUsableSpell("Earthbind Totem") then
             return RubimRH.QueuedSpell():Cast()
         end
-
-        if RubimRH.QueuedSpell():ID() == S.GroundingTotem:ID() and IsUsableSpell("Grounding Totem") and totemName4 ~= 'Grounding Totem' and S.GroundingTotem:TimeSinceLastCast()>2 then
+        if RubimRH.QueuedSpell():ID() == S.GroundingTotem:ID() and (S.GroundingTotem:CooldownRemains()>2 or not IsUsableSpell("Grounding Totem")) then
+            RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+      end
+        if RubimRH.QueuedSpell():ID() == S.GroundingTotem:ID() and IsUsableSpell("Grounding Totem") and totemName4 ~= 'Grounding Totem' and S.GroundingTotem:TimeSinceLastCast()>2 and IsUsableSpell("Grounding Totem") then
             return RubimRH.QueuedSpell():Cast()
         end
         if RubimRH.QueuedSpell():ID() == S.MagmaTotem:ID() and IsUsableSpell("Magma Totem") then
@@ -434,17 +437,18 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.WindfuryTotem:ID() and IsUsableSpell("Windfury Totem") and totemName4 ~= 'Windfury Totem' and S.WindfuryTotem:TimeSinceLastCast()>2 then
             return RubimRH.QueuedSpell():Cast()
         end
-        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and S.EarthShock:CooldownRemains()>2 then
+        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and (S.EarthShock:CooldownRemains()>1.5 or not IsUsableSpell("Earth Shock")) then
               RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
+        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and (S.TremorTotem:TimeSinceLastCast()<2 or not IsUsableSpell("Tremor Totem")) then
+            RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
+      end
+
 
         if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and S.EarthShock:CooldownRemains()<2 and namelavalash== 'Lava Lash' and IsUsableSpell("Earth Shock") then
             return RubimRH.QueuedSpell():Cast()
         end
 
-        if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and S.esr1:CooldownRemains()<2 and IsUsableSpell(8042) and ( namelavalash~= 'Lava Lash' or not IsUsableSpell("Earth Shock")) then 
-            return S.earthshock1:Cast()
-        end
 
         if RubimRH.QueuedSpell():ID() == S.TotemicProjection:ID() then
             RubimRH.queuedSpell = { RubimRH.Spell[7].totemicprojection, 0 }
@@ -452,27 +456,27 @@ local function APL()
         end
   
 
--- FTweaponenchantIDs = {5, 4, 3, 523}
+
+    -- FTweaponenchantIDs = {5, 4, 3, 523}
 -- WFweaponenchantIDs = {283, 284}
 -- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
-    return S.RockbiterWeapon:Cast()
-end
-if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
-    return S.FlametongueWeapon:Cast()
-end
-if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
-    return S.WindfuryWeapon:Cast()
-end
-if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
-    return S.RockbiterWeapon:Cast()
-end
-if flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
-    return S.FlametongueWeapon:Cast()
-end
-end
-
+    if rockbitermh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
+        return S.RockbiterWeapon:Cast()
+    end
+    if flametonguemh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+        return S.FlametongueWeapon:Cast()
+    end
+    if windfurymh == true and (hasMainHandEnchant==false  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+        return S.WindfuryWeapon:Cast()
+    end
+    if rockbiteroh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+        return S.RockbiterWeapon:Cast()
+    end
+    if flametongueoh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+        return S.FlametongueWeapon:Cast()
+    end
+    end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------IN COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -493,7 +497,7 @@ end
             return I.autoattack:ID()
         end
 
-        if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Target:IsAPlayer()) and RubimRH.CDsON() and targetRange30  then
+        if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and RubimRH.CDsON() and targetRange30  then
             return S.legrune:Cast()
         end
 
@@ -518,9 +522,41 @@ end
         if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
             return S.handrune:Cast()
         end
+        if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
+            return S.PoisonCleansingTotem:Cast()
+        end
 
-        if IsReady('Windfury Totem') and haveTotem4 == false  and PartyInRange()>=1 then
+        if IsReady("Disease Cleansing Totem") and S.DiseaseCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Disease" and totemName3 ~= 'Disease Cleansing Totem' then
+            return S.DiseaseCleansingTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
+        end
+        
+        if Target:IsAPlayer() and  IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.GroundingTotem:Cast()
+        end  
+
+        if not Target:IsAPlayer() and Player:StoppedFor()>1 and Player:ManaPercentage()>60 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.MagmaTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
+            return S.StrengthofEarthTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
+        and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
+        totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+        return S.totemicprojection:Cast()
+        end
+        if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.SearingTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+            return S.ManaSpringTotem:Cast()
         end
        
 
@@ -540,15 +576,15 @@ end
         --     return S.LightningBolt:Cast()
         -- end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and aoeTTD()>3 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and (aoeTTD()>3 and Target:TimeToDie()>3) and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and aoeTTD()>3 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and (aoeTTD()>3 and Target:TimeToDie()>3) and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.flameshock1:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
 
@@ -571,7 +607,7 @@ end
                 return S.feetrune:Cast()
             end
 
-            if IsReady('Shamanistic Rage') and Player:ManaPercentage()<65 and RubimRH.CDsON() and targetRange30 then
+            if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and RubimRH.CDsON() and targetRange30  then
                 return S.legrune:Cast()
             end
 
@@ -610,12 +646,51 @@ end
                 return S.handrune:Cast()
             end
 
+            if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
+                return S.PoisonCleansingTotem:Cast()
+            end
+    
+            if IsReady("Disease Cleansing Totem") and S.DiseaseCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Disease" and totemName3 ~= 'Disease Cleansing Totem' then
+                return S.DiseaseCleansingTotem:Cast()
+            end
+    
+            if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+                return S.WindfuryTotem:Cast()
+            end
+            
+            if Target:IsAPlayer() and  IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+                return S.GroundingTotem:Cast()
+            end  
+    
+            if not Target:IsAPlayer() and Player:StoppedFor()>1 and Player:ManaPercentage()>60 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+                return S.MagmaTotem:Cast()
+            end
+    
+            if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
+                return S.StrengthofEarthTotem:Cast()
+            end
+    
+            if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
+            and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
+            totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+            return S.totemicprojection:Cast()
+            end
             if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
                 return S.ChainLightning:Cast()
             end
             if IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
                 return S.flameshock1:Cast()
             end
+
+            if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+                return S.SearingTotem:Cast()
+            end
+    
+            if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+                return S.ManaSpringTotem:Cast()
+            end
+
+
 
 
         end
@@ -628,7 +703,7 @@ end
             return I.autoattack:ID()
         end
 
-        if IsReady('Shamanistic Rage') and Player:ManaPercentage()<65 and RubimRH.CDsON() and targetRange30 then
+        if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and RubimRH.CDsON() and targetRange30  then
             return S.legrune:Cast()
         end
 
@@ -658,6 +733,42 @@ end
         if Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.flameshock1:Cast()
         end
+        if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
+            return S.PoisonCleansingTotem:Cast()
+        end
+
+        if IsReady("Disease Cleansing Totem") and S.DiseaseCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Disease" and totemName3 ~= 'Disease Cleansing Totem' then
+            return S.DiseaseCleansingTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.WindfuryTotem:Cast()
+        end
+        
+        if Target:IsAPlayer() and  IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.GroundingTotem:Cast()
+        end  
+
+        if not Target:IsAPlayer() and Player:StoppedFor()>1 and Player:ManaPercentage()>60 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.MagmaTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
+            return S.StrengthofEarthTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
+        and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
+        totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+        return S.totemicprojection:Cast()
+        end
+        if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.SearingTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+            return S.ManaSpringTotem:Cast()
+        end
 
         if IsReady('Lightning Bolt') and targetRange30 then
             return S.LightningBolt:Cast()
@@ -666,46 +777,33 @@ end
     end
 
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------TOTEMS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        
-        if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.WindfuryTotem:Cast()
-        end
-
-        if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
-        and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
-        totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
-        return S.totemicprojection:Cast()
-        end
-
-        if not Target:IsAPlayer() and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.MagmaTotem:Cast()
-        end
-
-
-
-        if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
-            return S.StrengthofEarthTotem:Cast()
-        end
-
-
-        if IsReady('Searing Totem') and RangeCount11()==1 and aoeTTD()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.SearingTotem:Cast()
-        end
-
-
-
-
-        if IsReady(SpellRank('Mana Spring Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
-            return S.ManaSpringTotem:Cast()
-        end
-
 
         return 135328 -- sword icon id
     end --end of in combat rotation
 
+
+
+    -- FTweaponenchantIDs = {5, 4, 3, 523}
+-- WFweaponenchantIDs = {283, 284}
+-- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
+if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+    if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
+        return S.RockbiterWeapon:Cast()
+    end
+    if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+        return S.FlametongueWeapon:Cast()
+    end
+    if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+        return S.WindfuryWeapon:Cast()
+    end
+    if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+        return S.RockbiterWeapon:Cast()
+    end
+    if flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+        return S.FlametongueWeapon:Cast()
+    end
+    end
+    
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------OUT OF COMBAT ROTATION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
