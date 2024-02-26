@@ -538,28 +538,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.GroundingTotem:Cast()
         end  
 
-        if not Target:IsAPlayer() and Player:StoppedFor()>1 and Player:ManaPercentage()>60 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.MagmaTotem:Cast()
-        end
-
-        if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
-            return S.StrengthofEarthTotem:Cast()
-        end
-
-        if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
-        and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
-        totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
-        return S.totemicprojection:Cast()
-        end
-        if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.SearingTotem:Cast()
-        end
-
-        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
-            return S.ManaSpringTotem:Cast()
-        end
-       
-
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
             return S.ChainLightning:Cast()
         end
@@ -592,7 +570,27 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.earthshock1:Cast()
         end
 
+        if not Target:IsAPlayer() and Player:StoppedFor()>1 and Player:ManaPercentage()>60 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.MagmaTotem:Cast()
+        end
 
+        if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
+            return S.StrengthofEarthTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Totemic Projection')) and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
+        and (totemName2 == 'Strength of Earth Totem III' and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
+        totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+        return S.totemicprojection:Cast()
+        end
+        if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.SearingTotem:Cast()
+        end
+
+        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>60 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+            return S.ManaSpringTotem:Cast()
+        end
+       
     end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ENHTANK-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -615,33 +613,37 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.HealingWave:Cast()
             end
 
-            -- if Player:ManaPercentage()>=50 and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
-            --     return S.EarthShock:Cast()
-            -- end
+            if IsReady('Molten Blast') and rangecheck5 and RangeCount11()>1 then
+                return S.handrune:Cast()
+            end
+
+            if (Target:IsAPlayer() or Player:ManaPercentage()>=70) and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and CheckInteractDistance("target", 2) then
+                return S.EarthShock:Cast()
+            end
 
             if (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and CheckInteractDistance("target", 2) then
                 return S.earthshock1:Cast()
             end
 
-            -- if Player:ManaPercentage()>=50 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
-            --     return S.FlameShock:Cast()
-            -- end
-            if IsReady('Molten Blast') and rangecheck5 and RangeCount11()>1 then
-                return S.handrune:Cast()
+            if Player:ManaPercentage()>=70 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+                return S.FlameShock:Cast()
             end
 
-            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
+            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1  and targetRange30 then
                 return S.ChainLightning:Cast()
             end
+
             if IsReady('Stormstrike') and CheckInteractDistance("target", 2) then
                 return S.Stormstrike:Cast()
             end
+
             if IsReady('Molten Blast') and rangecheck5  then
                 return S.handrune:Cast()
             end
             if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
                 return S.handrune:Cast()
             end
+
             if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
                 return S.handrune:Cast()
             end
@@ -675,9 +677,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             totemName3 == 'Mana Spring Totem' and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
             return S.totemicprojection:Cast()
             end
+
             if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
                 return S.ChainLightning:Cast()
             end
+
             if IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
                 return S.flameshock1:Cast()
             end
@@ -775,8 +779,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
     end
-
-
 
         return 135328 -- sword icon id
     end --end of in combat rotation
