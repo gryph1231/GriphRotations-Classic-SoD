@@ -164,11 +164,11 @@ end
             return S.quickstrike:Cast()
         end
         
-        if IsReady('Cleave')  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 then
+        if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 then
             return S.Cleave:Cast()
         end
         
-        if IsReady('Heroic Strike')  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() == 1 then
+        if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() == 1 then
             return S.HeroicStrike:Cast()
         end
     end
@@ -222,7 +222,8 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Whirlwind:Cast()
     end
 
-    if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and S.MortalStrike:CooldownRemains() >= 1.5 and S.Whirlwind:CooldownRemains() >= 1.5 and Player:Rage() >= 50 then
+    if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and (not S.MortalStrike:IsAvailable() or S.MortalStrike:CooldownRemains() >= 1.5 and S.MortalStrike:IsAvailable() 
+    and S.Whirlwind:CooldownRemains() >= 1.5 and S.Whirlwind:IsAvailable() or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
         return S.quickstrike:Cast()
     end
 
@@ -230,10 +231,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
     return S.Execute:Cast()
     end	
-    if IsReady('Cleave')  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 then
+    if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave'))  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 then
         return S.Cleave:Cast()
     end
-    if IsReady('Heroic Strike')  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() == 1 then
+    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() == 1 then
         return S.HeroicStrike:Cast()
     end
     
