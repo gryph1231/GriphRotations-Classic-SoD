@@ -254,7 +254,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return S.BattleStance:Cast()
     end
 
-if IsCurrentSpell(6603) and GetShapeshiftFormID() == 1 and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and targetRange25 then
+if IsCurrentSpell(6603) and GetShapeshiftFormID() == 17 and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and targetRange25 then
     return S.Charge:Cast()
 end
 
