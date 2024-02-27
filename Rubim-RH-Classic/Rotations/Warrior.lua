@@ -95,7 +95,7 @@ else
     arms = true
     dwfury = false
 end
--- print(GetShapeshiftFormID())
+print(S.MortalStrike:IsAvailable())
 --  BattleStance -- GetShapeshiftFormID() == 1
 --  DefensiveStance -- GetShapeshiftFormID() == 2
 --  BerserkerStance -- GetShapeshiftFormID() == 3
@@ -222,8 +222,8 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Whirlwind:Cast()
     end
 
-    if IsReady('Quick Strike') and CheckInteractDistance("target",2) and (not S.MortalStrike:IsAvailable() or S.MortalStrike:CooldownRemains() >= 1.5 and S.MortalStrike:IsAvailable()) 
-    and (S.Whirlwind:CooldownRemains() >= 1.5 and S.Whirlwind:IsAvailable() or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+    if IsReady('Quick Strike') and CheckInteractDistance("target",2) and (not S.MortalStrike:IsAvailable() or S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5) 
+    and (not S.Whirlwind:IsAvailable() or S.Whirlwind:CooldownRemains() >= 1.5 and S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
         return S.quickstrike:Cast()
     end
 
