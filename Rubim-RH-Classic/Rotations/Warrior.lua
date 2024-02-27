@@ -222,8 +222,8 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Whirlwind:Cast()
     end
 
-    if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and (not S.MortalStrike:IsAvailable() or S.MortalStrike:CooldownRemains() >= 1.5 and S.MortalStrike:IsAvailable() 
-    and S.Whirlwind:CooldownRemains() >= 1.5 and S.Whirlwind:IsAvailable() or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+    if IsReady('Quick Strike') and CheckInteractDistance("target",2) and (not S.MortalStrike:IsAvailable() or S.MortalStrike:CooldownRemains() >= 1.5 and S.MortalStrike:IsAvailable()) 
+    and (S.Whirlwind:CooldownRemains() >= 1.5 and S.Whirlwind:IsAvailable() or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
         return S.quickstrike:Cast()
     end
 
