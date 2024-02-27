@@ -110,7 +110,7 @@ end
             return I.autoattack:ID()
         end
 
-        if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and RangeCount11()>=1 and not AuraUtil.FindAuraByName("Overpower","player") then
+        if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Overpower","player") then
             return S.BerserkerStance:Cast()
         end
 
@@ -129,7 +129,7 @@ end
         if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
             return S.Execute:Cast()
         end	
-        if not AuraUtil.FindAuraByName("Sweeping Strikes","player") and RangeCount11()>1 or RangeCount11()==1 then 
+        if (not AuraUtil.FindAuraByName("Sweeping Strikes","player") and RangeCount11()>1 or RangeCount11()==1) and CheckInteractDistance("target",3) then 
         if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and AuraUtil.FindAuraByName("Overpower","player") and RangeCount11()>=1 then
             return S.BattleStance:Cast()
         end
@@ -184,8 +184,8 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return I.autoattack:ID()
     end
 
-    if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and RangeCount11()>=1 and not AuraUtil.FindAuraByName("Overpower","player") then
-    return S.BerserkerStance:Cast()
+    if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Overpower","player") then
+        return S.BerserkerStance:Cast()
     end
 
     if IsReady("Bloodrage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") then
@@ -199,15 +199,15 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.SweepingStrikes:Cast()
         end
 
-    if not AuraUtil.FindAuraByName("Sweeping Strikes","player") and RangeCount11()>1 or RangeCount11()==1 then 
-        if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and AuraUtil.FindAuraByName("Overpower","player") and RangeCount11()>=1 then
-            return S.BattleStance:Cast()
-        end
-
-        if IsReady("Overpower") and CheckInteractDistance("target",2) then
-            return S.Overpower:Cast()
-        end	
-        end
+        if (not AuraUtil.FindAuraByName("Sweeping Strikes","player") and RangeCount11()>1 or RangeCount11()==1) and CheckInteractDistance("target",3) then 
+            if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and AuraUtil.FindAuraByName("Overpower","player") and RangeCount11()>=1 then
+                return S.BattleStance:Cast()
+            end
+    
+            if IsReady("Overpower") and CheckInteractDistance("target",2) then
+                return S.Overpower:Cast()
+            end	
+            end
 
         if IsReady('Whirlwind') and RangeCount10() > 1 and CheckInteractDistance("target",2) then
             return S.Whirlwind:Cast()
