@@ -16,7 +16,7 @@ RubimRH.Spell[1] = {
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
-    ragingblow = Spell(20589),--escape artist
+    chestrune = Spell(20589),--escape artist
     Charge = Spell(100),
     Overpower = Spell(7384),
     SunderArmor = Spell(7405),
@@ -27,7 +27,8 @@ RubimRH.Spell[1] = {
     Rend3 = Spell(6547),
     BerserkerStance = Spell(2458),
     QuickStrike = Spell(429765),
-    quickStrike = Spell(20594), --stone form
+    handrune = Spell(20580),--shadowmeld
+SweepingStrikes = Spell(12292),
     Slam = Spell(1464),
     HeroicStrike = Spell(78),
     Cleave = Spell(845),
@@ -95,7 +96,7 @@ else
     arms = true
     dwfury = false
 end
-print(S.MortalStrike:IsAvailable())
+-- print(S.MortalStrike:IsAvailable())
 --  BattleStance -- GetShapeshiftFormID() == 1
 --  DefensiveStance -- GetShapeshiftFormID() == 2
 --  BerserkerStance -- GetShapeshiftFormID() == 3
@@ -128,7 +129,7 @@ print(S.MortalStrike:IsAvailable())
         if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
             return S.Execute:Cast()
         end	
-
+        if not AuraUtil.FindAuraByName("Sweeping Strikes","player") and RangeCount11()>1 or RangeCount11()==1 then 
         if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and AuraUtil.FindAuraByName("Overpower","player") and RangeCount11()>=1 then
             return S.BattleStance:Cast()
         end
@@ -136,6 +137,7 @@ print(S.MortalStrike:IsAvailable())
         if IsReady("Overpower") and CheckInteractDistance("target",2) then
             return S.Overpower:Cast()
         end	
+        end
 
         if IsReady('Heroic Strike') and Target:HealthPercentage()<=20 and RangeCount11() ==1 and CheckInteractDistance("target",2) and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
             return S.HeroicStrike:Cast()
@@ -152,16 +154,16 @@ print(S.MortalStrike:IsAvailable())
             return S.Slam:Cast()
         end
         
-        if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and S.Bloodthirst:CooldownRemains() >= 1.5  then
-            return S.ragingblow:Cast()
+        if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
+            return S.chestrune:Cast()
         end
         
-        if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and S.Bloodthirst:CooldownRemains() >= 1.5 then
+        if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) then
             return S.Whirlwind:Cast()
         end
         
-        if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and S.Bloodthirst:CooldownRemains() >= 1.5 and S.Whirlwind:CooldownRemains() >= 1.5 and Player:Rage() >= 50 then
-            return S.quickstrike:Cast()
+        if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+            return S.handrune:Cast()
         end
         
         if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 then
@@ -193,14 +195,19 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady("Berserker Rage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") then
     return S.BerserkerRage:Cast()
     end
-
-    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and AuraUtil.FindAuraByName("Overpower","player") and RangeCount11()>=1 then
-        return S.BattleStance:Cast()
+    if IsReady("Sweeping Strikes") and CheckInteractDistance("target",2) and RangeCount11()>1 and RubimRH.CDsON() then
+        return S.SweepingStrikes:Cast()
         end
-    
+
+    if not AuraUtil.FindAuraByName("Sweeping Strikes","player") and RangeCount11()>1 or RangeCount11()==1 then 
+        if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and AuraUtil.FindAuraByName("Overpower","player") and RangeCount11()>=1 then
+            return S.BattleStance:Cast()
+        end
+
         if IsReady("Overpower") and CheckInteractDistance("target",2) then
-        return S.Overpower:Cast()
+            return S.Overpower:Cast()
         end	
+        end
 
         if IsReady('Whirlwind') and RangeCount10() > 1 and CheckInteractDistance("target",2) then
             return S.Whirlwind:Cast()
@@ -214,17 +221,24 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady('Slam')  and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
         return S.Slam:Cast()
     end
-    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and S.MortalStrike:CooldownRemains() >= 1.5  then
-        return S.ragingblow:Cast()
+    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
+        return S.chestrune:Cast()
     end
 
-    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and S.MortalStrike:CooldownRemains() >= 1.5 then
+    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
         return S.Whirlwind:Cast()
     end
 
-    if IsReady('Quick Strike') and CheckInteractDistance("target",2) and (not S.MortalStrike:IsAvailable() or S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5) 
-    and (not S.Whirlwind:IsAvailable() or S.Whirlwind:CooldownRemains() >= 1.5 and S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
-        return S.quickstrike:Cast()
+    if IsReady('Quick Strike') 
+    and CheckInteractDistance("target",2) 
+    and (not S.MortalStrike:IsAvailable() 
+    or S.MortalStrike:IsAvailable() 
+    and S.MortalStrike:CooldownRemains() >= 1.5) 
+    and (not S.Whirlwind:IsAvailable() 
+    or S.Whirlwind:IsAvailable() 
+    and S.Whirlwind:CooldownRemains() >= 1.5) 
+    and Player:Rage() >= 50 then
+        return S.handrune:Cast()
     end
 
 
