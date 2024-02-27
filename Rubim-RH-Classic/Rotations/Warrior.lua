@@ -265,7 +265,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 		return I.autoattack:ID()
 	end
 
-    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and RangeCount11() ==0 then
+    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and RangeCount11() ==0 and IsReady('Charge') then
         return S.BattleStance:Cast()
     end
 
