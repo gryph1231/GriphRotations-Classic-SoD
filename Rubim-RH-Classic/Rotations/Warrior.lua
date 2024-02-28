@@ -96,7 +96,8 @@ else
     arms = true
     dwfury = false
 end
-if (IsReady("Overpower") and CheckInteractDistance("target",3) or AuraUtil.FindAuraByName("Sweeping Strikes","player") or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and aoeTTD() and RubimRH.CDsON()) then
+
+if CheckInteractDistance("target",3) and (IsReady('Overpower') or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON() or not S.SweepingStrikes:IsAvailable() ) then
     battlestance = true
     berserkerstance = false
 else
@@ -107,10 +108,11 @@ end
 --  BattleStance -- GetShapeshiftFormID() == 1
 --  DefensiveStance -- GetShapeshiftFormID() == 2
 --  BerserkerStance -- GetShapeshiftFormID() == 3
+-- print(IsReady('Overpower'))
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  
+--   print(IsReady("Overpower"))
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true then
 	
         if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
@@ -195,15 +197,16 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if GetShapeshiftFormID() ~= 17  and IsReady("Battle Stance") and battlestance == true then
         return S.BattleStance:Cast()
     end
+
     if IsReady("Sweeping Strikes") and CheckInteractDistance("target",2) and RangeCount11()>1 and RubimRH.CDsON() then
         return S.SweepingStrikes:Cast()
-        end
+    end
 
-    if IsReady("Overpower") and CheckInteractDistance("target",2) then
+    if IsReady("Overpower") and CheckInteractDistance("target",3) then
         return S.Overpower:Cast()
-    end	
+    end
 
-    if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkstance == true then
+    if GetShapeshiftFormID() ~= 19 and not AuraUtil.FindAuraByName("Sweeping Strikes","player") and not IsReady('Overpower') and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true then
         return S.BerserkerStance:Cast()
     end
 
@@ -278,9 +281,9 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return S.BattleStance:Cast()
     end
 
-if GetShapeshiftFormID() == 17 and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and targetRange25 then
-    return S.Charge:Cast()
-end
+    if GetShapeshiftFormID() == 17 and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and Target:Exists() and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and targetRange25 then
+        return S.Charge:Cast()
+    end
 
 
 end

@@ -32,6 +32,7 @@ Rotations\Shaman.lua
 Rotations\Paladin.lua
 Rotations\Warrior.lua
 Rotations\Druid.lua
+Rotations\Priest.lua
 
 
 Modules\PVP.lua
