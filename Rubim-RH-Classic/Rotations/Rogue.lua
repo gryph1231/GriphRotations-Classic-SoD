@@ -47,7 +47,6 @@ RubimRH.Spell[4] = {
     KillingSpree = Spell(51690),
     FanofKnives = Spell(51723),
     ColdBlood = Spell(14177),
-    betweentheeyes = Spell(921), -- pick pocket
     HungerforBlood = Spell(51662),
     HungerforBloodBuff = Spell(63848),
     Mutilate = Spell(1329),
@@ -119,7 +118,7 @@ local function DungeonBoss()
 		end
 	end
 	
-	if (npcid == '24201' or npcid == '23954' or npcid == '23953' or npcid == '24200') then
+	if (npcid == '24201' or npcid == '23954' or npcid == '23953' or npcid == '24200') then --Mark - Look up boss ID and put here
 		DngBoss = true
 	else
 		DngBoss = false
