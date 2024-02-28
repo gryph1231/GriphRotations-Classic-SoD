@@ -939,3 +939,37 @@ function CanTargetBePurged()
 end
 
 
+
+-- Global variable for the last dodge timestamp
+lastDodgeTime = nil
+overpowerSpellID = 7384 -- Ensure this is the correct spell ID for Overpower
+
+-- Setup the event frame for listening to combat log events if not already defined
+if not dodgeTrackerFrame then
+    dodgeTrackerFrame = CreateFrame("Frame", "DodgeTrackerFrame")
+    dodgeTrackerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    dodgeTrackerFrame:SetScript("OnEvent", function(_, ...)
+        local timestamp, subEvent, _, sourceGUID, _, _, _, destGUID, _, _, _, _, _, missType = CombatLogGetCurrentEventInfo()
+        
+        -- If the player's melee attack was dodged by the target, update lastDodgeTime
+        if subEvent == "SWING_MISSED" and missType == "DODGE" and sourceGUID == UnitGUID("player") and destGUID == UnitGUID("target") then
+            lastDodgeTime = GetTime()
+        end
+    end)
+end
+
+-- Function to check if Overpower is ready based on a recent dodge
+function overpower()
+    local DODGE_WINDOW = 5 -- Time window in seconds to consider a dodge recent
+    
+    -- Check if a dodge occurred within the last 5 seconds
+    if lastDodgeTime and (GetTime() - lastDodgeTime <= DODGE_WINDOW) then
+        local isUsable, notEnoughRage = IsUsableSpell(overpowerSpellID)
+        -- Check if Overpower is usable (off cooldown and player has enough rage)
+        if isUsable and not notEnoughRage then
+            return true
+        end
+    end
+    
+    return false
+end

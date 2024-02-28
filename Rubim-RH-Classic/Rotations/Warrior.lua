@@ -62,10 +62,18 @@ local I = Item.Warrior.Arms;
 
 
 
-
 local function APL()
+-- print(overpower())
 
+local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
+    if unitTarget == 'target' and event1 == 'DODGE' then
+        overpower = true 
+    end
+end
 
+local f = CreateFrame("Frame")
+f:RegisterEvent("UNIT_COMBAT")
+f:SetScript("OnEvent", OnEvent)
 
     local inRange25 = 0
     for i = 1, 40 do
@@ -97,14 +105,15 @@ else
     dwfury = false
 end
 
-if CheckInteractDistance("target",3) and (IsReady('Overpower') or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON() or not S.SweepingStrikes:IsAvailable() ) then
+if CheckInteractDistance("target",3) and (overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON() or not S.SweepingStrikes:IsAvailable() ) then
     battlestance = true
     berserkerstance = false
 else
     battlestance = false
     berserkerstance = true
 end
--- print(S.MortalStrike:IsAvailable())
+
+
 --  BattleStance -- GetShapeshiftFormID() == 1
 --  DefensiveStance -- GetShapeshiftFormID() == 2
 --  BerserkerStance -- GetShapeshiftFormID() == 3
