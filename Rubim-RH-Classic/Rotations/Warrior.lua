@@ -66,8 +66,10 @@ local function APL()
 -- print(overpower())
 
 local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
-    if unitTarget == 'target' and event1 == 'DODGE' then
+    if unitTarget == 'target' and event1 == 'DODGE' and S.Overpower:TimeSinceLastCast()>2 then
         overpower = true 
+    else
+        overpower = false
     end
 end
 
