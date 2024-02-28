@@ -12,7 +12,7 @@ local Arena = Unit.Arena
 local Spell = HL.Spell;
 local Item = HL.Item;
 local Pet = Unit.Pet;
---test
+
 RubimRH.Spell[3] = {
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),

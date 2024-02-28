@@ -14,7 +14,6 @@ RubimRH.Spell[4] = {
     Evasion = Spell(5277),
     EnvenomBuff = Spell(399963),
     Envenom = Spell(399963),
-    envenom = Spell(20580), -- shadowmeld
     DeadlyPoisonDebuff = Spell(434312),
     SliceandDice = Spell(5171),
     Default = Spell(1),
@@ -45,7 +44,6 @@ RubimRH.Spell[4] = {
     WilloftheForsaken = Spell(7744),
     AdrenalineRush = Spell(13750),
     BladeFlurry = Spell(13877),
-    Beltrune = Spell(20554), -- berserking
     KillingSpree = Spell(51690),
     FanofKnives = Spell(51723),
     ColdBlood = Spell(14177),
@@ -54,8 +52,12 @@ RubimRH.Spell[4] = {
     HungerforBloodBuff = Spell(63848),
     Mutilate = Spell(1329),
     Shadowstrike = Spell(399985),
+
   
-    handrune = Spell(20594), --stone form - bind is for mutilate, shadowstrike, saber slash, etc.
+    chestrune = Spell(20580), --GGL bind shadowmeld -- BP macro quick draw
+    beltrune = Spell(20554), -- GGL bind berserking -- BP macro shadowstep, shuriken toss, 
+    legrune = Spell(921), -- GGL bind pick pocket -- BP macro between the eyes, blade dance, envenom
+    handrune = Spell(20594), --GGL bind stone form - BP macro mutilate, shadowstrike, saber slash, main gauche, shiv.
     
 };
 local S = RubimRH.Spell[4]
@@ -107,6 +109,25 @@ local I = Item.Rogue;
 
 
 
+local function DungeonBoss()
+	local guid = UnitGUID('target')
+	if guid then
+		local unit_type = strsplit("-", guid)
+		if not UnitIsPlayer('target') and Player:CanAttack(Target) then
+			local _, _, _, _, _, npc_id = strsplit("-", guid)
+			npcid = npc_id
+		end
+	end
+	
+	if (npcid == '24201' or npcid == '23954' or npcid == '23953' or npcid == '24200') then
+		DngBoss = true
+	else
+		DngBoss = false
+	end
+	
+	return DngBoss
+end
+
 
 
 
@@ -126,10 +147,16 @@ local function APL()
         end
     end
 
---    if Target:Exists() and Target:AffectingCombat() then
---     local ttd = UnitHealth('target')/getCurrentDPS()
---     else ttd = 0
---     end 
+if AuraUtil.FindAuraByName("Slice and Dice","player") then
+    SnDbuffremains = select(6,AuraUtil.FindAuraByName("Slice and Dice","player","PLAYER"))- GetTime()
+else
+    SnDbuffremains = 0
+end
+if AuraUtil.FindAuraByName("Blade Dance","player") then
+    BDbuffremains = select(6,AuraUtil.FindAuraByName("Blade Dance","player","PLAYER"))- GetTime()
+else
+    BDbuffremains = 0
+end
 
 
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
@@ -231,111 +258,106 @@ end
     end
 
 
-
-    --     -- Out of combat
-    if not Player:AffectingCombat() then
-        if not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
-           
-            if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
-              
-                -- if IsReady('Stealth') and CheckInteractDistance("target", 2)  and not AuraUtil.FindAuraByName("Stealth", "player") 
-                --     and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and S.Stealth:TimeSinceLastCast() > 0.5 
-                --     and Player:IsMoving() and not Player:Buff(S.Stealth) and Target:Exists() then
-                --     return S.Stealth:Cast()
-                -- end
-
-              
-                if IsReady('Ambush')
-                    and CheckInteractDistance("target", 3)  
-                then
-                    return S.Ambush:Cast()
-                end
-                if IsReady('Shadowstrike') and AuraUtil.FindAuraByName("Stealth", "player") 
-               
-                then
-                return S.handrune:Cast()
-                end
-
-               
-                if (IsReady('Sinister Strike') or IsReady('Saber Slash') or IsReady('Mutilate')) and not AuraUtil.FindAuraByName("Stealth", "player") 
-                    and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and IsCurrentSpell(6603)
-                then
-                    return S.SinisterStrike:Cast()
-                end
-
-                if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Stealth", "player")  then
-                    return I.autoattack:ID()
-                end
-
-            end
-            return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
-        end
-    end
-
-
-
-
-    if Player:AffectingCombat() and not Player:Buff(S.Stealth) and Target:Exists() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
+    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and AuraUtil.FindAuraByName("Stealth", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
         end
 
-        if IsReady('Adrenaline Rush') and
-        RubimRH.CDsON() and CheckInteractDistance("target", 3) and finish then
-        return S.AdrenalineRush:Cast()
-    end
+            if IsReady('Adrenaline Rush') and RubimRH.CDsON() and CheckInteractDistance("target", 3) and finish then
+            return S.AdrenalineRush:Cast()
+        end
 
-
-        -- if Player:ComboPoints()>Target:DebuffStack(S.DeadlyPoisonDebuff)
-
-        --Slice1
-        if IsReady('Slice and Dice') and aoeTTD()>4 and (not Player:Buff(S.SliceandDice) or Player:BuffRemains(S.SliceandDice)<4 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 or not Player:Buff(S.SliceandDice))) then
+        if IsReady('Slice and Dice') and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
             return S.SliceandDice:Cast()
         end
 
-        if IsReady('Envenom') and
-            not Player:Buff(S.EnvenomBuff) and CheckInteractDistance("target", 3) and finish then
-            return S.envenom:Cast()
+        if IsReady('Blade Dance') and not DungeonBoss() and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
+            return S.legrune:Cast()
+        end
+
+        if IsReady('Envenom') and not AuraUtil.FindAuraByName("Envenom", "player")  and CheckInteractDistance("target", 3) and finish then
+            return S.legrune:Cast()
+        end
+
+        if IsReady('Between the Eyes') and finish and (inRange25==1 or targetRange30) then
+            return S.legrune:Cast()
         end
 
         if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
             return S.Eviscerate:Cast()
         end
-        if IsReady('Between the Eyes') and finish then
-            return S.betweentheeyes:Cast()
+
+        if IsReady('Shuriken Toss') and inRange25>4 and CheckInteractDistance("target", 3) and not Player:Buff(S.BladeFlurry) and  Player:ComboPoints() < 5 then
+            return S.beltrune:Cast()
         end
 
-
-
-        -- if IsReady('Shuriken Toss') and inRange25>4 and CheckInteractDistance("target", 3) and not Player:Buff(S.BladeFlurry)
-        --     and  Player:ComboPoints() < 5
-
-        -- then
-        --     return S.Beltrune:Cast()
-        -- end
-
-        if
-            IsReady('Backstab') and not IsReady('Mutilate')
-
-            -- S.Backstab:CanCast()
-            and CheckInteractDistance("target", 3) and not Player:IsTanking(Target)
-        then
+        if IsReady('Backstab') and not IsReady('Mutilate') and CheckInteractDistance("target", 3) and not Player:IsTanking(Target) then
             return S.Backstab:Cast()
         end
 
-        if (IsReady('Mutilate'))
-            and CheckInteractDistance("target", 3) and Player:ComboPoints() <=4 
-        then
+        if  IsReady('Quick Draw') and (inRange25==1 or targetRange30) and Player:ComboPoints() < 5 then
+            return S.handrune:Cast()
+        end
+
+        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 then
+            return S.handrune:Cast()
+        end
+
+        if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+            return S.handrune:Cast()
+        end
+
+        if IsReady('Shiv') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 then
+            return S.handrune:Cast()
+        end
+
+        if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+            return S.handrune:Cast()
+        end
+
+        if IsReady('Sinister Strike') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
             return S.SinisterStrike:Cast()
         end
 
+    end
+  --     -- Out of combat
 
+    if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
+       
+        if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+          
 
-        if (IsReady('Sinister Strike') or IsReady('Saber Slash') )
-            and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5
-        then
-            return S.SinisterStrike:Cast()
+          
+            if IsReady('Ambush') and CheckInteractDistance("target", 3) then
+                return S.Ambush:Cast()
+            end
+
+            if IsReady('Shadowstrike') and AuraUtil.FindAuraByName("Stealth", "player") and (inRange25 >=1 or targetRange30) then
+                return S.handrune:Cast()
+            end
+
+            if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <=4 then
+                return S.handrune:Cast()
+            end
+
+            if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+                return S.handrune:Cast()
+            end
+
+            if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+                return S.handrune:Cast()
+            end
+    
+            if IsReady('Sinister Strike') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+                return S.SinisterStrike:Cast()
+            end
+
+            if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Stealth", "player")  then
+                return I.autoattack:ID()
+            end
+
         end
+        return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
     end
 
 
