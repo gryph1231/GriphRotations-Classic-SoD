@@ -107,7 +107,7 @@ else
     dwfury = false
 end
 
-if CheckInteractDistance("target",3) and (overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
+if CheckInteractDistance("target",3) and (not AuraUtil.FindAuraByName("Flagellation","player") or overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
     battlestance = true
     berserkerstance = false
 else
@@ -217,7 +217,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Overpower:Cast()
     end
 
-    if GetShapeshiftFormID() ~= 19 and not AuraUtil.FindAuraByName("Sweeping Strikes","player") and not IsReady('Overpower') and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true then
+    if GetShapeshiftFormID() ~= 19 and not IsReady('Overpower') and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true then
         return S.BerserkerStance:Cast()
     end
 

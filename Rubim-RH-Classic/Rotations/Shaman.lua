@@ -376,14 +376,14 @@ local function APL()
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
 
-        if RubimRH.QueuedSpell():ID() == S.SearingTotem:ID() and (not IsUsableSpell(S.SearingTotem) or S.SearingTotem:TimeSinceLastCast()<20) then
+        if RubimRH.QueuedSpell():ID() == S.SearingTotem:ID() and (not IsUsableSpell(S.SearingTotem) or S.SearingTotem:TimeSinceLastCast()<10) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
 
-        if RubimRH.QueuedSpell():ID() == S.MagmaTotem:ID() and (not IsUsableSpell(S.MagmaTotem) or S.MagmaTotem:TimeSinceLastCast()<20) then
+        if RubimRH.QueuedSpell():ID() == S.MagmaTotem:ID() and (not IsUsableSpell(S.MagmaTotem) or S.MagmaTotem:TimeSinceLastCast()<10) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
-        if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and (not IsUsableSpell(S.EarthbindTotem) or S.EarthbindTotem:TimeSinceLastCast()<20) then
+        if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and (not IsUsableSpell(S.EarthbindTotem) or S.EarthbindTotem:TimeSinceLastCast()<10) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
 
@@ -461,19 +461,19 @@ local function APL()
 -- WFweaponenchantIDs = {283, 284}
 -- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-    if rockbitermh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
+    if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
-    if flametonguemh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+    if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
         return S.FlametongueWeapon:Cast()
     end
-    if windfurymh == true and (hasMainHandEnchant==false  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+    if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
-    if rockbiteroh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+    if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
-    if flametongueoh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+    if flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
         return S.FlametongueWeapon:Cast()
     end
     end
@@ -559,7 +559,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.earthshock1:Cast()
         end
         
-        if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady(SpellRank('Windfury Totem')) and mhenchantseconds>30 and ohenchantseconds>30 and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
         
@@ -653,7 +653,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.DiseaseCleansingTotem:Cast()
             end
     
-            if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            if IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
                 return S.WindfuryTotem:Cast()
             end
             
@@ -742,7 +742,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.DiseaseCleansingTotem:Cast()
         end
 
-        if IsReady(SpellRank('Windfury Totem')) and haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
         
@@ -781,27 +781,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     end --end of in combat rotation
 
 
-
-    -- FTweaponenchantIDs = {5, 4, 3, 523}
--- WFweaponenchantIDs = {283, 284}
--- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
-if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-    if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
-        return S.RockbiterWeapon:Cast()
-    end
-    if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
-        return S.FlametongueWeapon:Cast()
-    end
-    if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
-        return S.WindfuryWeapon:Cast()
-    end
-    if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
-        return S.RockbiterWeapon:Cast()
-    end
-    if flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
-        return S.FlametongueWeapon:Cast()
-    end
-    end
     
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------OUT OF COMBAT ROTATION-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
