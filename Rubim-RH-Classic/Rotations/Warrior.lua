@@ -107,7 +107,7 @@ else
     dwfury = false
 end
 
-if CheckInteractDistance("target",3) and (overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON() or not S.SweepingStrikes:IsAvailable() ) then
+if CheckInteractDistance("target",3) and (overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
     battlestance = true
     berserkerstance = false
 else
