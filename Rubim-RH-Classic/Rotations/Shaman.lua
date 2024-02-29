@@ -543,7 +543,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.ChainLightning:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and (aoeTTD()>3 and Target:TimeToDie()>3) and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and (aoeTTD()>3 or Target:TimeToDie()>3 or HL.CombatTime()<3) and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
 
