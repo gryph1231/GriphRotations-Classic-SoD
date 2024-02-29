@@ -455,7 +455,7 @@ local function APL()
             return RubimRH.QueuedSpell():Cast()
         end
   
-
+        -- print( GetUnitSpeed("target") /7 *100)
 
     -- FTweaponenchantIDs = {5, 4, 3, 523}
 -- WFweaponenchantIDs = {283, 284}
@@ -485,7 +485,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
    and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Ghost Wolf", "player")
    and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) then 
-    -- print('true')
+  
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ENHDPS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

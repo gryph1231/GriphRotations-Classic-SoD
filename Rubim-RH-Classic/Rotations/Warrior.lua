@@ -28,7 +28,7 @@ RubimRH.Spell[1] = {
     BerserkerStance = Spell(2458),
     QuickStrike = Spell(429765),
     handrune = Spell(20580),--shadowmeld
-SweepingStrikes = Spell(12292),
+    SweepingStrikes = Spell(12292),
     Slam = Spell(1464),
     HeroicStrike = Spell(78),
     Cleave = Spell(845),
@@ -43,7 +43,7 @@ SweepingStrikes = Spell(12292),
     DeathWish = Spell(12328),
     BattleShout3 = Spell(6192),
     MortalStrike = Spell(12294),
-	
+	Hamstring = Spell(1715),
 	ThunderClap = Spell(11581),
 	
 };
@@ -63,26 +63,26 @@ local I = Item.Warrior.Arms;
 
 
 local function APL()
--- print(overpower())
 
-local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
-    if unitTarget == 'target' and event1 == 'DODGE' and S.Overpower:TimeSinceLastCast()>2 then
-        overpower = true 
-    else
-        overpower = false
-    end
-end
-
-local f = CreateFrame("Frame")
-f:RegisterEvent("UNIT_COMBAT")
-f:SetScript("OnEvent", OnEvent)
-
-    local inRange25 = 0
-    for i = 1, 40 do
-        if UnitExists('nameplate' .. i) then
-            inRange25 = inRange25 + 1
+    local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
+        if unitTarget == 'target' and event1 == 'DODGE' and S.Overpower:TimeSinceLastCast()>2 then
+            overpower = true 
+        else
+            overpower = false
         end
     end
+    
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("UNIT_COMBAT")
+    f:SetScript("OnEvent", OnEvent)
+    
+  
+        local inRange25 = 0
+        for i = 1, 40 do
+            if UnitExists('nameplate' .. i) then
+                inRange25 = inRange25 + 1
+            end
+        end
 
     inRange5 = RangeCount("Rend")
 
@@ -107,7 +107,7 @@ else
     dwfury = false
 end
 
-if CheckInteractDistance("target",3) and (not AuraUtil.FindAuraByName("Flagellation","player") or overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
+if CheckInteractDistance("target",3) and (IsReady("Overpower") or overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
     battlestance = true
     berserkerstance = false
 else
@@ -130,7 +130,11 @@ end
             return I.autoattack:ID()
         end
 
-        if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true then
+        if Target:IsAPlayer() and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+            return S.Hamstring:Cast()
+        end
+
+        if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true and Player:Rage()<50 then
             return S.BerserkerStance:Cast()
         end
 
@@ -138,11 +142,11 @@ end
             return S.DeathWish:Cast()
         end	
 
-        if IsReady("Bloodrage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") then
+        if IsReady("Bloodrage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
             return S.Bloodrage:Cast()
         end
 
-        if IsReady("Berserker Rage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") then
+        if IsReady("Berserker Rage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
             return S.BerserkerRage:Cast()
         end
 
@@ -205,6 +209,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return I.autoattack:ID()
     end
 
+    if Target:IsAPlayer() and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+        return S.Hamstring:Cast()
+    end
+
     if GetShapeshiftFormID() ~= 17  and IsReady("Battle Stance") and battlestance == true then
         return S.BattleStance:Cast()
     end
@@ -217,16 +225,16 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Overpower:Cast()
     end
 
-    if GetShapeshiftFormID() ~= 19 and not IsReady('Overpower') and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true then
+    if GetShapeshiftFormID() ~= 19 and not IsReady('Overpower') and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true and Player:Rage()<50 then
         return S.BerserkerStance:Cast()
     end
 
-    if IsReady("Bloodrage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") then
-    return S.Bloodrage:Cast()
+    if IsReady("Bloodrage") and CheckInteractDistance("target",3) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+        return S.Bloodrage:Cast()
     end
 
-    if IsReady("Berserker Rage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") then
-    return S.BerserkerRage:Cast()
+    if IsReady("Berserker Rage") and CheckInteractDistance("target",3) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        return S.BerserkerRage:Cast()
     end
 
       
