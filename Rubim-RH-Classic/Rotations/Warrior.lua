@@ -18,7 +18,7 @@ RubimRH.Spell[1] = {
     RagingBlow = Spell(402911),
     chestrune = Spell(20589),--escape artist
     Charge = Spell(100),
-    Overpower = Spell(7384),
+    Overpower = Spell(7887),
     SunderArmor = Spell(7405),
     Execute = Spell(5308),
     Rend1 = Spell(772),
@@ -35,7 +35,7 @@ RubimRH.Spell[1] = {
     BerserkerRage = Spell(18499),
 	-- Warstomp = Spell(20549),
 	Whirlwind = Spell(1680),
-    BattleStance = Spell(7165),
+    BattleStance = Spell(2457),
 	Bloodrage = Spell(2687),
 	-- Execute = Spell(20662),
 	BattleShout1 = Spell(6673),
@@ -67,7 +67,7 @@ local I = Item.Warrior.Arms;
 local function APL()
 
     local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
-        if unitTarget == 'target' and event1 == 'DODGE' and S.Overpower:TimeSinceLastCast()>2 and S.Overpower:CooldownRemains()<2 then
+        if unitTarget == 'target' and event1 == 'DODGE' and S.Overpower:CooldownRemains()<2 then
             overpower = true 
         else
             overpower = false
@@ -109,7 +109,7 @@ else
     dwfury = false
 end
 
-if CheckInteractDistance("target",3) and (IsReady("Overpower") or overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
+if CheckInteractDistance("target",3) and (overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
     battlestance = true
     berserkerstance = false
 else
@@ -121,7 +121,7 @@ end
 --  BattleStance -- GetShapeshiftFormID() == 1
 --  DefensiveStance -- GetShapeshiftFormID() == 2
 --  BerserkerStance -- GetShapeshiftFormID() == 3
--- print(IsReady('Overpower'))
+-- print(S.BattleStance:TimeSinceLastCast())
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ end
         if IsReady("Death Wish") and CheckInteractDistance("target",3) then
             return S.DeathWish:Cast()
         end	
-
+        
 
         
         if IsReady("Bloodrage") and CheckInteractDistance("target",2) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
@@ -159,9 +159,11 @@ end
         end	
 
        
-        if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and CheckInteractDistance("target",3) and battlestance == true then
-            return S.BattleStance:Cast()
+
+        if GetShapeshiftFormID() ~= 19 and S.BattleStance:TimeSinceLastCast()>1.5 and (S.Overpower:TimeSinceLastCast()>2 or berserkerstance == true) and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
+            return S.BerserkerStance:Cast()
         end
+    
 
         if IsReady("Overpower") and CheckInteractDistance("target",2) then
             return S.Overpower:Cast()
@@ -199,9 +201,11 @@ end
         if  IsReady("Battle Shout") and not AuraUtil.FindAuraByName("Battle Shout","player") then
             return S.BattleShout1:Cast()
             end	
+
             if  IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") then
                 return S.commandingshout:Cast()
                 end	
+
         if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
             return S.handrune:Cast()
         end
@@ -241,7 +245,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
                 end	
 
 
-    if GetShapeshiftFormID() ~= 17  and IsReady("Battle Stance") and battlestance == true then
+    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and battlestance == true then
         return S.BattleStance:Cast()
     end
 
@@ -253,7 +257,8 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Overpower:Cast()
     end
 
-    if GetShapeshiftFormID() ~= 19 and not IsReady('Overpower') and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and berserkerstance == true and Player:Rage()<50 then
+
+    if GetShapeshiftFormID() ~= 19 and S.BattleStance:TimeSinceLastCast()>1.5 and (S.Overpower:TimeSinceLastCast()>2 or berserkerstance == true) and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
         return S.BerserkerStance:Cast()
     end
 
@@ -331,7 +336,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 		return I.autoattack:ID()
 	end
 
-    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and RangeCount11() ==0 then
+    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and inRange25() ==0 and IsReady('Charge') and Player:Rage()>50 then
         return S.BattleStance:Cast()
     end
 
