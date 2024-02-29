@@ -109,6 +109,7 @@ else
     dwfury = false
 end
 
+
 if CheckInteractDistance("target",3) and (overpower == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON()) then
     battlestance = true
     berserkerstance = false
@@ -116,6 +117,7 @@ else
     battlestance = false
     berserkerstance = true
 end
+
 
 
 --  BattleStance -- GetShapeshiftFormID() == 1
@@ -253,22 +255,24 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.SweepingStrikes:Cast()
     end
 
-    if IsReady("Overpower") and CheckInteractDistance("target",3) then
+    if IsReady("Overpower") and CheckInteractDistance("target",3) and (RangeCount11()==1 or RangeCount11()>1 and AuraUtil.FindAuraByName("Sweeping Strikes","player") or S.SweepingStrikes:CooldownRemains()>2 or not S.SweepingStrikes:IsAvailable() or not RubimRH.CDsON()) then
         return S.Overpower:Cast()
     end
 
 
-    if GetShapeshiftFormID() ~= 19 and S.BattleStance:TimeSinceLastCast()>1.5 and (S.Overpower:TimeSinceLastCast()>2 or berserkerstance == true) and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
+    if GetShapeshiftFormID() ~= 19 and CheckInteractDistance("target",3) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and (RangeCount11()==1 or RangeCount11()>1 and S.SweepingStrikes:CooldownRemains()>2 ) and IsReady("Berserker Stance") and Player:Rage()<50 then
         return S.BerserkerStance:Cast()
+    end
+
+    
+    if IsReady("Berserker Rage") and CheckInteractDistance("target",3) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        return S.BerserkerRage:Cast()
     end
 
     if IsReady("Bloodrage") and CheckInteractDistance("target",3) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
 
-    if IsReady("Berserker Rage") and CheckInteractDistance("target",3) and nameflagellation == 'Flagellation' and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
-        return S.BerserkerRage:Cast()
-    end
 
       
 
@@ -276,13 +280,16 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         if IsReady('Whirlwind') and RangeCount10() > 1 and CheckInteractDistance("target",2) then
             return S.Whirlwind:Cast()
         end
-        
+
+        if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) and Player:Rage()>=30 then
+        return S.Execute:Cast()
+        end	
 
     if IsReady("Mortal Strike") and CheckInteractDistance("target",2) then
     return S.MortalStrike:Cast()
     end	
 
-    if IsReady('Slam')  and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
+    if IsReady('Slam') and (RangeCount11()==1 or RangeCount11()>1 and AuraUtil.FindAuraByName("Sweeping Strikes","player") or S.SweepingStrikes:CooldownRemains()>2 or not S.SweepingStrikes:IsAvailable() or not RubimRH.CDsON()) and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
         return S.Slam:Cast()
     end
     if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
@@ -336,7 +343,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 		return I.autoattack:ID()
 	end
 
-    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and inRange25() ==0 and IsReady('Charge') and Player:Rage()>50 then
+    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and inRange25==0 and IsReady('Charge') and Player:Rage()>50 then
         return S.BattleStance:Cast()
     end
 
