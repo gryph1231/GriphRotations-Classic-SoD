@@ -51,8 +51,10 @@ RubimRH.Spell[4] = {
     HungerforBloodBuff = Spell(63848),
     Mutilate = Spell(1329),
     Shadowstrike = Spell(399985),
+    Riposte = Spell(14251),
+    BladeDance = Spell(400012),
+    WidgetVolley = Spell(436833), --gnomer kick tracking widget volley spell
 
-  
     chestrune = Spell(20580), --GGL bind shadowmeld -- BP macro quick draw
     beltrune = Spell(20554), -- GGL bind berserking -- BP macro shadowstep, shuriken toss, 
     legrune = Spell(921), -- GGL bind pick pocket -- BP macro between the eyes, blade dance, envenom
@@ -118,7 +120,7 @@ local function DungeonBoss()
 		end
 	end
 	
-	if (npcid == '24201' or npcid == '23954' or npcid == '23953' or npcid == '24200') then --Mark - Look up boss ID and put here
+	if (npcid == '24201' or npcid == '23954' or npcid == '23953' or npcid == '24200') then
 		DngBoss = true
 	else
 		DngBoss = false
@@ -175,7 +177,7 @@ end
 
 
 -- print(targetTTD)
-  
+    local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
     local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
@@ -257,13 +259,18 @@ end
     end
 
 
-    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and AuraUtil.FindAuraByName("Stealth", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
+    if Player:AffectingCombat() and AuraUtil.FindAuraByName("Stealth", "player") 
+    and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
         end
 
-            if IsReady('Adrenaline Rush') and RubimRH.CDsON() and CheckInteractDistance("target", 3) and finish then
+        if IsReady('Adrenaline Rush') and RubimRH.CDsON() and CheckInteractDistance("target", 3) and finish then
             return S.AdrenalineRush:Cast()
+        end
+
+        if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
+            return S.legrune:Cast()
         end
 
         if IsReady('Slice and Dice') and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
@@ -274,12 +281,20 @@ end
             return S.legrune:Cast()
         end
 
+        if IsReady('Kick') and Target:IsCasting(S.WidgetVolley) and CheckInteractDistance("target", 3) then
+            return S.Kick:Cast()
+        end
+
         if IsReady('Envenom') and not AuraUtil.FindAuraByName("Envenom", "player")  and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
         end
 
         if IsReady('Between the Eyes') and finish and (inRange25==1 or targetRange30) then
             return S.legrune:Cast()
+        end
+
+        if IsReady('Riposte') and AuraUtil.FindAuraByName("Blade Dance", "player") and CheckInteractDistance("target", 3) then
+            return S.Riposte:Cast()
         end
 
         if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
