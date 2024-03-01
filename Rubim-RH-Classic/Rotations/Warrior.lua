@@ -121,7 +121,7 @@ else
     stoprotation = false
 end
 
-
+-- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ end
             return S.Hamstring:Cast()
         end
 
-        if GetShapeshiftFormID() ~= 19 and S.BattleStance:TimeSinceLastCast()>1.5 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
+        if GetShapeshiftFormID() ~= 19 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
             return S.BerserkerStance:Cast()
         end
 
@@ -232,8 +232,8 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if Target:IsAPlayer() and IsReady("Rallying Cry") and inRange25>=1 and Player:HealthPercentage()<=15 then
         return S.feetrune:Cast()
     end	
-    if stoprotation == false then 
 
+    if stoprotation == false then 
     if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
         return S.Hamstring:Cast()
     end
@@ -263,7 +263,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end
 
 
-    if GetShapeshiftFormID() ~= 19 and CheckInteractDistance("target",3) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and Player:Rage()<50 then
+    if GetShapeshiftFormID() ~= 19 and CheckInteractDistance("target",3) and berserkerstance == true and IsReady("Berserker Stance") and Player:Rage()<50 then
         return S.BerserkerStance:Cast()
     end
 
