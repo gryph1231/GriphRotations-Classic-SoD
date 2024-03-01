@@ -290,6 +290,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.SliceandDice:Cast()
         end
 
+        if IsReady('Cold Blood') and RubimRH.CDsON() and finish and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Slice and Dice", "player") then
+            return S.ColdBlood:Cast()
+        end
       
         if IsReady('Envenom') and not AuraUtil.FindAuraByName("Envenom", "player") and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
