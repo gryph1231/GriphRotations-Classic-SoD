@@ -939,104 +939,31 @@ function CanTargetBePurged()
 end
 
 
+-- This flag tracks the success or dodge state of Overpower
+local canoverpower = false
 
--- function overpower()
--- local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
---     if unitTarget == 'target' and event1 == 'DODGE' and S.Overpower:TimeSinceLastCast()>2 then
---         overpower = true 
---     else
---         overpower = false
---     end
--- end
+local function OnEvent(self, event, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
 
--- local f = CreateFrame("Frame")
--- f:RegisterEvent("UNIT_COMBAT")
--- f:SetScript("OnEvent", OnEvent)
--- end
-
-
--- -- Global variable for the last dodge timestamp
--- lastDodgeTime = nil
--- overpowerSpellID = 7384 -- Ensure this is the correct spell ID for Overpower
-
--- -- Setup the event frame for listening to combat log events if not already defined
--- if not dodgeTrackerFrame then
---     dodgeTrackerFrame = CreateFrame("Frame", "DodgeTrackerFrame")
---     dodgeTrackerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
---     dodgeTrackerFrame:SetScript("OnEvent", function(_, ...)
---         local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
-        
---         -- If the player's melee attack was dodged by the target, update lastDodgeTime
---         if unitTarget == 'target' and event1 == 'DODGE' then
---             lastDodgeTime = GetTime()
---         end
---     end)
--- end
-
--- -- Function to check if Overpower is ready based on a recent dodge
--- function overpower()
---     local DODGE_WINDOW = 5 -- Time window in seconds to consider a dodge recent
-    
---     -- Check if a dodge occurred within the last 5 seconds
---     if lastDodgeTime and (GetTime() - lastDodgeTime <= DODGE_WINDOW) then
---         local isUsable, notEnoughRage = IsUsableSpell(overpowerSpellID)
---         -- Check if Overpower is usable (off cooldown and player has enough rage)
---         if isUsable and not notEnoughRage then
---             return true
---         end
---     end
-    
---     return false
--- end
-
-
-
-function overpower()
--- combat log function
-    local eventSearchingFor = "DODGE" -- name of event to be searched for
-    local arr = {}
-    local function OnEvent(self, event)
-        if(GetSpellInfo(NAME_OVERPOWER)) then -- only load if player knows the spell
-            arr[1], arr[2], arr[3], arr[4],arr[5],arr[6],arr[7],arr[8],arr[9],arr[10],arr[11],arr[12],arr[13],arr[14],arr[15],arr[16],arr[17],arr[18],arr[19],arr[20] = CombatLogGetCurrentEventInfo() 
-            
-            -- read thru players combat log
-            if arr[5] == UnitName("player") then
-                
-                
-                
-    
-                --this will hide alert after player overpowers successfully
-                if(arr[2]=="SPELL_CAST_SUCCESS" and arr[13]==NAME_OVERPOWER) then 
-                    print('overpower false')
-                    
-                end
-    
-    
-    
-                -- below works (on swings and spell)
-                if arr[12]==eventSearchingFor or arr[15] == eventSearchingFor then
-                    print('use overpower')
-                    
-                end
-            end
-            
-            -- this code fades out overpower alert when overpower is still on cd
-            local start, duration, enabled, _ = GetSpellCooldown(NAME_OVERPOWER)
-            local opCD = start + duration - GetTime()
-                if(opCD > 1.5) then
-                print('overpower true')
-            else
-                print('overpower false')
-            end
+        -- Check if Overpower was successfully cast
+        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player") then
+            canoverpower = false
         end
-    
-    
+
+        -- Check if the target dodged an attack
+        if eventType == "SPELL_MISSED" and missType == "DODGE" and sourceName == UnitName("player") then
+            canoverpower = true
+        end
     end
-
-
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "player")
-    f:SetScript("OnEvent", OnEvent)
-    
-    NAME_OVERPOWER = GetSpellInfo(11585)
 end
+
+-- Function to call to check the status of Overpower
+function checkOverpower()
+    return canoverpower
+end
+
+-- Setup the event frame and register for combat log events
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+eventFrame:SetScript("OnEvent", OnEvent)
