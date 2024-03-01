@@ -988,3 +988,55 @@ end
     
 --     return false
 -- end
+
+
+
+function overpower()
+-- combat log function
+    local eventSearchingFor = "DODGE" -- name of event to be searched for
+    local arr = {}
+    local function OnEvent(self, event)
+        if(GetSpellInfo(NAME_OVERPOWER)) then -- only load if player knows the spell
+            arr[1], arr[2], arr[3], arr[4],arr[5],arr[6],arr[7],arr[8],arr[9],arr[10],arr[11],arr[12],arr[13],arr[14],arr[15],arr[16],arr[17],arr[18],arr[19],arr[20] = CombatLogGetCurrentEventInfo() 
+            
+            -- read thru players combat log
+            if arr[5] == UnitName("player") then
+                
+                
+                
+    
+                --this will hide alert after player overpowers successfully
+                if(arr[2]=="SPELL_CAST_SUCCESS" and arr[13]==NAME_OVERPOWER) then 
+                    print('overpower false')
+                    
+                end
+    
+    
+    
+                -- below works (on swings and spell)
+                if arr[12]==eventSearchingFor or arr[15] == eventSearchingFor then
+                    print('use overpower')
+                    
+                end
+            end
+            
+            -- this code fades out overpower alert when overpower is still on cd
+            local start, duration, enabled, _ = GetSpellCooldown(NAME_OVERPOWER)
+            local opCD = start + duration - GetTime()
+                if(opCD > 1.5) then
+                print('overpower true')
+            else
+                print('overpower false')
+            end
+        end
+    
+    
+    end
+
+
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "player")
+    f:SetScript("OnEvent", OnEvent)
+    
+    NAME_OVERPOWER = GetSpellInfo(11585)
+end

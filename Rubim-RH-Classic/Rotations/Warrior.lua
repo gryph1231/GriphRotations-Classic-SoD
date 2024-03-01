@@ -238,9 +238,6 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.MortalStrike:Cast()
         end	
                 
-        if Target:IsAPlayer() and IsReady("Rallying Cry") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
-            return S.bootrune:Cast()
-        end
 
         if Target:IsAPlayer() and IsReady("Battle Shout") and not AuraUtil.FindAuraByName("Battle Shout","player") then
             return S.BattleShout1:Cast()
