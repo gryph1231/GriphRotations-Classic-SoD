@@ -41,7 +41,7 @@ RubimRH.Spell[1] = {
 	Hamstring = Spell(1715),
 	ThunderClap = Spell(11581),
 
-    commandingshout = Spell(10595), --GGL war stomp - BP keybind is /cast commanding shout
+    commandingshout = Spell(20549), --GGL war stomp - BP keybind is /cast commanding shout
     chestrune = Spell(20589),--GGL escape artist - BP macro /cast chest rune ability -- used for raging blow
     handrune = Spell(20580),--GGL shadowmeld - BP keybind /cast hands rune ability -- used for quick strike, victory rush (not in profile yet)
     feetrune = Spell(7744), --GGL will of the forsaken - BP keybind /cast feet rune ability -- used for intervene (not in profile yet)/rallying cry/engraged regeneration (not in profile yet)
