@@ -313,7 +313,8 @@ local function APL()
         end
 
 
-
+        local spell = UnitCastingInfo("target")
+        print(spell)
         -- print('flametongueMH:', flametonguemh)
         -- print('flametongueOH:', flametongueoh)
         -- print('rockbiterMH:', rockbitermh)

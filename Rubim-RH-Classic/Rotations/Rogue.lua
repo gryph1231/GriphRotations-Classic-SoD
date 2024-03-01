@@ -49,7 +49,7 @@ RubimRH.Spell[4] = {
     ColdBlood = Spell(14177),
     HungerforBlood = Spell(51662),
     HungerforBloodBuff = Spell(63848),
-    Mutilate = Spell(1329),
+    Mutilate = Spell(399956),
     Shadowstrike = Spell(399985),
     Riposte = Spell(14251),
     BladeDance = Spell(400012),
@@ -147,6 +147,9 @@ local function APL()
             inRange25 = inRange25 + 1
         end
     end
+    -- if Target:Exists() then
+    --     return S.beltrune:Cast()
+    -- end
 
 if AuraUtil.FindAuraByName("Slice and Dice","player") then
     SnDbuffremains = select(6,AuraUtil.FindAuraByName("Slice and Dice","player","PLAYER"))- GetTime()
@@ -173,10 +176,14 @@ else finish = false
 end
    
 
-
-
-
--- print(targetTTD)
+local spellwidgetvolley = UnitCastingInfo("target")
+local namequickdraw = GetSpellInfo('Quick Draw')
+local nameshiv = GetSpellInfo('Shiv')
+local namemainguache = GetSpellInfo('Main Guache')
+local namemutilate = GetSpellInfo(399956)
+local namesaberslash = GetSpellInfo('Saber Slash')
+local nameshadowstrike = GetSpellInfo('Shadowstrike')
+-- print(namemutilate)
     local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
@@ -259,33 +266,32 @@ end
     end
 
 
-    if Player:AffectingCombat() and AuraUtil.FindAuraByName("Stealth", "player") 
+    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
+    and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Food & Drink", "player")
     and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
         end
 
-        if IsReady('Adrenaline Rush') and RubimRH.CDsON() and CheckInteractDistance("target", 3) and finish then
-            return S.AdrenalineRush:Cast()
-        end
-
-        if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
-            return S.legrune:Cast()
-        end
-
-        if IsReady('Slice and Dice') and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
-            return S.SliceandDice:Cast()
-        end
-
-        if IsReady('Blade Dance') and not DungeonBoss() and aoeTTD()>1 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=1 and (HL.CombatTime()<5 or not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
-            return S.legrune:Cast()
-        end
-
-        if IsReady('Kick') and Target:IsCasting(S.WidgetVolley) and CheckInteractDistance("target", 3) then
+        if S.Kick:CooldownRemains()<2 and spellwidgetvolley == 'Widget Volley' and CheckInteractDistance("target", 3) then
             return S.Kick:Cast()
         end
 
-        if IsReady('Envenom') and not AuraUtil.FindAuraByName("Envenom", "player")  and CheckInteractDistance("target", 3) and finish then
+
+        if IsReady('Adrenaline Rush') and RubimRH.CDsON() and CheckInteractDistance("target", 3) then
+            return S.AdrenalineRush:Cast()
+        end
+
+        if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
+            return S.legrune:Cast()
+        end
+
+        if IsReady('Slice and Dice') and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
+            return S.SliceandDice:Cast()
+        end
+
+      
+        if IsReady('Envenom') and not AuraUtil.FindAuraByName("Envenom", "player") and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
         end
 
@@ -304,34 +310,36 @@ end
         if IsReady('Shuriken Toss') and inRange25>4 and CheckInteractDistance("target", 3) and not Player:Buff(S.BladeFlurry) and  Player:ComboPoints() < 5 then
             return S.beltrune:Cast()
         end
+ 
 
-        if IsReady('Backstab') and not IsReady('Mutilate') and CheckInteractDistance("target", 3) and not Player:IsTanking(Target) then
+        if  IsReady('Quick Draw') and (inRange25==1 or targetRange30) and Player:ComboPoints() < 5 and namequickdraw == 'Quick Draw'  then
+            return S.handrune:Cast()
+        end
+
+        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5  then
+            return S.handrune:Cast()
+        end
+
+        if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namemainguache == 'Main Guache' then
+            return S.handrune:Cast()
+        end
+
+        if IsReady('Shiv') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 and nameshiv == 'Shiv' then
+            return S.handrune:Cast()
+        end
+
+        if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' then
+            return S.handrune:Cast()
+        end
+
+        if IsReady('Backstab') and namemutilate ~= 'Mutilate' and CheckInteractDistance("target", 3) and not Player:IsTanking(Target) then
             return S.Backstab:Cast()
         end
 
-        if  IsReady('Quick Draw') and (inRange25==1 or targetRange30) and Player:ComboPoints() < 5 then
-            return S.handrune:Cast()
-        end
-
-        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 then
-            return S.handrune:Cast()
-        end
-
-        if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
-            return S.handrune:Cast()
-        end
-
-        if IsReady('Shiv') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 then
-            return S.handrune:Cast()
-        end
-
-        if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
-            return S.handrune:Cast()
-        end
-
-        if IsReady('Sinister Strike') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+        if IsReady('Sinister Strike') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and (namesaberslash ~= 'Saber Slash' and namemutilate ~= 'Mutilate') then
             return S.SinisterStrike:Cast()
         end
+   
 
     end
   --     -- Out of combat
@@ -350,19 +358,29 @@ end
                 return S.handrune:Cast()
             end
 
-            if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <=4 then
+
+            if  IsReady('Quick Draw') and (inRange25==1 or targetRange30) and Player:ComboPoints() < 5 and namequickdraw == 'Quick Draw'  then
                 return S.handrune:Cast()
             end
 
-            if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
-                return S.handrune:Cast()
-            end
-
-            if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+            if S.Mutilate:CanCast() and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 and namemutilate == 'Mutilate' then
                 return S.handrune:Cast()
             end
     
-            if IsReady('Sinister Strike') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 then
+    
+            if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namemainguache == 'Main Guache' then
+                return S.handrune:Cast()
+            end
+    
+            if IsReady('Shiv') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 and nameshiv == 'Shiv' then
+                return S.handrune:Cast()
+            end
+    
+            if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' then
+                return S.handrune:Cast()
+            end
+    
+            if IsReady('Sinister Strike') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and (namesaberslash ~= 'Saber Slash' and namemutilate ~= 'Mutilate') then
                 return S.SinisterStrike:Cast()
             end
 
@@ -371,6 +389,7 @@ end
             end
 
         end
+
         return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
     end
 
