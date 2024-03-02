@@ -275,9 +275,14 @@ local function APL()
         rockbitermh = true
         rockbiteroh = true
      end
-     if dualWielding and S.FlametongueWeaponR1:IsAvailable()  then
-        flametongueoh = true
-        rockbiteroh = false
+         if dualWielding and S.FlametongueWeaponR1:IsAvailable() and not S.WindfuryWeaponR1:IsAvailable() then
+        flametongueoh = false
+        rockbiteroh = true
+        windfuryoh = false
+     end
+     if dualWielding and S.WindfuryWeaponR1:IsAvailable()  then
+        flametongueoh = false
+        rockbiteroh = true
         windfuryoh = false
      end
         if not HasMainhandWeapon() then
@@ -293,6 +298,7 @@ local function APL()
                 else
                     rockbitermh = true
                 end
+        
             end
                     
             if elemental == true then
@@ -469,6 +475,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         return S.FlametongueWeapon:Cast()
     end
     if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+        return S.WindfuryWeapon:Cast()
+    end
+    if windfuryoh == true and (ohenchantseconds<30  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
     if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then

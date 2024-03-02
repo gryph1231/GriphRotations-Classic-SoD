@@ -214,7 +214,7 @@ end
             return S.Cleave:Cast()
         end
         
-        if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() == 1 then
+        if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not RubimRH.AoEON()) then
             return S.HeroicStrike:Cast()
         end
     end
@@ -326,7 +326,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Cleave:Cast()
     end
 
-    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() == 1 then
+    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not RubimRH.AoEON()) then
         return S.HeroicStrike:Cast()
     end
 end
