@@ -967,3 +967,9 @@ end
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 eventFrame:SetScript("OnEvent", OnEvent)
+
+
+
+
+
+

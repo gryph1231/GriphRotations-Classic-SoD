@@ -71,7 +71,7 @@ if not Item.Rogue then
 end
 
 Item.Rogue = {
-
+thistletea = Item(7676),
     trinket = Item(28288, { 13, 14 }),
     trinket2 = Item(25628, { 13, 14 }),
     autoattack = Item(135274, { 13, 14 }),
@@ -79,37 +79,6 @@ Item.Rogue = {
 
 local I = Item.Rogue;
 
-
--- S.BladeFlurry.TextureSpellID =  {58749} --nature resist totem
--- S.AdrenalineRush.TextureSpellID  = {16166} --elemental mastery
--- S.HungerforBlood.TextureSpellID = {25464} --frost shock
--- S.SinisterStrike.TextureSpellID = {30706} --totem of wrath
--- S.KillingSpree.TextureSpellID = {33697} -- Blood Fury
--- -- I.trinket.TextureSpellID = {26296} -- berserking
--- S.Evasion.TextureSpellID = {8143} --tremor totem
--- S.tott.TextureSpellID = {131} -- water walking
--- S.Blind.TextureSpellID = {16342} --flametongue weapon
--- S.CloakofShadows.TextureSpellID = {2062} --earth elemental totem
--- S.Distract.TextureSpellID = {2894} --fire elemental totem
--- S.Mutilate.TextureSpellID = {25420} --lesser healing wave
--- S.Stealth.TextureSpellID = {25547} --fire nova totem
--- S.ColdBlood.TextureSpellID = {8177} --grounding totem
--- S.CheapShot.TextureSpellID = {25560} --Frost resist totem
--- S.DeadlyThrow.TextureSpellID = {25557} --flametongue totem
--- S.Envenom.TextureSpellID = {25457} --flame shock
--- S.Eviscerate.TextureSpellID = {25442} --chain lightning
--- S.ExposeArmor.TextureSpellID = {25563} --fire resist totem
--- S.Garrote.TextureSpellID = {25359} --grace of air totem
--- S.KidneyShot.TextureSpellID = {25567} --healing stream totem
--- S.Rupture.TextureSpellID = {25449} -- lightning bolt
--- S.SnD.TextureSpellID = {2825} -- bloodlust
--- S.Feint.TextureSpellID = {25525} --stoneclaw totem
--- S.Kick.TextureSpellID = {8044} --earthshock
--- S.Gouge.TextureSpellID = {25509} --stoneskin totem
--- S.WilloftheForsaken.TextureSpellID = {59547} --gift of naaru
--- S.Vanish.TextureSpellID = {45528} --ghost wolf
--- S.FanofKnives.TextureSpellID = {25423} --chain heal
--- --S.ColdBlood.TextureSpellID = {135863} --natures swiftness
 
 
 
@@ -201,9 +170,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     local castchannelTime = math.random(275, 500) / 1000
 
 
-    -- print(aoeTTD())
-
-
+    
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
     elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player")
@@ -211,19 +178,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         return "Interface\\Addons\\Rubim-RH-Classic\\Media\\griph.tga", false
     end
 
-    --    print(Player:BuffRemains(S.SliceandDice) < 3)
 
-    -- local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
-    -- if hasMainHandEnchant ~= true then
-    -- mhenchantremains = 0
-    -- elseif hasMainHandEnchant == true then
-    -- mhenchantremains = mainHandExpiration*0.001
-    -- end
-    -- if hasOffHandEnchant ~= true then
-    -- ohenchantremains = 0
-    -- elseif hasOffHandEnchant == true then
-    -- ohenchantremains = offHandExpiration*0.001
-    -- end
     if inRange25 == 0 then
         RubimRH.queuedSpell = { RubimRH.Spell[4].Default, 0 }
     end
@@ -268,6 +223,14 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         return RubimRH.QueuedSpell():Cast()
     end
 
+    local GetItemCooldown =  (C_Container and C_Container.GetItemCooldown(7676)) or nil
+
+    if 300-GetTime()+GetItemCooldown<=0 then
+        thistleteaoffcooldown = true
+    else
+        thistleteaoffcooldown=false
+    end
+
 
     if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
     and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Food & Drink", "player")
@@ -285,7 +248,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.AdrenalineRush:Cast()
         end
 
-        if Player:Energy()<20 and IsUsableItem(7676) and GetItemCooldown(7676) ==0 and GetItemCount(7676) >= 1 and RubimRH.CDsON() then
+        if Player:Energy()<20 and IsUsableItem(7676)==true and thistleteaoffcooldown==true and GetItemCount(7676) >= 1 and RubimRH.CDsON() then
         return  S.ThistleTea:Cast()
         end
 
