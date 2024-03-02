@@ -68,7 +68,7 @@ if not Item.Rogue then
 end
 
 Item.Rogue = {
-    ThistleTea = Item(7676),
+    ThistleTea = Item(7676, { 13, 14 }),
     trinket = Item(28288, { 13, 14 }),
     trinket2 = Item(25628, { 13, 14 }),
     autoattack = Item(135274, { 13, 14 }),
@@ -283,7 +283,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         end
 
         if Player:Energy()<20 and IsUsableItem(7676) and GetItemCooldown(7676) ==0 and GetItemCount(7676) >= 1 and RubimRH.CDsON() then
-        return I.ThisleTea:Cast()
+        return I.ThisleTea:ID()
         end
 
         if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
@@ -353,7 +353,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
        
-        if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+        if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and IsCurrentSpell(6603) then
           
 
           
