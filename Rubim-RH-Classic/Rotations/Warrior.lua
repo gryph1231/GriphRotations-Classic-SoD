@@ -141,7 +141,7 @@ end
             return S.Hamstring:Cast()
         end
 
-        if GetShapeshiftFormID() ~= 19 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
+        if GetShapeshiftFormID() ~= 19 and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
             return S.BerserkerStance:Cast()
         end
 
@@ -262,11 +262,9 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Overpower:Cast()
     end
 
-
-    if GetShapeshiftFormID() ~= 19 and CheckInteractDistance("target",3) and berserkerstance == true and IsReady("Berserker Stance") and Player:Rage()<50 then
+    if GetShapeshiftFormID() ~= 19 and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
         return S.BerserkerStance:Cast()
     end
-
     
     if IsReady("Berserker Rage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
