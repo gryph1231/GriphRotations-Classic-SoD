@@ -233,7 +233,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
 
     if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
-    and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Food & Drink", "player")
+    and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Vanish", "player") and not AuraUtil.FindAuraByName("Food & Drink", "player")
     and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
