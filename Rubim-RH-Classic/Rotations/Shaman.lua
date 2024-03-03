@@ -131,7 +131,7 @@ local function PartyInRange()
 
 local function APL()
 
- 
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -357,9 +357,6 @@ local function APL()
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
 
-        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and (inRange25 ==0 or not IsUsableSpell("Tremor Totem") or not Player:AffectingCombat() )  then
-            RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
-        end
         if RubimRH.QueuedSpell():ID() == S.FrostShock:ID() and (not targetRange25 or not Player:AffectingCombat() )  then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
@@ -420,7 +417,7 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.SearingTotem:ID() and IsUsableSpell("Searing Totem") then
             return RubimRH.QueuedSpell():Cast()
         end
-        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and IsUsableSpell("Tremor Totem") then
+        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and IsUsableSpell("Tremor Totem") and totemName2 ~= 'Tremor Totem' then
             return RubimRH.QueuedSpell():Cast()
         end
         if RubimRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and IsUsableSpell("Earthbind Totem") then
@@ -447,7 +444,7 @@ local function APL()
         if RubimRH.QueuedSpell():ID() == S.EarthShock:ID() and (S.EarthShock:CooldownRemains()>1.5 or not IsUsableSpell("Earth Shock")) then
               RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
         end
-        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and (S.TremorTotem:TimeSinceLastCast()<2 or not IsUsableSpell("Tremor Totem")) then
+        if RubimRH.QueuedSpell():ID() == S.TremorTotem:ID() and (S.TremorTotem:TimeSinceLastCast()>2 or not IsUsableSpell("Tremor Totem")) then
             RubimRH.queuedSpell = { RubimRH.Spell[7].Default, 0 }
       end
 

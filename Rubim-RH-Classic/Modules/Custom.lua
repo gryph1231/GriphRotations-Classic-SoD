@@ -947,7 +947,7 @@ local function OnEvent(self, event, ...)
         local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
 
         -- Check if Overpower was successfully cast
-        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player") then
+        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player") or GetShapeshiftFormID() == 17 and not IsReady('Overpower') then
             canoverpower = false
         end
 

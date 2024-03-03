@@ -248,7 +248,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.AdrenalineRush:Cast()
         end
 
-        if Player:Energy()<20 and IsUsableItem(7676)==true and thistleteaoffcooldown==true and GetItemCount(7676) >= 1 and RubimRH.CDsON() then
+        if Player:Energy()<20 and UnitHealthMax('target')>100000 and IsUsableItem(7676)==true and thistleteaoffcooldown==true and GetItemCount(7676) >= 1 and RubimRH.CDsON() then
         return  S.ThistleTea:Cast()
         end
 

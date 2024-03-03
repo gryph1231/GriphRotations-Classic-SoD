@@ -94,7 +94,7 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount11()>1 and RubimRH.CDsON() and RubimRH.AoEON()) then
+if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and RubimRH.CDsON() and RubimRH.AoEON()) then
     battlestance = true
     berserkerstance = false
 else
@@ -120,6 +120,8 @@ or AuraUtil.FindAuraByName("Dispersion","target") then
 else
     stoprotation = false
 end
+
+local _,instanceTypepvp = IsInInstance()
 
 -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -153,7 +155,7 @@ end
             return S.Bloodrage:Cast()
         end
 
-        if IsReady("Berserker Rage") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        if IsReady("Berserker Rage") and instanceTypepvp == false and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
             return S.BerserkerRage:Cast()
         end
 
@@ -170,7 +172,7 @@ end
             return S.BattleShout:Cast()
         end	
 
-        if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") then
+        if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
             return S.commandingshout:Cast()
         end	
 
@@ -202,7 +204,7 @@ end
             return S.BattleShout:Cast()
         end	
 
-        if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") then
+        if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
             return S.commandingshout:Cast()
         end	
 
@@ -246,7 +248,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleShout:Cast()
     end	
 
-    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") then
+    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
         return S.commandingshout:Cast()
     end	
 
@@ -254,7 +256,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleStance:Cast()
     end
 
-    if IsReady("Sweeping Strikes") and CheckInteractDistance("target",2) and RangeCount11()>1 and RubimRH.CDsON() and RubimRH.AoEON() then
+    if IsReady("Sweeping Strikes") and CheckInteractDistance("target",2) and RangeCount10()>1 and RubimRH.CDsON() and RubimRH.AoEON() then
         return S.SweepingStrikes:Cast()
     end
 
@@ -266,7 +268,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerStance:Cast()
     end
     
-    if IsReady("Berserker Rage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    if IsReady("Berserker Rage") and instanceTypepvp == false and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
     end
 
@@ -318,7 +320,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleShout:Cast()
     end	
 
-    if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") then
+    if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
     return S.commandingshout:Cast()
     end	
 
