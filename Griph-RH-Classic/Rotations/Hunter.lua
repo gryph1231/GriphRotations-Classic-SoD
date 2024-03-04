@@ -17,6 +17,7 @@ GriphRH.Spell[3] = {
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),
 	ChimeraShotz = Spell(14280), --viper sting
+	BestialWrath = Spell(19574),
 	RaptorStrike = Spell(14262),
 	AutoShot = Spell(75),
 	AimedShot = Spell(19434),
@@ -208,6 +209,7 @@ local function IsReady(spell,range_check,aoe_check)
 		return false
 	end
 end
+
 local function APL()
 CleaveCount()
 IsReady()
@@ -216,6 +218,28 @@ PetActive()
 PetHapiness()
 StingTime()
 --/dump GetMouseFocus().skillLineAbilityID
+
+-- local function OnEvent(self, event, errorType, message, x)
+	-- if self == 'player' and errorType == 'CRITICAL' then
+		-- print('asdfadsfadsf')
+	-- end
+-- end
+
+-- local f = CreateFrame("Frame")
+-- f:RegisterEvent("UNIT_COMBAT")
+-- f:SetScript("OnEvent", OnEvent)
+
+
+local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
+	if unitTarget == 'target' and event1 == 'DODGE' then
+		print('asdfdsaf')
+	end
+end
+
+local f = CreateFrame("Frame")
+f:RegisterEvent("UNIT_COMBAT")
+f:SetScript("OnEvent", OnEvent)
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -241,7 +265,9 @@ end
 if GriphRH.queuedSpell[1]:CooldownRemains() > 2 or not UnitAffectingCombat('player')
 	or (S.AspectoftheCheetah:ID() == GriphRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player"))
 	or (S.ConcussiveShot:ID() == GriphRH.queuedSpell[1]:ID() and IsSpellInRange('Auto Shot', 'target') == 0)
-	or (S.WingClip:ID() == GriphRH.queuedSpell[1]:ID() and not CheckInteractDistance("target",3)) 
+	or (S.WingClip:ID() == GriphRH.queuedSpell[1]:ID() and not CheckInteractDistance("target",3))
+	or (S.BestialWrath:ID() == GriphRH.queuedSpell[1]:ID() and not PetActive())
+	or (S.WingClip:ID() == GriphRH.queuedSpell[1]:ID() and not AuraUtil.FindAuraByName("Wing Clip", "target"))
 	or ((S.FrostTrap:ID() == GriphRH.queuedSpell[1]:ID() or S.ExplosiveTrap:ID() == GriphRH.queuedSpell[1]:ID()) and (AuraUtil.FindAuraByName("Silence","HARMFUL") or AuraUtil.FindAuraByName("Sonic Burst","HARMFUL"))) then
 	GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }
 end
@@ -262,6 +288,10 @@ end
 
 if S.AspectoftheCheetah:ID() == GriphRH.queuedSpell[1]:ID() and S.AspectoftheCheetah:CooldownRemains() < 2 then
 	return S.AspectoftheCheetah:Cast()
+end
+
+if S.BestialWrath:ID() == GriphRH.queuedSpell[1]:ID() and PetActive() and S.BestialWrath:CooldownRemains() < 2 then
+	return S.BestialWrath:Cast()
 end
 
 if S.BloodFury:ID() == GriphRH.queuedSpell[1]:ID() and S.BloodFury:CooldownRemains() < 2 then
