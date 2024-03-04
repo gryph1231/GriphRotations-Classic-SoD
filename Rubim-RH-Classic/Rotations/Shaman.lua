@@ -242,6 +242,80 @@ local function APL()
     
         local castchannelTime = math.random(275, 500) / 1000
 
+
+
+    --     inRangeParty1 = (CheckInteractDistance("party1", 4))
+    --     inRangeParty2 = (CheckInteractDistance("party2", 4));
+    --     inRangeParty3 = (CheckInteractDistance("party3", 4));
+    --     inRangeParty4 = (CheckInteractDistance("party4", 4));
+    --  if inRangeParty1 == true or inRangeParty2 == true or inRangeParty3 == true or inRangeParty4 == true then
+    --     partymemberinrange = true
+    --  else
+    --     partymemberinrange = false
+    --  end
+    --  if nameoverload == 'Overload' then
+    --     elemental = true
+    --     enhdps = false
+    --     enhtank = false
+    --  elseif IsEquippedItemType("Shield") then
+    --     elemental = false
+    --     enhdps = false
+    --     enhtank = true
+    --  else 
+    --     enhdps = true
+    --     enhtank = false
+    --     elemental = false
+    --  end
+    --  local rockbitermh, rockbiteroh, flametonguemh, flametongueoh, windfurymh, windfuryoh = false, false, false, false, false, false
+    --  local dualWielding = HasMainhandWeapon() and HasOffhandWeapon() 
+    --  if not dualWielding then
+    --     rockbiteroh = false
+    --     flametongueoh = false
+    --     windfuryoh = false
+    --  end
+    --  if dualWielding and not S.FlametongueWeaponR1:IsAvailable()  then
+    --     rockbitermh = true
+    --     rockbiteroh = true
+    --  end
+    --  if dualWielding and S.FlametongueWeaponR1:IsAvailable()  then
+    --     flametongueoh = true
+    --     rockbiteroh = false
+    --     windfuryoh = false
+    --  end
+    --     if not HasMainhandWeapon() then
+    --         rockbitermh = false
+    --         windfurymh = false
+    --         flametonguemh = false
+    --     else
+     
+    
+    --         if enhdps ==true then
+    --             if S.WindfuryWeaponR1:IsAvailable() then
+    --                 windfurymh = true
+    --             else
+    --                 rockbitermh = true
+    --             end
+    --         end
+                    
+    --         if elemental == true then
+    --             if S.FlametongueWeaponR1:IsAvailable()  then
+    --             flametonguemh = true
+    --             else
+    --                 rockbitermh = true
+    --             end
+    --         end
+            
+    --         if enhtank == true then
+    --             if  nameWayofEarth == 'Way of Earth' then
+    --                 rockbitermh = true
+    --                 elseif  S.WindfuryWeaponR1:IsAvailable()  and nameWayofEarth~= 'Way of Earth' then
+    --                     windfurymh = true
+    --                 end
+    --             end
+
+    --     end
+
+
         inRangeParty1 = (CheckInteractDistance("party1", 4))
         inRangeParty2 = (CheckInteractDistance("party2", 4));
         inRangeParty3 = (CheckInteractDistance("party3", 4));
@@ -485,6 +559,25 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     end
     end
 
+
+    if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+        if rockbitermh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
+            return S.RockbiterWeapon:Cast()
+        end
+        if flametonguemh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+            return S.FlametongueWeapon:Cast()
+        end
+        if windfurymh == true and (hasMainHandEnchant==false  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+            return S.WindfuryWeapon:Cast()
+        end
+        if rockbiteroh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+            return S.RockbiterWeapon:Cast()
+        end
+        if flametongueoh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+            return S.FlametongueWeapon:Cast()
+        end
+        end
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------IN COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -569,7 +662,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
+        if not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
         
@@ -634,7 +727,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             --     return S.EarthShock:Cast()
             -- end
 
-            if (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and CheckInteractDistance("target", 2) then
+            if S.earthshock1:CooldownRemains()<1.5 and (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and CheckInteractDistance("target", 2) then
                 return S.earthshock1:Cast()
             end
 

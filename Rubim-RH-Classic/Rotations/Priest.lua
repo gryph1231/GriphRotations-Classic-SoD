@@ -19,6 +19,9 @@ RubimRH.Spell[5] = {
 	PowerWordFortitude = Spell(1243),
 	shoot = Spell(7744),
 	Shoot = Spell(5019),
+	chestrune = Spell(20594),--stoneform
+	handrune = Spell(20554), --berserking
+	VoidPlague = Spell(425204),
 };
 
 local S = RubimRH.Spell[5]
@@ -59,11 +62,16 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
 		return Item(135274, { 13, 14 }):ID()
 	end
+	if IsReady('Void Plague') and targetRange30 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
+		return S.chestrune:Cast()
+	end
 
 	if IsReady('Shadow Word: Pain') and targetRange30 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
 	end
-
+	if IsReady('Penance') and not Player:IsMoving() and targetRange30 and (AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") or S.VoidPlague:CooldownRemains()>1.5 or  AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL")) then
+		return S.handrune:Cast()
+	end
 	if IsReady('Smite') and targetRange30 and not Player:IsMoving() then
 		return S.Smite:Cast() 
 	end

@@ -160,9 +160,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
     local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
-
+   
     local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
-
+    
     local channelTime = elapsedTimech / 1000
 
     local castTime = elapsedTimeca / 1000
@@ -239,7 +239,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return I.autoattack:ID()
         end
 
-        if S.Kick:CooldownRemains()<2 and spellwidgetvolley == 'Widget Volley' and CheckInteractDistance("target", 3) then
+        if S.Kick:CooldownRemains()<2 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and spellwidgetvolley == 'Widget Volley' and CheckInteractDistance("target", 3) then
             return S.Kick:Cast()
         end
 
