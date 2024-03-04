@@ -53,8 +53,7 @@ GriphRH.Spell[7] = {
     -- MoltenBlast = Spell(425339),
     legrune = Spell(20572),
 	ElementalMastery = Spell(16166),
-	-- LesserHealingWave = Spell(SpellRank('Lesser Healing Wave')),
-    -- ChainLightning = Spell(SpellRank('Chain Lightning')),
+
     DiseaseCleansingTotem = Spell(8170),
     -- WaterShield = Spell(33736),
     WindfuryWeaponR1 = Spell(8232),
