@@ -230,11 +230,11 @@ StingTime()
 -- f:SetScript("OnEvent", OnEvent)
 
 
-local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
-	if unitTarget == 'target' and event1 == 'DODGE' then
-		print('asdfdsaf')
-	end
-end
+-- local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
+-- 	if unitTarget == 'target' and event1 == 'DODGE' then
+-- 		print('asdfdsaf')
+-- 	end
+-- end
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("UNIT_COMBAT")
