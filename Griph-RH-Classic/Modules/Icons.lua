@@ -80,11 +80,10 @@ UIDropDownMenu_Initialize(dropDown, function(self, level, menuList)
         end
         UIDropDownMenu_AddButton(info)
         --
-        info.text, info.hasArrow, info.menuList = "Interrupts", nil
+        info.text, info.hasArrow = "Interrupts", nil
         info.checked = GriphRH.InterruptsON()
         info.func = function(self)
-            GriphRH.playSoundR(891);
-            GriphRH.InterruptsToggle()
+            GriphRH.InterruptToggle()
         end
         UIDropDownMenu_AddButton(info)
         --
@@ -204,18 +203,26 @@ local updateConfigFunc = function()
         local IconRotationCDText = IconRotation:CreateFontString("CDText", "OVERLAY")
         IconRotationCDText:SetFontObject(GameFontNormalSmall)
         IconRotationCDText:SetJustifyH("LEFT") --
-        IconRotationCDText:SetPoint("CENTER", IconRotation, "CENTER", -10, -15)
-        IconRotationCDText:SetFont("Fonts\\FRIZQT__.TTF", 8, "THICKOUTLINE")
+        IconRotationCDText:SetPoint("CENTER", IconRotation, "CENTER", -9, -11.5)
+        IconRotationCDText:SetFont("Fonts\\FRIZQT__.TTF", 9, "THICKOUTLINE")
         IconRotationCDText:SetShadowOffset(1, -1)
         IconRotationCDText:SetTextColor(1, 1, 1, 0.5)
 
         local IconRotationAoEText = IconRotation:CreateFontString("AoEText", "OVERLAY")
         IconRotationAoEText:SetFontObject(GameFontNormalSmall)
         IconRotationAoEText:SetJustifyH("RIGHT") --
-        IconRotationAoEText:SetPoint("CENTER", IconRotation, "CENTER", 10, -15)
-        IconRotationAoEText:SetFont("Fonts\\FRIZQT__.TTF", 8, "THICKOUTLINE")
+        IconRotationAoEText:SetPoint("CENTER", IconRotation, "CENTER", 11, -7)
+        IconRotationAoEText:SetFont("Fonts\\FRIZQT__.TTF", 6, "THICKOUTLINE")
         IconRotationAoEText:SetShadowOffset(1, -1)
         IconRotationAoEText:SetTextColor(1, 1, 1, 0.5)
+
+        local IconRotationInterruptsText = IconRotation:CreateFontString("InterruptsText", "OVERLAY")
+        IconRotationInterruptsText:SetFontObject(GameFontNormalSmall)
+        IconRotationInterruptsText:SetJustifyH("RIGHT") --
+        IconRotationInterruptsText:SetPoint("CENTER", IconRotation, "CENTER", 11, -14)
+        IconRotationInterruptsText:SetFont("Fonts\\FRIZQT__.TTF", 6, "THICKOUTLINE")
+        IconRotationInterruptsText:SetShadowOffset(1, -1)
+        IconRotationInterruptsText:SetTextColor(1, 1, 1, 0.5)
 
         IconRotation:SetScript("OnMouseDown", function(self, button)
             if button == "MiddleButton" and GriphPvP ~= nil then
@@ -386,12 +393,14 @@ function updateIcon:onUpdate(sinceLastUpdate)
             if CDText ~= nil then
                 CDText:SetText(GriphRH.ColorOnOff(GriphRH.config.cooldown) .. "CD")
                 AoEText:SetText(GriphRH.ColorOnOff(GriphRH.useAoE) .. "AoE")
+                InterruptsText:SetText(GriphRH.ColorOnOff(GriphRH.db.profile.mainOption.useInterrupts) .. "Kick")
             end
         else
             Icons.MainIcon:Hide()
             if CDText ~= nil then
                 CDText:SetText(GriphRH.ColorOnOff(GriphRH.config.cooldown) .. "")
                 AoEText:SetText(GriphRH.ColorOnOff(GriphRH.useAoE) .. "")
+                InterruptsText:SetText(GriphRH.ColorOnOff(GriphRH.mainOption.useInterrupts) .. "")
             end
         end
 
