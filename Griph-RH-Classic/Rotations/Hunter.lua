@@ -236,9 +236,9 @@ StingTime()
 -- 	end
 -- end
 
-local f = CreateFrame("Frame")
-f:RegisterEvent("UNIT_COMBAT")
-f:SetScript("OnEvent", OnEvent)
+-- local f = CreateFrame("Frame")
+-- f:RegisterEvent("UNIT_COMBAT")
+-- f:SetScript("OnEvent", OnEvent)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
