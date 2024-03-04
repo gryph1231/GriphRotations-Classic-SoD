@@ -1,0 +1,11 @@
+<Bindings>
+<Binding category="Griph RH" name="Cooldown Toggle" header="GRH">
+  GriphRH.CDToggle()
+</Binding>
+<Binding category="Griph RH" name="Interrupt Toggle">
+  GriphRH.InterruptsToggle()
+</Binding>
+<Binding category="Griph RH" name="AoE Toggle">
+  GriphRH.AoEToggle()
+</Binding>
+</Bindings>

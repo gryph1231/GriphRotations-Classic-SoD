@@ -1,0 +1,6 @@
+## Title: Griph Rotation Helper (Extra)
+## Dependencies:
+## Author: Griph
+## Version: 1.0
+## Notes: Show what button to press
+griph-rh_extraicon.lua

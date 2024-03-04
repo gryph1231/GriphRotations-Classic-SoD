@@ -1,7 +1,0 @@
-## Interface: 80200
-## Title: Rubim Rotation Helper (Extra)
-## Dependencies:
-## Author: Rubim
-## Version: 1.0
-## Notes: Show what button to press
-rubim-rh_extraicon.lua
