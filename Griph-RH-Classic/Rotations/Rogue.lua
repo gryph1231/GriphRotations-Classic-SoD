@@ -239,7 +239,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return I.autoattack:ID()
         end
 
-        if S.Kick:CooldownRemains()<2 and spellwidgetfort~='Widget Fortitude' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+        if S.Kick:CooldownRemains()<2 and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
             return S.Kick:Cast()
         end
 
