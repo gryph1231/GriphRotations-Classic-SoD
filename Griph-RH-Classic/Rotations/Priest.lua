@@ -38,7 +38,7 @@ GriphRH.Spell[5] = {
 local S = GriphRH.Spell[5]
 
 S.Smite:RegisterInFlight()
-S.Smite:RegisterInFlight()
+S.Shoot:RegisterInFlight()
 
 	if duration and start then 
 		cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
@@ -88,17 +88,13 @@ elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or A
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
 end
 
-
-if IsReady("Power Word: Fortitude") and Player:IsMoving() and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
-	return S.PowerWordFortitude:Cast()
-	end	
-	if IsReady("Inner Fire") and Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Fire","player") then
-		return S.InnerFire:Cast()
-		end	
+-- print(IsCurrentSpell(5019))
 
 if Player:CanAttack(Target) and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
 
 	
+	
+
 	if IsReady("Psychic Scream") and Player:HealthPercentage() < 20 and GriphRH.InterruptsON() then
 		return S.PsychicScream:Cast()
 	end	
@@ -137,7 +133,7 @@ if Player:CanAttack(Target) and (Player:AffectingCombat() or IsCurrentSpell(5019
 		return S.Smite:Cast() 
 	end
 
-	if not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10  then
+	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10 then
 		return S.shoot:Cast()
 	end
 
@@ -150,6 +146,15 @@ if Player:CanAttack(Target) and (Player:AffectingCombat() or IsCurrentSpell(5019
 end
 
 
+
+if not Player:AffectingCombat() then 
+if IsReady("Power Word: Fortitude") and Player:IsMoving() and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
+	return S.PowerWordFortitude:Cast()
+	end	
+	if IsReady("Inner Fire") and Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Fire","player") then
+		return S.InnerFire:Cast()
+		end	
+	end
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 	

@@ -94,7 +94,7 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON()) then
+if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
     battlestance = true
     berserkerstance = false
 else
@@ -150,14 +150,14 @@ local _,instanceTypepvp = IsInInstance()
         if IsReady("Death Wish") and CheckInteractDistance("target",3) then
             return S.DeathWish:Cast()
         end	
-        
-        if IsReady("Bloodrage") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
-            return S.Bloodrage:Cast()
-        end
 
-        if IsReady("Berserker Rage") and instanceTypepvp == false and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        if IsReady("Berserker Rage") and instanceTypepvp ~= 'pvp' and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
             return S.BerserkerRage:Cast()
         end
+
+        if IsReady("Bloodrage") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+            return S.Bloodrage:Cast()
+        end 
 
         if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
             return S.Execute:Cast()
@@ -256,7 +256,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleStance:Cast()
     end
 
-    if IsReady("Sweeping Strikes") and CheckInteractDistance("target",2) and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() then
+    if IsReady("Sweeping Strikes") and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL") and CheckInteractDistance("target",2) and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() then
         return S.SweepingStrikes:Cast()
     end
 
@@ -268,7 +268,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerStance:Cast()
     end
     
-    if IsReady("Berserker Rage") and instanceTypepvp == false and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    if IsReady("Berserker Rage") and instanceTypepvp ~= 'pvp' and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
     end
 
