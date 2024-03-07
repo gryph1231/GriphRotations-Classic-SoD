@@ -32,7 +32,9 @@ GriphRH.Spell[5] = {
 	InnerFire = Spell(588),
 	CureDisease = Spell(528),
 	PsychicScream = Spell(8122),
-
+	feetrune = Spell(1706), -- levitate
+	Silence = Spell(15487),
+	Shadowfiend = Spell(9484), -- shackle undead
 };
 
 local S = GriphRH.Spell[5]
@@ -81,6 +83,26 @@ if targetrunning == true and isTanking == true then
 else
 	powerwordshield = false
 end
+
+local _,instanceTypepvp = IsInInstance()
+local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
+
+local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+
+local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+
+local channelTime = elapsedTimech / 1000
+
+local castTime = elapsedTimeca / 1000
+
+local castchannelTime = math.random(275, 500) / 1000
+
+local spellwidgetfort= UnitCastingInfo("target")
+if instanceTypepvp ==  'pvp' or Target:IsAPlayer() then
+	pvp = true
+else
+	pvp = false
+end
 -- print(IsCurrentSpell(5019))
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
@@ -90,29 +112,46 @@ end
 
 -- print(IsCurrentSpell(5019))
 
-if Player:CanAttack(Target) and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
+-- if Target:Exists() then
+-- 	return S.feetrune:Cast()
+-- end
+
+if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
 
 	
-	
+	if IsReady("Silence") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetRange30 and GriphRH.InterruptsON() then
+		return S.Silence:Cast()
+	end
 
-	if IsReady("Psychic Scream") and Player:HealthPercentage() < 20 and GriphRH.InterruptsON() then
+	if IsReady("Psychic Scream") and RangeCount11()>=1 and (Player:HealthPercentage() < 20 or (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime)) and GriphRH.InterruptsON() then
 		return S.PsychicScream:Cast()
+	end	
+	
+	if IsReady("Dispersion") and pvp == true and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and (not AuraUtil.FindAuraByName("Power Word: Shield","player") or Player:HealthPercentage()<40 or Player:ManaPercentage()<30) then
+		return S.feetrune:Cast()
 	end	
 
 	if IsReady("Power Word: Shield") and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
 		return S.PowerWordShield:Cast()
 	end	
 
-	if IsReady("Renew") and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
+	if IsReady("Renew") and Player:ManaPercentage()>30 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
 		return S.Renew:Cast()
 	end	
 
 	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" then
 		return S.CureDisease:Cast()
 	end
-	if IsReady('Homunculi') and targetRange30 and GriphRH.CDsON() then
+	if IsReady('Homunculi') and targetRange30 then
 		return S.legrune:Cast()
 	end
+	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
+		return S.Shadowfiend:Cast()
+	end
+	if IsReady("Dispersion") and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and (not AuraUtil.FindAuraByName("Power Word: Shield","player") or Player:HealthPercentage()<40 or Player:ManaPercentage()<30) then
+		return S.feetrune:Cast()
+	end	
+
 	if IsReady('Void Plague') and targetRange30 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 		return S.chestrune:Cast()
 	end
@@ -127,6 +166,13 @@ if Player:CanAttack(Target) and (Player:AffectingCombat() or IsCurrentSpell(5019
 
 	if IsReady('Mind Blast') and targetRange30 and not Player:IsMoving() then
 		return S.MindBlast:Cast() 
+	end
+	if IsReady('Shadow Word: Death') and targetRange30  then
+		return S.handrune:Cast()
+	end
+
+	if IsReady('Devouring Plague') and targetRange30 and GriphRH.CDsON() then
+		return S.handrune:Cast()
 	end
 
 	if IsReady('Smite') and targetRange30 and not Player:IsMoving() then
