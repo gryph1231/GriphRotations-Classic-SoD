@@ -40,7 +40,7 @@ GriphRH.Spell[1] = {
     MortalStrike = Spell(12294),
 	Hamstring = Spell(1715),
 	ThunderClap = Spell(11581),
-
+    Pummel =  Spell(6552),
     commandingshout = Spell(20549), --GGL war stomp - BP keybind is /cast commanding shout
     chestrune = Spell(20589),--GGL escape artist - BP macro /cast chest rune ability -- used for raging blow
     handrune = Spell(20580),--GGL shadowmeld - BP keybind /cast hands rune ability -- used for quick strike, victory rush (not in profile yet)
@@ -122,7 +122,19 @@ else
 end
 
 local _,instanceTypepvp = IsInInstance()
+local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
+local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+
+local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+
+local channelTime = elapsedTimech / 1000
+
+local castTime = elapsedTimeca / 1000
+
+local castchannelTime = math.random(275, 500) / 1000
+
+local spellwidgetfort= UnitCastingInfo("target")
 -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -133,7 +145,9 @@ local _,instanceTypepvp = IsInInstance()
         if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
             return I.autoattack:ID()
         end
-
+        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+            return S.Pummel:Cast()
+        end
         if Target:IsAPlayer() and IsReady("Rallying Cry") and inRange25>=1 and Player:HealthPercentage()<=15 then
             return S.feetrune:Cast()
         end	
@@ -234,7 +248,9 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if Target:IsAPlayer() and IsReady("Rallying Cry") and inRange25>=1 and Player:HealthPercentage()<=15 then
         return S.feetrune:Cast()
     end	
-
+    if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+        return S.Pummel:Cast()
+    end
     if stoprotation == false then 
     if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
         return S.Hamstring:Cast()
@@ -272,7 +288,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerRage:Cast()
     end
 
-    if IsReady("Bloodrage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
 
