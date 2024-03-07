@@ -23,7 +23,7 @@ GriphRH.Spell[5] = {
 	MindBlast = Spell(8092),
 	ShadowWordPain = Spell(589),
 	PowerWordFortitude = Spell(1243),
-	shoot = Spell(7744),
+	shoot = Spell(7744), -- Will of the forsaken
 	Shoot = Spell(5019),
 	chestrune = Spell(20594),--stoneform
 	handrune = Spell(20554), --berserking
@@ -35,6 +35,7 @@ GriphRH.Spell[5] = {
 	feetrune = Spell(1706), -- levitate
 	Silence = Spell(15487),
 	Shadowfiend = Spell(9484), -- shackle undead
+	waistrune = Spell(586), --fade
 };
 
 local S = GriphRH.Spell[5]
@@ -84,7 +85,7 @@ else
 	powerwordshield = false
 end
 
-local _,instanceTypepvp = IsInInstance()
+local _,instanceType = IsInInstance()
 local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
 local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
@@ -98,11 +99,7 @@ local castTime = elapsedTimeca / 1000
 local castchannelTime = math.random(275, 500) / 1000
 
 local spellwidgetfort= UnitCastingInfo("target")
-if instanceTypepvp ==  'pvp' or Target:IsAPlayer() then
-	pvp = true
-else
-	pvp = false
-end
+
 -- print(IsCurrentSpell(5019))
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
@@ -113,7 +110,7 @@ end
 -- print(IsCurrentSpell(5019))
 
 -- if Target:Exists() then
--- 	return S.feetrune:Cast()
+-- 	return S.waistrune:Cast()
 -- end
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
@@ -127,15 +124,15 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.PsychicScream:Cast()
 	end	
 	
-	if IsReady("Dispersion") and pvp == true and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and (not AuraUtil.FindAuraByName("Power Word: Shield","player") or Player:HealthPercentage()<40 or Player:ManaPercentage()<30) then
+	if IsReady("Dispersion") and RangeCount11()>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and Player:HealthPercentage()<35 then
 		return S.feetrune:Cast()
 	end	
 
-	if IsReady("Power Word: Shield") and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
+	if IsReady("Power Word: Shield") and not AuraUtil.FindAuraByName("Shadowform","player") and instanceType~= 'raid' and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
 		return S.PowerWordShield:Cast()
 	end	
 
-	if IsReady("Renew") and Player:ManaPercentage()>30 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
+	if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>30 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
 		return S.Renew:Cast()
 	end	
 
@@ -148,7 +145,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	if IsReady("Dispersion") and (targetRange30 or Target:Exists() and Player:IsMoving() or powerwordshield== true) and (not AuraUtil.FindAuraByName("Power Word: Shield","player") or Player:HealthPercentage()<40 or Player:ManaPercentage()<30) then
+	if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and RangeCount11()>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
 		return S.feetrune:Cast()
 	end	
 
@@ -175,7 +172,11 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.handrune:Cast()
 	end
 
-	if IsReady('Smite') and targetRange30 and not Player:IsMoving() then
+	if IsReady('Mind Spike') and targetRange30 and not Player:IsMoving() then
+		return S.waistrune:Cast() 
+	end
+
+	if IsReady('Smite') and targetRange30 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
 		return S.Smite:Cast() 
 	end
 
