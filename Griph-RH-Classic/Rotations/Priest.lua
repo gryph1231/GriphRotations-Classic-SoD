@@ -23,7 +23,6 @@ GriphRH.Spell[5] = {
 	MindBlast = Spell(8092),
 	ShadowWordPain = Spell(589),
 	PowerWordFortitude = Spell(1243),
-	shoot = Spell(7744), -- Will of the forsaken
 	Shoot = Spell(5019),
 	chestrune = Spell(20594),--stoneform
 	handrune = Spell(20554), --berserking
@@ -35,7 +34,9 @@ GriphRH.Spell[5] = {
 	feetrune = Spell(1706), -- levitate
 	Silence = Spell(15487),
 	Shadowfiend = Spell(9484), -- shackle undead
-	waistrune = Spell(586), --fade
+	waistrune = Spell(7744), --will of the forsaken
+
+
 };
 
 local S = GriphRH.Spell[5]
@@ -54,9 +55,7 @@ S.Shoot:RegisterInFlight()
 	
 
 
-
 local function APL()
-
 
 	local Shoot = 0
 
@@ -104,14 +103,12 @@ local spellwidgetfort= UnitCastingInfo("target")
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 -- print(IsCurrentSpell(5019))
 
--- if Target:Exists() then
--- 	return S.waistrune:Cast()
--- end
+
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
 
@@ -181,7 +178,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	end
 
 	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10 then
-		return S.shoot:Cast()
+		return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
 	end
 
 	-- if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
