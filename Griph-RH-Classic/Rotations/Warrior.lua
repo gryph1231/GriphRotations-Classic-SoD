@@ -284,7 +284,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerStance:Cast()
     end
     
-    if IsReady("Berserker Rage") and instanceTypepvp ~= 'pvp' and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    if IsReady("Berserker Rage") and instanceTypepvp ~= 'pvp' and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
     end
 
