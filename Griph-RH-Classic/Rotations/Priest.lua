@@ -112,12 +112,16 @@ end
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
 
-	
+	if IsReady('Shadow Word: Death') and targetRange30 and UnitHealth('target')<300 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL")
+	then
+		return S.handrune:Cast()
+	end
+
 	if IsReady("Silence") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetRange30 and GriphRH.InterruptsON() then
 		return S.Silence:Cast()
 	end
 
-	if IsReady("Psychic Scream") and RangeCount11()>=1 and (Player:HealthPercentage() < 20 or (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime)) and GriphRH.InterruptsON() then
+	if IsReady("Psychic Scream") and CheckInteractDistance("target",2) and RangeCount10()>=1 and (Player:HealthPercentage() < 35 or (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) ) and GriphRH.InterruptsON() then
 		return S.PsychicScream:Cast()
 	end	
 	
@@ -129,7 +133,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.PowerWordShield:Cast()
 	end	
 
-	if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>30 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
+	if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>40 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
 		return S.Renew:Cast()
 	end	
 
