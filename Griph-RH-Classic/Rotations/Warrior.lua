@@ -140,7 +140,7 @@ local spellwidgetfort= UnitCastingInfo("target")
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true then
+    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
 	
         if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
             return I.autoattack:ID()
@@ -164,15 +164,13 @@ local spellwidgetfort= UnitCastingInfo("target")
         if IsReady("Death Wish") and CheckInteractDistance("target",3) then
             return S.DeathWish:Cast()
         end	
-
-        if IsReady("Berserker Rage") and instanceTypepvp ~= 'pvp' and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
             return S.BerserkerRage:Cast()
         end
-
-        if IsReady("Bloodrage") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    
+        if IsReady("Bloodrage") and (S.BerserkerRage:CooldownRemains()>2 or instanceTypepvp == 'pvp') and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
             return S.Bloodrage:Cast()
-        end 
-
+        end
         if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
             return S.Execute:Cast()
         end	
@@ -239,7 +237,7 @@ local spellwidgetfort= UnitCastingInfo("target")
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------2H ARMS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
-if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and arms == true then
+if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and arms == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
 	
     if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
         return I.autoattack:ID()
@@ -264,7 +262,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleShout:Cast()
     end	
 
-    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
+    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","player") then
         return S.commandingshout:Cast()
     end	
 
@@ -284,11 +282,11 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerStance:Cast()
     end
     
-    if IsReady("Berserker Rage") and instanceTypepvp ~= 'pvp' and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
     end
 
-    if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    if IsReady("Bloodrage") and (S.BerserkerRage:CooldownRemains()>2 or instanceTypepvp == 'pvp') and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
 
