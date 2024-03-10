@@ -134,7 +134,7 @@ end
 if GriphRH.QueuedSpell():ID() == S.Fade:ID() and (not IsUsableSpell("Fade") or S.Fade:CooldownRemains()>2) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
-if GriphRH.QueuedSpell():ID() == S.DispelMagic:ID() and not IsUsableSpell("Dispel Magic")  then
+if GriphRH.QueuedSpell():ID() == S.DispelMagic:ID() and (not IsUsableSpell("Dispel Magic") or not CanTargetBePurged()) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
 if GriphRH.QueuedSpell():ID() == S.Fade:ID() and IsUsableSpell("Fade") then
@@ -143,7 +143,7 @@ end
 if GriphRH.QueuedSpell():ID() == S.PsychicScream:ID() and IsUsableSpell("Psychic Scream")then
 	return GriphRH.QueuedSpell():Cast()
 end
-if GriphRH.QueuedSpell():ID() == S.DispelMagic:ID() and IsUsableSpell("Dispel Magic")then
+if GriphRH.QueuedSpell():ID() == S.DispelMagic:ID() and CanTargetBePurged() and IsUsableSpell("Dispel Magic") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 	return GriphRH.QueuedSpell():Cast()
 end
 if GriphRH.QueuedSpell():ID() == S.FlashHeal:ID() and not IsCurrentSpell("Flash Heal") and IsUsableSpell("Flash Heal") then
@@ -187,7 +187,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.PsychicScream:Cast()
 	end	
 	
-	if IsReady("Dispersion") and RangeCount11()>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and Player:HealthPercentage()<25 then
+	if IsReady("Dispersion") and inRange25>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and Player:HealthPercentage()<25 then
 		return S.feetrune:Cast()
 	end	
 
@@ -213,7 +213,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	if IsReady("Dispersion") and instanceType == 'raid' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and RangeCount11()>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
+	if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
 		return S.feetrune:Cast()
 	end	
 
