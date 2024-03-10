@@ -16,8 +16,9 @@ local Item = HL.Item;
 GriphRH.Spell[5] = {
     Smite = Spell(585),
 	PowerWordShield = Spell(17),
-	FlashHeal = Spell(9473),
+	FlashHeal = Spell(9474),
 	Heal = Spell(6064),
+	GreaterHeal = Spell(2060),
 	Renew = Spell(139),
 	LesserHeal = Spell(2053),
 	Resurrection = Spell(2006),
@@ -25,6 +26,8 @@ GriphRH.Spell[5] = {
 	MindBlast = Spell(8092),
 	ShadowWordPain = Spell(589),
 	PowerWordFortitude = Spell(1243),
+	ShadowProtection = Spell(976),
+	shadowprotection = Spell(605), --mind control
 	Shoot = Spell(5019),
 	chestrune = Spell(20594),--stoneform
 	handrune = Spell(20554), --berserking
@@ -123,16 +126,21 @@ end
 if GriphRH.QueuedSpell():ID() == S.Heal:ID() and (not IsUsableSpell("Heal") or Player:MovingFor()>.15) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
+if GriphRH.QueuedSpell():ID() == S.GreaterHeal:ID() and (not IsUsableSpell("Greater Heal") or Player:MovingFor()>.15) then
+	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
+end
 if GriphRH.QueuedSpell():ID() == S.PsychicScream:ID() and IsUsableSpell("Psychic Scream")then
 	return GriphRH.QueuedSpell():Cast()
 end
-if GriphRH.QueuedSpell():ID() == S.FlashHeal:ID() and IsUsableSpell("Flash Heal") then
+if GriphRH.QueuedSpell():ID() == S.FlashHeal:ID() and not IsCurrentSpell("Flash Heal") and IsUsableSpell("Flash Heal") then
 	return GriphRH.QueuedSpell():Cast()
 end
 
+if GriphRH.QueuedSpell():ID() == S.GreaterHeal:ID() and not IsCurrentSpell("Greater Heal") and IsUsableSpell("Greater Heal") then
+	return GriphRH.QueuedSpell():Cast()
+end
 
-
-if GriphRH.QueuedSpell():ID() == S.Heal:ID() and IsUsableSpell("Heal") then
+if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell("Heal") and IsUsableSpell("Heal") then
 	return GriphRH.QueuedSpell():Cast()
 end
 
@@ -149,7 +157,7 @@ end
 
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
-	if IsReady('Shadowform') and AuraUtil.FindAuraByName("Inner Fire","player") and AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
+	if IsReady('Shadowform') then
 		return S.Shadowform:Cast()
 	end
 
@@ -169,7 +177,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.feetrune:Cast()
 	end	
 
-	if IsReady("Power Word: Shield") and not AuraUtil.FindAuraByName("Shadowform","player") and not AuraUtil.FindAuraByName("Dispersion","player") and ((instanceType~= 'raid' or Target:IsAPlayer()) and Target:Exists() and Player:IsMoving() and Player:CanAttack(Target) or powerwordshield== true) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
+	if IsReady("Power Word: Shield") and not AuraUtil.FindAuraByName("Dispersion","player") and ((instanceType~= 'raid' or Target:IsAPlayer()) and Target:Exists() and Player:IsMoving() and Player:CanAttack(Target) or powerwordshield== true) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
 		return S.PowerWordShield:Cast()
 	end	
 
@@ -239,21 +247,26 @@ end
 
 
 
-if not Player:AffectingCombat() then 
-if IsReady("Power Word: Fortitude") and Player:IsMoving() and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
+if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
+	if IsReady('Shadowform') then
+	return S.Shadowform:Cast()
+	end
+
+	if IsReady("Power Word: Fortitude") and Player:IsMoving() and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
 	return S.PowerWordFortitude:Cast()
 	end	
+
 	if IsReady("Inner Fire") and Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Fire","player") then
-		return S.InnerFire:Cast()
-		end	
+	return S.InnerFire:Cast()
+	end	
 
+	if IsReady('Shadow Protection') and Player:IsMoving() and not AuraUtil.FindAuraByName("Shadow Protection","player") then
+	return S.shadowprotection:Cast()
+	end
 
-		if IsReady('Shadowform') and AuraUtil.FindAuraByName("Inner Fire","player") and AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
-			return S.Shadowform:Cast()
-		end
-		if IsReady('Touch of Weakness') and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
-			return S.TouchofWeakness:Cast()
-		end
+	if IsReady('Touch of Weakness') and Player:IsMoving() and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
+		return S.TouchofWeakness:Cast()
+	end
 	
 	end
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
