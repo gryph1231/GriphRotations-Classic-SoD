@@ -23,6 +23,7 @@ GriphRH.Spell[5] = {
 	LesserHeal = Spell(2053),
 	Resurrection = Spell(2006),
 	Fade = Spell(586),
+	DispelMagic = Spell(527),
 	MindBlast = Spell(8092),
 	ShadowWordPain = Spell(589),
 	PowerWordFortitude = Spell(1243),
@@ -46,6 +47,7 @@ GriphRH.Spell[5] = {
 	DevouringPlague = Spell(2944),
 	VampiricEmbrace = Spell(15286),
 	Dispersion = Spell(425294),
+	AbolishDisease = Spell(552),
 };
 
 local S = GriphRH.Spell[5]
@@ -129,7 +131,19 @@ end
 if GriphRH.QueuedSpell():ID() == S.GreaterHeal:ID() and (not IsUsableSpell("Greater Heal") or Player:MovingFor()>.15) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
+if GriphRH.QueuedSpell():ID() == S.Fade:ID() and (not IsUsableSpell("Fade") or S.Fade:CooldownRemains()>2) then
+	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
+end
+if GriphRH.QueuedSpell():ID() == S.DispelMagic:ID() and not IsUsableSpell("Dispel Magic")  then
+	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
+end
+if GriphRH.QueuedSpell():ID() == S.Fade:ID() and IsUsableSpell("Fade") then
+	return GriphRH.QueuedSpell():Cast()
+end
 if GriphRH.QueuedSpell():ID() == S.PsychicScream:ID() and IsUsableSpell("Psychic Scream")then
+	return GriphRH.QueuedSpell():Cast()
+end
+if GriphRH.QueuedSpell():ID() == S.DispelMagic:ID() and IsUsableSpell("Dispel Magic")then
 	return GriphRH.QueuedSpell():Cast()
 end
 if GriphRH.QueuedSpell():ID() == S.FlashHeal:ID() and not IsCurrentSpell("Flash Heal") and IsUsableSpell("Flash Heal") then
@@ -153,13 +167,13 @@ elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or A
 end
 
 
-
+if IsReady('Shadowform') and Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
+	return S.Shadowform:Cast()
+end
 
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
-	if IsReady('Shadowform') then
-		return S.Shadowform:Cast()
-	end
+	
 
 	if IsReady('Shadow Word: Death') and targetRange30 and (UnitHealth('target')<500 and not Target:IsAPlayer() or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.handrune:Cast()
@@ -185,9 +199,14 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Renew:Cast()
 	end	
 
-	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" then
+	if IsReady("Abolish Disease") and GetAppropriateCureSpell() == "Disease" then
+		return S.AbolishDisease:Cast()
+	end
+
+	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 then
 		return S.CureDisease:Cast()
 	end
+
 	if IsReady('Homunculi') and targetRange30 then
 		return S.legrune:Cast()
 	end
@@ -248,9 +267,6 @@ end
 
 
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
-	if IsReady('Shadowform') then
-	return S.Shadowform:Cast()
-	end
 
 	if IsReady("Power Word: Fortitude") and Player:IsMoving() and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
 	return S.PowerWordFortitude:Cast()
