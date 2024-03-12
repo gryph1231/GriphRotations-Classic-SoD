@@ -248,7 +248,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.AdrenalineRush:Cast()
         end
 
-        if ((UnitName('target') == "STX-98/PO" or UnitName('target') == "STX-98/XD") and GriphRH.InterruptsON() and Player:Energy()>25 or not GriphRH.InterruptsON() or UnitName('target') ~= "STX-98/XD" and UnitName('target') ~= "STX-98/PO") then 
+        if (UnitName('target') == "STX-25/NB" and GriphRH.InterruptsON() and Player:Energy()>25 or not GriphRH.InterruptsON() or UnitName('target') ~= "STX-25/NB") then 
         if Player:Energy()<20 and UnitHealthMax('target')>100000 and IsUsableItem(7676)==true and thistleteaoffcooldown==true and GetItemCount(7676) >= 1 and GriphRH.CDsON() then
         return  S.ThistleTea:Cast()
         end

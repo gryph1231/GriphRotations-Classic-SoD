@@ -159,7 +159,6 @@ if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell("Heal") and 
 end
 
 
--- print(IsCurrentSpell(5019))
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
@@ -207,7 +206,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.CureDisease:Cast()
 	end
 
-	if IsReady('Homunculi') and targetRange30 then
+	if IsReady('Homunculi') and targetRange30 and GriphRH.CDsON() then
 		return S.legrune:Cast()
 	end
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
@@ -248,9 +247,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.waistrune:Cast() 
 	end
 
-	-- if IsReady('Smite') and targetRange30 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
-	-- 	return S.Smite:Cast() 
-	-- end
+	if IsReady('Smite') and targetRange30 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
+		return S.Smite:Cast() 
+	end
 
 	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10 then
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
