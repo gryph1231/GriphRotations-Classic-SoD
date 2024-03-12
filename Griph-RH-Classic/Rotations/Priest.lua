@@ -78,8 +78,12 @@ local function APL()
 			Shoot = ActionSlot
 		end
 	end
+	if S.MindBlast:IsAvailable() then
+		targetRange30 = TargetInRange("Mind Blast")
+	else
+		targetRange30 = TargetInRange("Smite")
+	end
 
-	targetRange30 = TargetInRange("Mind Blast")
     local inRange25 = 0
         for i = 1, 40 do
             if UnitExists('nameplate' .. i) then
