@@ -109,24 +109,6 @@ local function bool(val)
     return val ~= 0
 end
 
-local function PartyInRange()
-    local party_counter = 0
-    
-            for i=1,40 do
-                local unitID = "party" .. i
-                if UnitExists("party"..i) then           
-                    local member_guid = UnitGUID("party"..i) 
-                    local npc_id = select(6, strsplit("-",member_guid))
-                    if npc_id ~='120651' and npc_id ~='161895' then
-                        if UnitInRange(unitID) then
-                            party_counter = party_counter + 1
-                        end                    
-                    end
-                end
-            end
-        
-        return party_counter
-        end
 
 local function APL()
 
@@ -134,21 +116,13 @@ local function APL()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- print(overpower())
         targetRange25 = TargetInRange("Earth Shock")
 
         targetRange30 = TargetInRange("Lightning Bolt")
-
+    
         local inRange25 = 0
         for i = 1, 40 do
             if UnitExists('nameplate' .. i) then
-                inRange25 = inRange25 + 1
-            end
-        end
-
-        local inRangeparty = 0
-        for i = 1, 40 do
-            if UnitInRange('partyN' .. i) then
                 inRange25 = inRange25 + 1
             end
         end
@@ -183,7 +157,7 @@ local function APL()
         if nameWayofEarth == 'Way of Earth' then 
             rangecheck5 = TargetInRange("Earth Shock") -- range tracker for range 5
         else
-            rangecheck5 = CheckInteractDistance("target", 2)
+            rangecheck5 = targetrange11()
         end
 
         local haveTotem1, totemName1, startTime1, duration1 = GetTotemInfo(1) --fire
@@ -315,11 +289,7 @@ local function APL()
     --     end
 
 
-        inRangeParty1 = (CheckInteractDistance("party1", 4))
-        inRangeParty2 = (CheckInteractDistance("party2", 4));
-        inRangeParty3 = (CheckInteractDistance("party3", 4));
-        inRangeParty4 = (CheckInteractDistance("party4", 4));
-     if inRangeParty1 == true or inRangeParty2 == true or inRangeParty3 == true or inRangeParty4 == true then
+     if partyInRange()>=1 then
         partymemberinrange = true
      else
         partymemberinrange = false
@@ -439,7 +409,7 @@ local function APL()
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
 
-        if GriphRH.QueuedSpell():ID() == S.earthshock1:ID() and (not CheckInteractDistance("target", 3) or S.esr1:CooldownRemains()>2) then
+        if GriphRH.QueuedSpell():ID() == S.earthshock1:ID() and (not targetrange11() or S.esr1:CooldownRemains()>2) then
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
 
@@ -592,7 +562,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
     if enhdps == true  then
 
-        if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
+        if not IsCurrentSpell(6603) and targetrange11() then
             return I.autoattack:ID()
         end
 
@@ -611,14 +581,14 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.handrune:Cast()
         end
 
-        if IsReady('Stormstrike') and CheckInteractDistance("target", 2) then
+        if IsReady('Stormstrike') and targetrange11() then
             return S.Stormstrike:Cast()
         end
         if IsReady('Molten Blast') and RangeCount11()==1 then
             return S.handrune:Cast()
         end
    
-        if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
+        if IsReady('Lava Lash') and targetrange11() then
             return S.handrune:Cast()
         end
         
@@ -666,7 +636,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
         
     
-        if not Target:IsAPlayer() and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if not Target:IsAPlayer() and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
         
@@ -692,7 +662,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.SearingTotem:Cast()
         end
 
-        if not Target:IsAPlayer() and IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>60 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if not Target:IsAPlayer() and IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>60 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
        
@@ -702,7 +672,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         if enhtank  == true then 
                 
-            if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
+            if not IsCurrentSpell(6603) and targetrange11() then
                 return I.autoattack:ID()
             end    
         
@@ -722,11 +692,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.handrune:Cast()
             end
 
-            -- if (Target:IsAPlayer() or Player:ManaPercentage()>=70) and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and CheckInteractDistance("target", 2) then
+            -- if (Target:IsAPlayer() or Player:ManaPercentage()>=70) and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetrange11() then
             --     return S.EarthShock:Cast()
             -- end
 
-            if S.earthshock1:CooldownRemains()<1.5 and (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and CheckInteractDistance("target", 2) then
+            if S.earthshock1:CooldownRemains()<1.5 and (isTanking == false or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and S.esr1:CooldownRemains()<1.5 and IsUsableSpell("Earth Shock(rank 1)") and targetrange11() then
                 return S.earthshock1:Cast()
             end
 
@@ -738,14 +708,14 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.ChainLightning:Cast()
             end
 
-            if IsReady('Stormstrike') and CheckInteractDistance("target", 2) then
+            if IsReady('Stormstrike') and targetrange11() then
                 return S.Stormstrike:Cast()
             end
 
             if IsReady('Molten Blast') and rangecheck5  then
                 return S.handrune:Cast()
             end
-            if IsReady('Lava Lash') and CheckInteractDistance("target", 2) then
+            if IsReady('Lava Lash') and targetrange11() then
                 return S.handrune:Cast()
             end
 
@@ -791,7 +761,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.SearingTotem:Cast()
             end
     
-            if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+            if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
                 return S.ManaSpringTotem:Cast()
             end
 
@@ -804,7 +774,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     if elemental == true then
 
-        if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
+        if not IsCurrentSpell(6603) and targetrange11() then
             return I.autoattack:ID()
         end
 
@@ -847,7 +817,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
        
-        if not Target:IsAPlayer() and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and PartyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if not Target:IsAPlayer() and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
         
@@ -873,7 +843,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.SearingTotem:Cast()
         end
 
-        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  PartyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
 
@@ -896,16 +866,16 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player")  
     and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
   
-        if  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and CheckInteractDistance("target", 2) then 
-            if not IsCurrentSpell(6603) and CheckInteractDistance("target", 2) then
+        if  Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetrange11() then 
+            if not IsCurrentSpell(6603) and targetrange11() then
                 return I.autoattack:ID()
             end
        
-            if IsReady('Stormstrike') and CheckInteractDistance("target", 2)  then
+            if IsReady('Stormstrike') and targetrange11()  then
             return S.Stormstrike:Cast()
             end
 
-            if IsReady('Lava Lash') and CheckInteractDistance("target", 2)  then
+            if IsReady('Lava Lash') and targetrange11()  then
                 return S.handrune:Cast()
             end
 

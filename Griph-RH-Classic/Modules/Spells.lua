@@ -146,6 +146,32 @@ GriphRH.Spell[269] = {
     PressurePoint = Spell(247255),
 }
 
+GriphRH.Spell[5] = {
+    Smite = Spell(585),
+	PowerWordShield = Spell(17),
+	Renew = Spell(139),
+	LesserHeal = Spell(2053),
+	Resurrection = Spell(2006),
+	Fade = Spell(586),
+	MindBlast = Spell(8092),
+	ShadowWordPain = Spell(589),
+	PowerWordFortitude = Spell(1243),
+	Shoot = Spell(5019),
+	chestrune = Spell(20594),--stoneform
+	handrune = Spell(20554), --berserking
+	legrune = Spell(20580), --shadowmeld
+	VoidPlague = Spell(425204),
+	InnerFire = Spell(588),
+	CureDisease = Spell(528),
+	PsychicScream = Spell(8122),
+	feetrune = Spell(1706), -- levitate
+	Silence = Spell(15487),
+	Shadowfiend = Spell(9484), -- shackle undead
+	waistrune = Spell(7744), --will of the forsaken
+	Shadowform = Spell(15473),
+	Default = Spell(1),
+}
+
 GriphRH.Spell[4] = {
     Evasion = Spell(5277),
     EnvenomBuff = Spell(399963),

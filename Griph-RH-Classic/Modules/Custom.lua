@@ -314,6 +314,8 @@ function RangeCount11()
 
     return range_counter
 end
+
+
 function RangeCount10()
     local range_counter = 0
 
@@ -970,6 +972,33 @@ eventFrame:SetScript("OnEvent", OnEvent)
 
 
 
+function targetrange11()
+   
+local unitID = "target" 
+if UnitExists(unitID) then
+
+        if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,2) then
+            return true
+        else
+            return false
+        end
+    end
+end
+  
 
 
-
+function partyInRange()
+    local range_counter = 0
+    local spellName = "Cure Disease" -- Replace SPELL_NAME with a valid spell name for your class
+    
+    for i = 1, GetNumGroupMembers() do
+        local unitID = "party" .. i
+        if UnitExists(unitID) and not UnitIsUnit(unitID, "player") then
+            if IsSpellInRange(spellName, unitID) == 1 then
+                range_counter = range_counter + 1
+            end
+        end
+    end
+    
+    return range_counter
+end
