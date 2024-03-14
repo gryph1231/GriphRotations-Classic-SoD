@@ -270,7 +270,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.ColdBlood:Cast()
         end
       
-        if IsReady('Envenom') and AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Envenom", "player") and CheckInteractDistance("target", 3) and finish then
+        if IsReady('Envenom') and AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
         end
 
@@ -282,7 +282,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.Riposte:Cast()
         end
 
-        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Envenom", "player") then
+        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) and (AuraUtil.FindAuraByName("Envenom", "player") or not IsReady('Envenom')) then
             return S.Eviscerate:Cast()
         end
 
