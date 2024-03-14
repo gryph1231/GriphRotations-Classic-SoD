@@ -169,7 +169,6 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     local castchannelTime = math.random(275, 500) / 1000
 
-
     
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
@@ -253,7 +252,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.AdrenalineRush:Cast()
         end
 
-        if (UnitName('target') == "STX-25/NB" and GriphRH.InterruptsON() and Player:Energy()>25 or not GriphRH.InterruptsON() or UnitName('target') ~= "STX-25/NB") then 
+        if (UnitName('target') == "STX-25/NB" and GriphRH.InterruptsON() and Player:Energy()>55 or not GriphRH.InterruptsON() or UnitName('target') ~= "STX-25/NB") then 
         if Player:Energy()<20 and UnitHealthMax('target')>100000 and IsUsableItem(7676)==true and thistleteaoffcooldown==true and GetItemCount(7676) >= 1 and GriphRH.CDsON() then
         return  S.ThistleTea:Cast()
         end
@@ -262,7 +261,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.legrune:Cast()
         end
 
-        if IsReady('Slice and Dice') and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
+        if IsReady('Slice and Dice') and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
             return S.SliceandDice:Cast()
         end
 
@@ -270,7 +269,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.ColdBlood:Cast()
         end
       
-        if IsReady('Envenom') and AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") and CheckInteractDistance("target", 3) and finish then
+        if IsReady('Envenom') and (AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL")) and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
         end
 
