@@ -178,7 +178,7 @@ end
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
 	
 
-	if IsReady('Shadow Word: Death') and targetRange30 and (UnitHealth('target')<500 and not Target:IsAPlayer() or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	if IsReady('Shadow Word: Death') and targetRange30 and (UnitHealth('target')<500 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and Target:TimeToDie()<10 or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.handrune:Cast()
 	end
 
@@ -198,9 +198,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.PowerWordShield:Cast()
 	end	
 
-	if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>40 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
-		return S.Renew:Cast()
-	end	
+	-- if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>40 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
+	-- 	return S.Renew:Cast()
+	-- end	
 
 	if IsReady("Abolish Disease") and GetAppropriateCureSpell() == "Disease" then
 		return S.AbolishDisease:Cast()
@@ -283,7 +283,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 	return S.shadowprotection:Cast()
 	end
 
-	if IsReady('Touch of Weakness') and Player:IsMoving() and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
+	if IsReady('Touch of Weakness') and Player:IsMoving() and instanceType~= 'party'  and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
 		return S.TouchofWeakness:Cast()
 	end
 	

@@ -198,6 +198,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     if GriphRH.QueuedSpell():ID() == S.Kick:ID() and (S.Kick:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
         GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
     end
+    if GriphRH.QueuedSpell():ID() == S.Backstab:ID() and (Player:Energy()<60 or not Player:AffectingCombat()) then
+        GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
+    end
 
     if GriphRH.QueuedSpell():ID() == S.Distract:ID() and (S.Distract:CooldownRemains() > Player:GCD() or not Player:AffectingCombat()) then
         GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
@@ -210,7 +213,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     if GriphRH.QueuedSpell():ID() == S.KidneyShot:ID() and not Target:Debuff(S.CheapShot) and Player:ComboPoints()>=1 and Player:Energy()> 15 and CheckInteractDistance("target", 3) then
         return GriphRH.QueuedSpell():Cast()
     end
-
+    if GriphRH.QueuedSpell():ID() == S.Backstab:ID() and CheckInteractDistance("target", 3) then
+        return GriphRH.QueuedSpell():Cast()
+    end
     if GriphRH.QueuedSpell():ID() == S.Kick:ID() and Player:Energy()> 15 and CheckInteractDistance("target", 3) then
         return GriphRH.QueuedSpell():Cast()
     end
@@ -265,7 +270,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.ColdBlood:Cast()
         end
       
-        if IsReady('Envenom') and not AuraUtil.FindAuraByName("Envenom", "player") and CheckInteractDistance("target", 3) and finish then
+        if IsReady('Envenom') and AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Envenom", "player") and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
         end
 
@@ -277,7 +282,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.Riposte:Cast()
         end
 
-        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
+        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Envenom", "player") then
             return S.Eviscerate:Cast()
         end
 

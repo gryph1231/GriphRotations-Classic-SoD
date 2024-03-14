@@ -574,9 +574,15 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.HealingWave:Cast()
         end
 
-        if Target:IsAPlayer() and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
+        if Target:IsAPlayer() and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 and GriphRH.InterruptsON() then
             return S.EarthShock:Cast()
         end
+
+        if Target:IsAPlayer() and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 and GriphRH.InterruptsON() then
+            return S.earthshock1:Cast()
+        end
+        
+
         if IsReady('Molten Blast') and RangeCount11()>1 then
             return S.handrune:Cast()
         end
