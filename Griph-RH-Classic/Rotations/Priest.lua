@@ -231,10 +231,13 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Penance') and not Player:IsMoving() and targetRange30  then
 		return S.handrune:Cast()
 	end
-
+	if IsReady("Mind Sear") and not Player:IsMoving() and targetRange30 and inRange25>=3 then
+		return S.handrune:Cast()
+	end	
 	if IsReady('Mind Blast') and targetRange30 and not Player:IsMoving() then
 		return S.MindBlast:Cast() 
 	end
+	
 	if IsReady('Shadow Word: Death') and targetRange30  then
 		return S.handrune:Cast()
 	end
