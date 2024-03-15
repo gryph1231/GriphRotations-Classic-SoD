@@ -93,11 +93,6 @@ local function APL()
 local targetrunning = (GetUnitSpeed("target") /7 *100)>90
 local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
-if  isTanking == true then
-	powerwordshield = true
-else
-	powerwordshield = false
-end
 
 local _,instanceType = IsInInstance()
 local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
@@ -170,7 +165,7 @@ elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or A
 end
 
 
-if IsReady('Shadowform') and Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
+if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
 
@@ -194,7 +189,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.feetrune:Cast()
 	end	
 
-	if IsReady("Power Word: Shield") and not AuraUtil.FindAuraByName("Dispersion","player") and ((instanceType~= 'raid' or Target:IsAPlayer()) and Target:Exists() and Player:IsMoving() and Player:CanAttack(Target) or powerwordshield== true) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
+	if IsReady("Power Word: Shield") and (instanceType== 'none' or isTanking == true or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Dispersion","player") and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
 		return S.PowerWordShield:Cast()
 	end	
 
@@ -216,9 +211,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
-		return S.feetrune:Cast()
-	end	
+	-- if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
+	-- 	return S.feetrune:Cast()
+	-- end	
 
 	if IsReady('Void Plague') and targetRange30 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 		return S.chestrune:Cast()
@@ -231,7 +226,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Penance') and not Player:IsMoving() and targetRange30  then
 		return S.handrune:Cast()
 	end
-	if IsReady("Mind Sear") and not Player:IsMoving() and targetRange30 and inRange25>=3 then
+	if IsReady("Mind Sear") and not Player:IsMoving() and targetRange30 and inRange25>=4 then
 		return S.handrune:Cast()
 	end	
 	if IsReady('Mind Blast') and targetRange30 and not Player:IsMoving() then
