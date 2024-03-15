@@ -185,11 +185,11 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.PsychicScream:Cast()
 	end	
 	
-	if IsReady("Dispersion") and inRange25>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and Player:HealthPercentage()<25 then
+	if IsReady("Dispersion") and inRange25>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and Player:HealthPercentage()<15 then
 		return S.feetrune:Cast()
 	end	
 
-	if IsReady("Power Word: Shield") and (instanceType== 'none' or isTanking == true or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Dispersion","player") and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
+	if IsReady("Power Word: Shield") and (instanceType== 'none' or isTanking == true or Target:IsAPlayer() or instanceType == 'pvp')  and not AuraUtil.FindAuraByName("Dispersion","player") and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
 		return S.PowerWordShield:Cast()
 	end	
 
@@ -211,9 +211,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	-- if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
-	-- 	return S.feetrune:Cast()
-	-- end	
+	if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
+		return S.feetrune:Cast()
+	end	
 
 	if IsReady('Void Plague') and targetRange30 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 		return S.chestrune:Cast()
