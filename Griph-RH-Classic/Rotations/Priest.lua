@@ -248,9 +248,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.DevouringPlague:Cast()
 	end
 
-	-- if IsReady('Vampiric Embrace') and (instanceType== 'party' or instanceType == 'pvp') and Player:HealthPercentage()<50 and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
-	-- 	return S.VampiricEmbrace:Cast()
-	-- end
+	if IsReady('Vampiric Embrace') and (instanceType== 'party' or instanceType == 'pvp') and Player:HealthPercentage()<50 and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
+		return S.VampiricEmbrace:Cast()
+	end
 
 	if IsReady('Mind Spike') and targetRange30 and not Player:IsMoving() then
 		return S.waistrune:Cast() 
