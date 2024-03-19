@@ -178,10 +178,7 @@ end
 -- print(Player:StoppedFor())
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
-	
-	if IsReady('Mind Spike') and targetRange30 and Player:StoppedFor()>0.5 and not Player:AffectingCombat() and (IsCurrentSpell(5019) or IsCurrentSpell(6603)) then
-		return S.waistrune:Cast() 
-	end
+
 
 	if IsReady('Shadow Word: Death') and targetRange30 and (UnitHealth('target')<1000 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.handrune:Cast()
@@ -202,7 +199,10 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady("Power Word: Shield") and (instanceType== 'none' or isTanking == true or Target:IsAPlayer() or instanceType == 'pvp')  and not AuraUtil.FindAuraByName("Dispersion","player") and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
 		return S.PowerWordShield:Cast()
 	end	
-
+	
+	if IsReady('Mind Spike') and targetRange30 and Player:StoppedFor()>0.5 and not Player:AffectingCombat() and (IsCurrentSpell(5019) or IsCurrentSpell(6603)) then
+		return S.waistrune:Cast() 
+	end
 	-- if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>40 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
 	-- 	return S.Renew:Cast()
 	-- end	
