@@ -175,7 +175,6 @@ if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") 
 end
 
 
--- print(Player:StoppedFor())
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
@@ -200,9 +199,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.PowerWordShield:Cast()
 	end	
 	
-	if IsReady('Mind Spike') and targetRange30 and Player:StoppedFor()>0.5 and not Player:AffectingCombat() and (IsCurrentSpell(5019) or IsCurrentSpell(6603)) then
-		return S.waistrune:Cast() 
-	end
+
 	-- if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>40 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
 	-- 	return S.Renew:Cast()
 	-- end	
