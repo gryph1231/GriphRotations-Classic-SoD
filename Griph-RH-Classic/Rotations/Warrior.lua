@@ -246,6 +246,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if Target:IsAPlayer() and IsReady("Rallying Cry") and inRange25>=1 and Player:HealthPercentage()<=15 then
         return S.feetrune:Cast()
     end	
+    if IsReady("Intercept") and not CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+        return S.Charge:Cast()
+    end
+
     if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
         return S.Pummel:Cast()
     end
@@ -286,7 +290,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerRage:Cast()
     end
 
-    if IsReady("Bloodrage") and (S.BerserkerRage:CooldownRemains()>2 or instanceTypepvp == 'pvp') and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    if IsReady("Bloodrage") and (not S.BerserkerRage:IsAvailable() or S.BerserkerRage:CooldownRemains()>2 or instanceTypepvp == 'pvp') and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
 
@@ -359,7 +363,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 		return I.autoattack:ID()
 	end
 
-    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and inRange25==0 and IsReady('Charge') and Player:Rage()>50 then
+    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and RangeCount11()==0 then
         return S.BattleStance:Cast()
     end
 

@@ -48,12 +48,14 @@ GriphRH.Spell[5] = {
 	VampiricEmbrace = Spell(15286),
 	Dispersion = Spell(425294),
 	AbolishDisease = Spell(552),
+	MindSpike = Spell(431655),
 };
 
 local S = GriphRH.Spell[5]
 
 S.Smite:RegisterInFlight()
 S.Shoot:RegisterInFlight()
+S.MindSpike:RegisterInFlight()
 
 	if duration and start then 
 		cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
@@ -109,12 +111,20 @@ local castchannelTime = math.random(275, 500) / 1000
 
 local spellwidgetfort= UnitCastingInfo("target")
 
+
+if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+end
+
+
 if GriphRH.QueuedSpell():ID() == S.PsychicScream:ID() and (S.PsychicScream:CooldownRemains()>2 or not IsUsableSpell("Psychic Scream") or RangeCount11()==0) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
 
 
-if GriphRH.QueuedSpell():ID() == S.Dispersion:ID() and S.Dispersion:CooldownRemains()>2  then
+if GriphRH.QueuedSpell():ID() == S.Dispersion:ID() and (S.Dispersion:CooldownRemains()>2 or inRange25==0 or not Player:AffectingCombat()) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
 
@@ -158,11 +168,6 @@ if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell("Heal") and 
 end
 
 
-if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
-end
 
 
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
@@ -170,10 +175,15 @@ if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") 
 end
 
 
-if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight()) and not Target:IsDeadOrGhost() then 
-	
+print(Player:NotMovingFor())
 
-	if IsReady('Shadow Word: Death') and targetRange30 and (UnitHealth('target')<500 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and Target:TimeToDie()<10 or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
+	
+	if IsReady('Mind Spike') and targetRange30 and Player:NotMovingFor()>0.5 and not Player:AffectingCombat() and (IsCurrentSpell(5019) or IsCurrentSpell(6603)) then
+		return S.waistrune:Cast() 
+	end
+
+	if IsReady('Shadow Word: Death') and targetRange30 and (UnitHealth('target')<1000 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.handrune:Cast()
 	end
 
@@ -211,7 +221,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	if IsReady("Dispersion") and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
+	if IsReady("Dispersion") and instanceType~= 'none' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
 		return S.feetrune:Cast()
 	end	
 
@@ -241,9 +251,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.DevouringPlague:Cast()
 	end
 
-	if IsReady('Vampiric Embrace') and (instanceType== 'party' or instanceType == 'pvp') and Player:HealthPercentage()<50 and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
-		return S.VampiricEmbrace:Cast()
-	end
+	-- if IsReady('Vampiric Embrace') and (instanceType== 'party' or instanceType == 'pvp') and Player:HealthPercentage()<50 and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
+	-- 	return S.VampiricEmbrace:Cast()
+	-- end
 
 	if IsReady('Mind Spike') and targetRange30 and not Player:IsMoving() then
 		return S.waistrune:Cast() 
@@ -281,7 +291,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 	return S.shadowprotection:Cast()
 	end
 
-	if IsReady('Touch of Weakness') and Player:IsMoving() and instanceType~= 'party'  and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
+	if IsReady('Touch of Weakness') and Player:ManaPercentage()>80 and Player:IsMoving() and instanceType== 'none'  and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
 		return S.TouchofWeakness:Cast()
 	end
 	
