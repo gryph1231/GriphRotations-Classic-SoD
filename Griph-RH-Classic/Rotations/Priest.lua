@@ -267,7 +267,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	-- if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
 	-- 	return Item(135274, { 13, 14 }):ID()
 	-- end
-
+--test test
 
 
 end
