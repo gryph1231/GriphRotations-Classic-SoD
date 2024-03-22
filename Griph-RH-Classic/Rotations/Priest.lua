@@ -174,7 +174,7 @@ if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") 
 	return S.Shadowform:Cast()
 end
 
-
+-- print(AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL"))
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
@@ -218,7 +218,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	if IsReady("Dispersion") and instanceType~= 'none' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
+	if IsReady("Dispersion") and instanceType~= 'pvp' and instanceType~= 'none' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<40 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
 		return S.feetrune:Cast()
 	end	
 

@@ -136,6 +136,11 @@ local castchannelTime = math.random(275, 500) / 1000
 
 local spellwidgetfort= UnitCastingInfo("target")
 -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
+if HL.CombatTime()<2 and S.SweepingStrikes:CooldownRemains()<Player:GCD()*2 and GriphRH.CDsON() and RangeCount11()>1 and GriphRH.AoEON() then
+    battlestance = true
+else
+    battlestance = false
+end 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -220,6 +225,7 @@ local spellwidgetfort= UnitCastingInfo("target")
             return S.commandingshout:Cast()
         end	
 
+
         if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
             return S.handrune:Cast()
         end
@@ -266,7 +272,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleShout:Cast()
     end	
 
-    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","player") then
+    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
         return S.commandingshout:Cast()
     end	
 
@@ -339,8 +345,9 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
     if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
-    return S.commandingshout:Cast()
+        return S.commandingshout:Cast()
     end	
+
 
     if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave'))  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
         return S.Cleave:Cast()
