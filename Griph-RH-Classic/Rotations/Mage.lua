@@ -150,6 +150,10 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Counterspell:Cast()
 	end
 
+	if IsReady("Mana Shield") and (instanceType== 'none' or isTanking == true or Target:IsAPlayer() or instanceType == 'pvp')  and not AuraUtil.FindAuraByName("Mana Shield","player") then
+		return S.ManaShield:Cast()
+	end	
+
 	if IsReady("Evocation") and Player:ManaPercentage()<=15 and instanceType~= 'pvp' and instanceType~= 'none' and GriphRH.CDsON() and Player:StoppedFor()>3 then
 		return S.Evocation:Cast()
 	end
@@ -210,9 +214,9 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 		return S.FrostArmor:Cast()
 	end
 
-	if IsReady('Mana Shield') and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mana Shield","player") then
-		return S.ManaShield:Cast()
-	end
+	-- if IsReady('Mana Shield') and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mana Shield","player") then
+	-- 	return S.ManaShield:Cast()
+	-- end
 	
 	end
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
