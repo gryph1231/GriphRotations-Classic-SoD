@@ -177,7 +177,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return I.autoattack:ID()
 	end
 
-end
+	
+
+end--end in combat rotation here
 
 
 
