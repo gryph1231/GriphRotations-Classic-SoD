@@ -31,6 +31,7 @@ GriphRH.Spell[8] = {
 	Frostbolt = Spell(116),
 	Counterspell = Spell(2139),
 	FrostArmor = Spell(168),
+    handrune = Spell(20594), --GGL bind stone form - BP /cast hands rune ability
 };
 
 local S = GriphRH.Spell[8]
@@ -145,7 +146,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Evocation:Cast()
 	end
 
-
+	if IsReady("Living Bomb") and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
+		return S.handrune:Cast()
+	end
 	if IsReady('Scorch') and targetRange30 and (not scorchDebuff or  S.ImprovedScorch:IsAvailable() and (scorchCount < 5 or scorchRemainingTime <= 5)) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
