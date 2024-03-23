@@ -204,11 +204,11 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	-- 	return S.Renew:Cast()
 	-- end	
 
-	if IsReady("Abolish Disease") and GetAppropriateCureSpell() == "Disease" then
+	if IsReady("Abolish Disease") and GetAppropriateCureSpell() == "Disease" and not AuraUtil.FindAuraByName("Shadowform","player") then
 		return S.AbolishDisease:Cast()
 	end
 
-	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 then
+	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Shadowform","player")  then
 		return S.CureDisease:Cast()
 	end
 

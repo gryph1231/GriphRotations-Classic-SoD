@@ -15,17 +15,18 @@ local Item = HL.Item;
 
 GriphRH.Spell[8] = {
 	ArcaneIntellect = Spell(1459),
-
+	ImprovedScorch = Spell(12873),
 	shadowprotection = Spell(605), --mind control
 	Shoot = Spell(5019),
+	Scorch = Spell(2948),
 	chestrune = Spell(20594),--stoneform
 	handrune = Spell(20554), --berserking
 	legrune = Spell(20580), --shadowmeld
-
+	Pyroblast = Spell(11366),
 	feetrune = Spell(1706), -- levitate
-
+	Fireball = Spell(133),
 	waistrune = Spell(7744), --will of the forsaken
-
+	FireBlast = Spell(10199),
 	Default = Spell(1),
 	Frostbolt = Spell(116),
 	Counterspell = Spell(2139),
@@ -34,6 +35,8 @@ GriphRH.Spell[8] = {
 local S = GriphRH.Spell[8]
 
 S.Frostbolt:RegisterInFlight()
+S.Fireball:RegisterInFlight()
+
 S.Shoot:RegisterInFlight()
 
 
@@ -105,11 +108,15 @@ end
 -- end
 
 
+local scorchDebuff, scorchCount, scorchExpiration = AuraUtil.FindAuraByName("Improved Scorch", "target", "PLAYER|HARMFUL")
+local scorchRemainingTime = scorchDebuff and (scorchExpiration - GetTime()) or 0
 
 
 
 
-if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Frostbolt:InFlight()) and not Target:IsDeadOrGhost() then 
+
+
+if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Frostbolt:InFlight() or S.Fireball:InFlight()) and not Target:IsDeadOrGhost() then 
 
 
 
@@ -121,11 +128,26 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady("Evocation") and Player:ManaPercentage()<=15 and instanceType~= 'pvp' and instanceType~= 'none' and GriphRH.CDsON() then
 		return S.Evocation:Cast()
 	end
-	if IsReady('Scorch') and targetRange30 and not AuraUtil.FindAuraByName("Improved Scorch","target","PLAYER|HARMFUL") and not Player:IsMoving() then
+
+
+	if IsReady('Scorch') and targetRange30 and (not scorchDebuff or  S.ImprovedScorch:IsAvailable() and (scorchCount < 5 or scorchRemainingTime <= 5)) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
+	
+	if IsReady('Pyroblast') and AuraUtil.FindAuraByName("Hot Streak", "player") then
+		return S.Pyroblast:Cast()
+	end
+	
+	if IsReady('Fireball') and AuraUtil.FindAuraByName("Combustion", "player") and AuraUtil.FindAuraByName("Icy Veins", "player") and not Player:IsMoving() then
+		return S.Fireball:Cast()
+	end
+	if IsReady('Fire Blast')  then
+		return S.FireBlast:Cast()
+	end
 
-
+	if IsReady('Scorch') and not Player:IsMoving() then
+		return S.Scorch:Cast()
+	end
 
 
 	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10 then
