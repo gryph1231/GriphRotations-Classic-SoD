@@ -203,13 +203,13 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 	if IsReady('Arcane Intellect') and not AuraUtil.FindAuraByName("Arcane Intellect","player") and Player:IsMoving() then
 		return S.ArcaneIntellect:Cast()
 	end
-	
-	if IsReady('Frost Armor') and Player:ManaPercentage()>80 and Player:IsMoving() and not AuraUtil.FindAuraByName("Frost Armor","player") then
-		return S.FrostArmor:Cast()
-	end
-	if IsReady('Mage Armor') and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mage Armor","player") then
+	if IsReady('Mage Armor') and instanceType~= 'pvp' and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mage Armor","player") then
 		return S.MageArmor:Cast()
 	end
+	if IsReady('Frost Armor') and instanceType== 'pvp' and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Frost Armor","player") and not AuraUtil.FindAuraByName("Mage Armor","player")  then
+		return S.FrostArmor:Cast()
+	end
+
 	if IsReady('Mana Shield') and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mana Shield","player") then
 		return S.ManaShield:Cast()
 	end
