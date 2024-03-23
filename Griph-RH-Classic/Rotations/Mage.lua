@@ -30,6 +30,7 @@ GriphRH.Spell[8] = {
 	Default = Spell(1),
 	Frostbolt = Spell(116),
 	Counterspell = Spell(2139),
+	FrostArmor = Spell(168),
 };
 
 local S = GriphRH.Spell[8]
@@ -141,6 +142,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Fireball') and AuraUtil.FindAuraByName("Combustion", "player") and AuraUtil.FindAuraByName("Icy Veins", "player") and not Player:IsMoving() then
 		return S.Fireball:Cast()
 	end
+	
 	if IsReady('Fire Blast')  then
 		return S.FireBlast:Cast()
 	end
@@ -148,7 +150,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Scorch') and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
-
+	if IsReady('Fireball') and not Player:IsMoving() then
+		return S.Fireball:Cast()
+	end
 
 	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10 then
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
@@ -162,10 +166,13 @@ end
 
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
 
-	if IsReady('Arcane Intellect') and not AuraUtil.FindAuraByName("Arcane Intellect","player") then
+	if IsReady('Arcane Intellect') and not AuraUtil.FindAuraByName("Arcane Intellect","player") and Player:IsMoving() then
 		return S.ArcaneIntellect:Cast()
 	end
 	
+	if IsReady('Frost Armor') and Player:ManaPercentage()>80 and Player:IsMoving() and not AuraUtil.FindAuraByName("Frost Armor","player") then
+		return S.FrostArmor:Cast()
+	end
 	
 	
 	end
