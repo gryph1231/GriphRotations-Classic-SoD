@@ -19,8 +19,8 @@ GriphRH.Spell[8] = {
 	shadowprotection = Spell(605), --mind control
 	Shoot = Spell(5019),
 	Scorch = Spell(2948),
-	chestrune = Spell(20594),--stoneform
-	handrune = Spell(20554), --berserking
+	
+
 	legrune = Spell(20580), --shadowmeld
 	Pyroblast = Spell(11366),
 	feetrune = Spell(1706), -- levitate
@@ -31,7 +31,9 @@ GriphRH.Spell[8] = {
 	Frostbolt = Spell(116),
 	Counterspell = Spell(2139),
 	FrostArmor = Spell(168),
-    handrune = Spell(20594), --GGL bind stone form - BP /cast hands rune ability
+	MageArmor = Spell(6117),
+	ManaShield = Spell(1463),
+    handrune = Spell(20554), --berserking - BP /cast hands rune ability
 };
 
 local S = GriphRH.Spell[8]
@@ -147,7 +149,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Counterspell:Cast()
 	end
 
-	if IsReady("Evocation") and Player:ManaPercentage()<=15 and instanceType~= 'pvp' and instanceType~= 'none' and GriphRH.CDsON() then
+	if IsReady("Evocation") and Player:ManaPercentage()<=15 and instanceType~= 'pvp' and instanceType~= 'none' and GriphRH.CDsON() and Player:StoppedFor()>3 then
 		return S.Evocation:Cast()
 	end
 
@@ -200,7 +202,12 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 	if IsReady('Frost Armor') and Player:ManaPercentage()>80 and Player:IsMoving() and not AuraUtil.FindAuraByName("Frost Armor","player") then
 		return S.FrostArmor:Cast()
 	end
-	
+	if IsReady('Mage Armor') and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mage Armor","player") then
+		return S.MageArmor:Cast()
+	end
+	if IsReady('Mana Shield') and Player:ManaPercentage()>65 and Player:IsMoving() and not AuraUtil.FindAuraByName("Mana Shield","player") then
+		return S.ManaShield:Cast()
+	end
 	
 	end
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
