@@ -281,7 +281,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.Riposte:Cast()
         end
 
-        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) and (AuraUtil.FindAuraByName("Envenom", "player") or not IsReady('Envenom')) then
+        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
             return S.Eviscerate:Cast()
         end
 
@@ -294,7 +294,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5  then
+        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <4  then
             return S.handrune:Cast()
         end
 
@@ -342,7 +342,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
                 return S.handrune:Cast()
             end
 
-            if S.Mutilate:CanCast() and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 and namemutilate == 'Mutilate' then
+            if S.Mutilate:CanCast() and CheckInteractDistance("target", 3) and Player:ComboPoints() <4 and namemutilate == 'Mutilate' then
                 return S.handrune:Cast()
             end
     
