@@ -25,7 +25,7 @@ GriphRH.Spell[8] = {
 	Pyroblast = Spell(11366),
 	feetrune = Spell(1706), -- levitate
 	Fireball = Spell(133),
-	waistrune = Spell(7744), --will of the forsaken
+
 	FireBlast = Spell(10199),
 	Default = Spell(1),
 	Frostbolt = Spell(116),
@@ -33,6 +33,7 @@ GriphRH.Spell[8] = {
 	FrostArmor = Spell(168),
 	MageArmor = Spell(6117),
 	ManaShield = Spell(1463),
+	legrune = Spell(7744), --will of the forsaken - BP /cast leg rune ability
     handrune = Spell(20554), --berserking - BP /cast hands rune ability
 };
 
@@ -83,7 +84,7 @@ local function APL()
 		end
 	end
 
-		targetRange30 = TargetInRange("Frostbolt")
+		targetRange30 = TargetInRange("Fireball")
 
 
     local inRange25 = 0
@@ -153,29 +154,33 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Evocation:Cast()
 	end
 
-	if IsReady("Living Bomb") and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
+	if IsReady("Living Bomb") and targetRange30 and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
 		return S.handrune:Cast()
 	end
+	if IsReady("Living Flame")  and targetRange30 then
+		return S.handrune:Cast()
+	end
+
 	if IsReady('Scorch') and targetRange30 and (not scorchDebuff or  S.ImprovedScorch:IsAvailable() and (scorchCount < 5 or scorchRemainingTime <= 5)) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
 	
-	if IsReady('Pyroblast') and AuraUtil.FindAuraByName("Hot Streak", "player") then
+	if IsReady('Pyroblast') and AuraUtil.FindAuraByName("Hot Streak", "player") and targetRange30 then
 		return S.Pyroblast:Cast()
 	end
 	
-	if IsReady('Fireball') and AuraUtil.FindAuraByName("Combustion", "player") and AuraUtil.FindAuraByName("Icy Veins", "player") and not Player:IsMoving() then
+	if IsReady('Fireball') and targetRange30 and AuraUtil.FindAuraByName("Combustion", "player") and AuraUtil.FindAuraByName("Icy Veins", "player") and not Player:IsMoving() then
 		return S.Fireball:Cast()
 	end
 	
-	if IsReady('Fire Blast')  then
+	if IsReady('Fire Blast') and targetRange30 then
 		return S.FireBlast:Cast()
 	end
 
-	if IsReady('Scorch') and not Player:IsMoving() then
+	if IsReady('Scorch') and not Player:IsMoving() and targetRange30 then
 		return S.Scorch:Cast()
 	end
-	if IsReady('Fireball') and not Player:IsMoving() then
+	if IsReady('Fireball') and not Player:IsMoving() and targetRange30 then
 		return S.Fireball:Cast()
 	end
 
