@@ -19,9 +19,9 @@ GriphRH.Spell[8] = {
 	shadowprotection = Spell(605), --mind control
 	Shoot = Spell(5019),
 	Scorch = Spell(2948),
-	
+	Evocation = Spell(12051),
 
-	legrune = Spell(20580), --shadowmeld
+	-- legrune = Spell(20580), --shadowmeld
 	Pyroblast = Spell(11366),
 	feetrune = Spell(1706), -- levitate
 	Fireball = Spell(133),
@@ -158,7 +158,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.handrune:Cast()
 	end
 	if IsReady("Living Flame")  and targetRange30 then
-		return S.handrune:Cast()
+		return S.legrune:Cast()
 	end
 
 	if IsReady('Scorch') and targetRange30 and (not scorchDebuff or  S.ImprovedScorch:IsAvailable() and (scorchCount < 5 or scorchRemainingTime <= 5)) and not Player:IsMoving() then
