@@ -158,7 +158,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
 	end
 
-
+	if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
+		return I.autoattack:ID()
+	end
 
 end
 
