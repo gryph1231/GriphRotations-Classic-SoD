@@ -137,6 +137,11 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 
 
 
+	if IsReady('Fire Blast') and targetRange30 and (UnitHealth('target')<200 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20)  then
+		return S.FireBlast:Cast()
+	end
+
+
 
 	if IsReady("Counterspell") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetRange30 and GriphRH.InterruptsON() then
 		return S.Counterspell:Cast()
