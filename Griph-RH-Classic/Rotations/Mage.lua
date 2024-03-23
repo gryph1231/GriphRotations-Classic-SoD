@@ -171,13 +171,15 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Pyroblast:Cast()
 	end
 
+
+	
 	if IsReady('Scorch') and targetRange30 and (Target:DebuffStack(S.ScorchDebuff) < 5 or Target:DebuffRemains(S.ScorchDebuff) <= 5) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
 	
 
 	
-	if IsReady('Fireball') and targetRange30 and AuraUtil.FindAuraByName("Combustion", "player") and AuraUtil.FindAuraByName("Icy Veins", "player") and not Player:IsMoving() then
+	if IsReady('Fireball') and targetRange30 and (AuraUtil.FindAuraByName("Combustion", "player") or AuraUtil.FindAuraByName("Icy Veins", "player")) and not Player:IsMoving() then
 		return S.Fireball:Cast()
 	end
 	
