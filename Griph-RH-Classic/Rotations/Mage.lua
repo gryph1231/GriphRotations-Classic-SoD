@@ -35,6 +35,21 @@ GriphRH.Spell[8] = {
 
 local S = GriphRH.Spell[8]
 
+
+if not Item.Mage then
+    Item.Mage = {}
+end
+
+Item.Mage = {
+thistletea = Item(7676),
+    trinket = Item(28288, { 13, 14 }),
+    trinket2 = Item(25628, { 13, 14 }),
+    autoattack = Item(135274, { 13, 14 }),
+};
+
+local I = Item.Mage;
+
+
 S.Frostbolt:RegisterInFlight()
 S.Fireball:RegisterInFlight()
 
