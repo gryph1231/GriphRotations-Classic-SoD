@@ -529,24 +529,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     end
 
 
-    if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-        if rockbitermh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
-            return S.RockbiterWeapon:Cast()
-        end
-        if flametonguemh == true and (hasMainHandEnchant==false or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
-            return S.FlametongueWeapon:Cast()
-        end
-        if windfurymh == true and (hasMainHandEnchant==false  or (mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
-            return S.WindfuryWeapon:Cast()
-        end
-        if rockbiteroh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
-            return S.RockbiterWeapon:Cast()
-        end
-        if flametongueoh == true and (hasOffHandEnchant==false  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
-            return S.FlametongueWeapon:Cast()
-        end
-        end
-
+   
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------IN COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -651,7 +634,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.GroundingTotem:Cast()
         end  
 
-        if not Target:IsAPlayer() and not Player:IsMoving() and Player:ManaPercentage()>70 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if not Target:IsAPlayer() and Player:MovingFor()<1 and Player:ManaPercentage()>70 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.MagmaTotem:Cast()
         end
 
@@ -668,7 +651,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.SearingTotem:Cast()
         end
 
-        if not Target:IsAPlayer() and IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>60 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if not Target:IsAPlayer() and IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>60 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
        
@@ -698,7 +681,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.handrune:Cast()
             end
 
-            if (Target:IsAPlayer() or Player:ManaPercentage()>=70) and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetrange11() then
+            if (Target:IsAPlayer() or Player:ManaPercentage()>=30) and ( isTanking == false and Player:ManaPercentage()>=50 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetrange11() then
                 return S.EarthShock:Cast()
             end
 
@@ -706,7 +689,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.earthshock1:Cast()
             end
 
-            if Player:ManaPercentage()>=70 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+            if Player:ManaPercentage()>=60 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
                 return S.FlameShock:Cast()
             end
 
@@ -897,9 +880,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.ChainLightning:Cast()
             end
 
-            if IsReady('Lightning Bolt') then
-                return S.LightningBolt:Cast()
-            end
+            -- if IsReady('Lightning Bolt') then
+            --     return S.LightningBolt:Cast()
+            -- end
         end
 
         if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Lightning Shield", "player") and Player:IsMoving() and Player:ManaPercentage()>90 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
