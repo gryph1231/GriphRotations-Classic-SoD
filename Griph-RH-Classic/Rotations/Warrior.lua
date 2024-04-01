@@ -41,8 +41,9 @@ GriphRH.Spell[1] = {
 	Hamstring = Spell(1715),
 	ThunderClap = Spell(11581),
     Pummel =  Spell(6552),
-    commandingshout = Spell(20549), --GGL war stomp - BP keybind is /cast commanding shout
+    VictoryRush = Spell(402927),
     chestrune = Spell(20589),--GGL escape artist - BP macro /cast chest rune ability -- used for raging blow
+    commandingshout = Spell(20549), --GGL war stomp - BP keybind is /cast commanding shout
     handrune = Spell(20580),--GGL shadowmeld - BP keybind /cast hands rune ability -- used for quick strike, victory rush (not in profile yet)
     feetrune = Spell(7744), --GGL will of the forsaken - BP keybind /cast feet rune ability -- used for intervene (not in profile yet)/rallying cry/engraged regeneration (not in profile yet)
   
@@ -146,14 +147,16 @@ local spellwidgetfort= UnitCastingInfo("target")
         if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
             return I.autoattack:ID()
         end
-        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
-            return S.Pummel:Cast()
-        end
+     
         if Target:IsAPlayer() and IsReady("Rallying Cry") and inRange25>=1 and Player:HealthPercentage()<=15 then
             return S.feetrune:Cast()
         end	
 
         if stoprotation == false then 
+
+            if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+                return S.Pummel:Cast()
+            end
         if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
             return S.Hamstring:Cast()
         end
@@ -176,6 +179,9 @@ local spellwidgetfort= UnitCastingInfo("target")
             return S.Execute:Cast()
         end	
 
+        if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
+            return S.handrune:Cast()
+        end	
 
         if IsReady("Overpower") and CheckInteractDistance("target",2) then
             return S.Overpower:Cast()
@@ -252,10 +258,15 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Charge:Cast()
     end
 
-    if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
-        return S.Pummel:Cast()
-    end
+
+
     if stoprotation == false then 
+        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+            return S.Pummel:Cast()
+        end
+        if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
+            return S.handrune:Cast()
+        end	
     if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
         return S.Hamstring:Cast()
     end

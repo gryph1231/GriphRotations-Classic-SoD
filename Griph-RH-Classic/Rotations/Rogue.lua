@@ -298,7 +298,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namemainguache == 'Main Guache' then
+        if  IsReady('Main Gauche') and CheckInteractDistance("target", 3) and Player:ComboPoints() <=2 and namemainguache == 'Main Guache' then
             return S.handrune:Cast()
         end
 
