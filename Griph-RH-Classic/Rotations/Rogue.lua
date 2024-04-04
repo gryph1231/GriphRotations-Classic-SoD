@@ -234,7 +234,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     else
         thistleteaoffcooldown=false
     end
-
+    local deadlypoisondebuff= (AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL")) 
 
     if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
     and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Vanish", "player") and not AuraUtil.FindAuraByName("Food & Drink", "player")
@@ -261,15 +261,24 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.legrune:Cast()
         end
 
-        if IsReady('Slice and Dice') and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Slice and Dice", "player"))) then
-            return S.SliceandDice:Cast()
+        if IsReady('Vanish') and deadlypoisondebuff and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
+            return S.Vanish :Cast()
         end
 
-        if IsReady('Cold Blood') and GriphRH.CDsON() and finish and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Slice and Dice", "player") then
+        if IsReady('Cold Blood') and GriphRH.CDsON() and deadlypoisondebuff and finish and CheckInteractDistance("target", 3) then
             return S.ColdBlood:Cast()
         end
       
-        if IsReady('Envenom') and (AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL")) and CheckInteractDistance("target", 3) and finish then
+      
+        if IsReady('Envenom') and AuraUtil.FindAuraByName("Cold Blood", "player") and CheckInteractDistance("target", 3) and finish and deadlypoisondebuff then
+            return S.legrune:Cast()
+        end
+
+        if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
+            return S.SliceandDice:Cast()
+        end
+
+        if IsReady('Envenom') and CheckInteractDistance("target", 3) and finish and deadlypoisondebuff then
             return S.legrune:Cast()
         end
 

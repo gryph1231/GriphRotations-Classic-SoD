@@ -600,7 +600,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
             return S.ChainLightning:Cast()
         end
-
+        if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+            return S.LightningBolt:Cast()
+        end
 
         if not Target:IsAPlayer() and UnitHealthMax('target')>100000 and Target:TimeToDie()<10 and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
@@ -712,6 +714,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.handrune:Cast()
             end
 
+            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+                return S.ChainLightning:Cast()
+            end
+
             if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
                 return S.PoisonCleansingTotem:Cast()
             end
@@ -741,9 +747,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.totemicprojection:Cast()
             end
 
-            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
-                return S.ChainLightning:Cast()
-            end
+ 
 
             if IsReady('Flame Shock(rank 1)') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
                 return S.flameshock1:Cast()
