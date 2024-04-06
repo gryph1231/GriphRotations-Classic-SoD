@@ -149,7 +149,10 @@ end
    
 
 local spellwidgetfort= UnitCastingInfo("target")
+local namecuttothechase = GetSpellInfo('Cut to the Chase')
+local namemasterofsublety = GetSpellInfo('Master of Sublety')
 local namequickdraw = GetSpellInfo('Quick Draw')
+local namecarnage = GetSpellInfo('Carnage')
 local nameshiv = GetSpellInfo('Shiv')
 local namemainguache = GetSpellInfo('Main Guache')
 local namemutilate = GetSpellInfo(399956)
@@ -169,7 +172,10 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     local castchannelTime = math.random(275, 500) / 1000
 
-    
+    local targetttd20= (Target:TimeToDie()>20 or UnitHealth('target')>5000 or Target:IsAPlayer() and Target:HealthPercentage()>65)
+    local targetttd10= (Target:TimeToDie()>10 or UnitHealth('target')>3500 or Target:IsAPlayer() and Target:HealthPercentage()>60)
+    local targetttd8= (Target:TimeToDie()>8 or UnitHealth('target')>3000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
+
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
     elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player")
@@ -235,9 +241,24 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         thistleteaoffcooldown=false
     end
     local deadlypoisondebuff= (AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL")) 
+    if AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL") then
+        rupturedebuff = select(6,AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL")) - GetTime()
+         else
+            rupturedebuff = 0 
+        end
+        if AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL") and namecarnage =='Carnage' then
+            carnagedebuff = select(6,AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")) - GetTime()
+              else
+                 carnageedebuff = 0 
+             end
 
+        if AuraUtil.FindAuraByName("Garrote","target","PLAYER|HARMFUL") then
+           garrotedebuff = select(6,AuraUtil.FindAuraByName("Garrote","target","PLAYER|HARMFUL")) - GetTime()
+             else
+                garroteedebuff = 0 
+            end
     if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
-    and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Vanish", "player") and not AuraUtil.FindAuraByName("Food & Drink", "player")
+    and not AuraUtil.FindAuraByName("Food", "player") and (not AuraUtil.FindAuraByName("Vanish", "player") or AuraUtil.FindAuraByName("Cold Blood", "player")) and not AuraUtil.FindAuraByName("Food & Drink", "player")
     and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
@@ -255,13 +276,29 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         if (UnitName('target') == "STX-25/NB" and GriphRH.InterruptsON() and Player:Energy()>55 or not GriphRH.InterruptsON() or UnitName('target') ~= "STX-25/NB") then 
         if Player:Energy()<20 and UnitHealthMax('target')>100000 and IsUsableItem(7676)==true and thistleteaoffcooldown==true and GetItemCount(7676) >= 1 and GriphRH.CDsON() then
         return  S.ThistleTea:Cast()
+        end 
+
+
+        if namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
+        or  rupturedebuff <1 and AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL") 
+        or garrotedebuff<1.5 and AuraUtil.FindAuraByName("Garrote","target","PLAYER|HARMFUL"))
+        and Player:ComboPoints()>=3 and targetttd8 then
+            return S.Rupture:Cast()
         end
+
+        if namecuttothechase == 'Cut to the Chase' and not AuraUtil.FindAuraByName("Slice and Dice", "player") and Player:ComboPoints()>=1 and targetttd10 then
+            return S.SliceandDice:Cast()
+        end
+        if namecuttothechase ~= 'Cut to the Chase' and SnDbuffremains<1 and Player:ComboPoints()>=3 and targetttd20 then
+            return S.SliceandDice:Cast()
+        end
+
 
         if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
             return S.legrune:Cast()
         end
 
-        if IsReady('Vanish') and deadlypoisondebuff and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
+        if IsReady('Vanish') and namemasterofsublety =='Master of Sublety' and deadlypoisondebuff and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
             return S.Vanish :Cast()
         end
 
@@ -274,9 +311,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.legrune:Cast()
         end
 
-        if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
-            return S.SliceandDice:Cast()
-        end
+        -- if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
+        --     return S.SliceandDice:Cast()
+        -- end
 
         if IsReady('Envenom') and CheckInteractDistance("target", 3) and finish and deadlypoisondebuff then
             return S.legrune:Cast()
@@ -337,7 +374,12 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and IsCurrentSpell(6603) then
           
 
-
+            if IsReady('Stealth') and targetrange11() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
+                S.Stealth:Cast()
+            end
+            if IsReady('Garrote') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
+                return S.Garrote:Cast()
+            end
             if IsReady('Ambush') and CheckInteractDistance("target", 3) then
                 return S.Ambush:Cast()
             end
