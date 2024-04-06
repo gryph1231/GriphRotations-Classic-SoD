@@ -244,8 +244,23 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         thistleteaoffcooldown=false
     end
 
+    if AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") then
+        deadlypoisonstack =select(3,AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL"))
+    elseif AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL") then 
+        deadlypoisonstack = select(3,AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL"))
+    elseif AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") then 
+        deadlypoisonstack = select(3,AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL"))
+    elseif AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") then 
+        deadlypoisonstack = select(3,AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL"))
+    elseif AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") then 
+        deadlypoisonstack = select(3,AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL"))
+    elseif AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") then 
+        deadlypoisonstack = select(3,AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL"))
+    else
+        deadlypoisonstack = 0
+    end
 
-    local deadlypoisondebuff= (AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL")) 
+
     if AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL") then
         rupturedebuff = select(6,AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL")) - GetTime()
          else
@@ -303,32 +318,32 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.legrune:Cast()
         end
 
-        if IsReady('Vanish') and namemasterofsublety =='Master of Sublety' and deadlypoisondebuff and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
+        if IsReady('Vanish') and namemasterofsublety =='Master of Sublety' and deadlypoisonstack>=1 and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
             return S.Vanish :Cast()
         end
 
-        if IsReady('Cold Blood') and GriphRH.CDsON() and deadlypoisondebuff and finish and CheckInteractDistance("target", 3) then
+        if IsReady('Cold Blood') and GriphRH.CDsON() and deadlypoisonstack>=1 and finish and CheckInteractDistance("target", 3) then
             return S.ColdBlood:Cast()
         end
       
       
-        if IsReady('Envenom') and AuraUtil.FindAuraByName("Cold Blood", "player") and CheckInteractDistance("target", 3) and finish and deadlypoisondebuff then
+        if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and CheckInteractDistance("target", 3) and finish then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and namehonoramongthieves~= 'Honor Among Thieves' and CheckInteractDistance("target", 3) and Player:ComboPoints()>=4 then
+        if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves~= 'Honor Among Thieves' and CheckInteractDistance("target", 3) and Player:ComboPoints()>=4 then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and namehonoramongthieves== 'Honor Among Thieves' and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=5 or Player:ComboPoints()>=4 and Player:Energy()>=70) then
+        if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves== 'Honor Among Thieves' and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=5 or Player:ComboPoints()>=4 and Player:Energy()>=70) then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=2 and targetttd3) then
+        if IsReady('Envenom') and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=2 and targetttd3 and deadlypoisonstack >=3) then
             return S.legrune:Cast()
         end
         -- if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
         --     return S.SliceandDice:Cast()
         -- end
 
-        if IsReady('Envenom') and CheckInteractDistance("target", 3) and finish and deadlypoisondebuff then
+        if IsReady('Envenom') and CheckInteractDistance("target", 3) and finish and deadlypoisonstack>=1 then
             return S.legrune:Cast()
         end
 
@@ -386,7 +401,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
        
         if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
           
-
+            if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and CheckInteractDistance("target", 3) and finish then
+                return S.legrune:Cast()
+            end
             if IsReady('Stealth') and CheckInteractDistance("target", 3) then
                 return S.Stealth:Cast()
             end
