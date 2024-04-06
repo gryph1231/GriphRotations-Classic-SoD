@@ -41,6 +41,7 @@ GriphRH.Spell[5] = {
 	Silence = Spell(15487),
 	Shadowfiend = Spell(9484), -- shackle undead
 	waistrune = Spell(7744), --will of the forsaken
+	wristrune = Spell(1706), --levitate
 	Shadowform = Spell(15473),
 	Default = Spell(1),
 	TouchofWeakness = Spell(2652),
@@ -250,6 +251,10 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 
 	if IsReady('Vampiric Embrace') and instanceType~= 'none' and Player:HealthPercentage()<50 and not Target:IsAPlayer() and UnitHealth('target')>5000 and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
 		return S.VampiricEmbrace:Cast()
+	end
+	
+	if IsReady('Void Zone') and targetRange30 and not Player:IsMoving() then
+		return S.wristrune:Cast() 
 	end
 
 	if IsReady('Mind Spike') and targetRange30 and not Player:IsMoving() then
