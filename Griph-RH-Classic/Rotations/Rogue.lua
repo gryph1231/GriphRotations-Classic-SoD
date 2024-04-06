@@ -174,9 +174,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     local castchannelTime = math.random(275, 500) / 1000
 
-    local targetttd20= (Target:TimeToDie()>20 or UnitHealth('target')>5000 or Target:IsAPlayer() and Target:HealthPercentage()>65)
-    local targetttd10= (Target:TimeToDie()>10 or UnitHealth('target')>3500 or Target:IsAPlayer() and Target:HealthPercentage()>60)
-    local targetttd8= (Target:TimeToDie()>8 or UnitHealth('target')>3000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
+    local targetttd20= (Target:TimeToDie()>20 or UnitHealth('target')>2500 or Target:IsAPlayer() and Target:HealthPercentage()>65)
+    local targetttd10= (Target:TimeToDie()>10 or UnitHealth('target')>2250 or Target:IsAPlayer() and Target:HealthPercentage()>60)
+    local targetttd8= (Target:TimeToDie()>8 or UnitHealth('target')>2000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
     local targetttd3= (Target:TimeToDie()<3 or Target:IsAPlayer() and Target:HealthPercentage()<20)
 
     if Player:IsCasting() or Player:IsChanneling() then
@@ -243,6 +243,8 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     else
         thistleteaoffcooldown=false
     end
+
+
     local deadlypoisondebuff= (AuraUtil.FindAuraByName("Deadly Poison VI","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison V","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison IV","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison III","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison","target","PLAYER|HARMFUL") or AuraUtil.FindAuraByName("Deadly Poison II","target","PLAYER|HARMFUL")) 
     if AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL") then
         rupturedebuff = select(6,AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL")) - GetTime()
@@ -382,11 +384,11 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
        
-        if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and IsCurrentSpell(6603) then
+        if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
           
 
-            if IsReady('Stealth') and targetrange11() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-                S.Stealth:Cast()
+            if IsReady('Stealth') and CheckInteractDistance("target", 3) then
+                return S.Stealth:Cast()
             end
             if IsReady('Garrote') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
                 return S.Garrote:Cast()
