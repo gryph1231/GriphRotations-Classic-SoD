@@ -306,10 +306,10 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.Rupture:Cast()
         end
 
-        if namecuttothechase == 'Cut to the Chase' and not AuraUtil.FindAuraByName("Slice and Dice", "player") and Player:ComboPoints()>=1 and targetttd10 then
+        if namecuttothechase == 'Cut to the Chase' and not AuraUtil.FindAuraByName("Slice and Dice", "player") and Player:ComboPoints()>=1 and (targetttd10 or inRange25>1 and aoeTTD()>5) then
             return S.SliceandDice:Cast()
         end
-        if namecuttothechase ~= 'Cut to the Chase' and SnDbuffremains<1 and Player:ComboPoints()>=3 and targetttd20 then
+        if namecuttothechase ~= 'Cut to the Chase' and SnDbuffremains<1 and Player:ComboPoints()>=3 and (targetttd20 or inRange25>1 and aoeTTD()>5) then
             return S.SliceandDice:Cast()
         end
 
