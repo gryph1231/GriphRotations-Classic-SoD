@@ -177,7 +177,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     local targetttd20= (Target:TimeToDie()>20 or UnitHealth('target')>5000 or Target:IsAPlayer() and Target:HealthPercentage()>65)
     local targetttd10= (Target:TimeToDie()>10 or UnitHealth('target')>3500 or Target:IsAPlayer() and Target:HealthPercentage()>60)
     local targetttd8= (Target:TimeToDie()>8 or UnitHealth('target')>3000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
-    local targetttd3= (Target:TimeToDie()<3 or UnitHealth('target')<1800 or Target:IsAPlayer() and Target:HealthPercentage()<20)
+    local targetttd3= (Target:TimeToDie()<3 or Target:IsAPlayer() and Target:HealthPercentage()<20)
 
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
