@@ -355,7 +355,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.Riposte:Cast()
         end
 
-        if IsReady('Eviscerate') and inRange25==1 and finish and CheckInteractDistance("target", 3) then
+        if IsReady('Eviscerate') and inRange25==1 and Player:ComboPoints()>=5 and CheckInteractDistance("target", 3) then
             return S.Eviscerate:Cast()
         end
 
@@ -368,7 +368,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <4  then
+        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5  then
             return S.handrune:Cast()
         end
 
@@ -404,13 +404,13 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and CheckInteractDistance("target", 3) and finish then
                 return S.legrune:Cast()
             end
-            if IsReady('Stealth') and CheckInteractDistance("target", 3) then
+            if IsReady('Stealth') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
                 return S.Stealth:Cast()
             end
             if IsReady('Garrote') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
                 return S.Garrote:Cast()
             end
-            if IsReady('Ambush') and CheckInteractDistance("target", 3) then
+            if IsReady('Ambush') and CheckInteractDistance("target", 3) and namemutilate ~='mutilate' then
                 return S.Ambush:Cast()
             end
 

@@ -73,7 +73,8 @@ GriphRH.Spell[7] = {
     feetrune = Spell(8227), --flametongue totem
         fsr1 = Spell(8050),
         esr1 = Spell(408681),
-     
+        GraceofAirTotem = Spell(8835),
+     MagmaTotem3 = Spell(10586),
 };
 
 local S = GriphRH.Spell[7]
@@ -389,6 +390,9 @@ local function APL()
         if GriphRH.QueuedSpell():ID() == S.FireNovaTotem:ID() and (inRange25 ==0 or not IsUsableSpell("Fire Nova Totem") or S.FireNovaTotem:CooldownRemains()>2 or not Player:AffectingCombat())  then
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
+        if GriphRH.QueuedSpell():ID() == S.MagmaTotem:ID() and (inRange25 ==0 or not IsUsableSpell("Magma Totem") or S.MagmaTotem3:TimeSinceLastCast()<5 or not Player:AffectingCombat())  then
+            GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
+        end
         if GriphRH.QueuedSpell():ID() == S.StoneclawTotem:ID() and (inRange25 ==0 or not IsUsableSpell("Stoneclaw Totem") or S.StoneclawTotem:CooldownRemains()>2 or not Player:AffectingCombat() )  then
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
@@ -419,10 +423,10 @@ local function APL()
         if GriphRH.QueuedSpell():ID() == S.SearingTotem:ID() and (not IsUsableSpell(S.SearingTotem) or S.SearingTotem:TimeSinceLastCast()<10) then
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
-
-        if GriphRH.QueuedSpell():ID() == S.MagmaTotem:ID() and (not IsUsableSpell(S.MagmaTotem) or S.MagmaTotem:TimeSinceLastCast()<10) then
+        if GriphRH.QueuedSpell():ID() == S.WindfuryTotem:ID() and (not IsUsableSpell(S.WindfuryTotem) or S.WindfuryTotem:TimeSinceLastCast()<10 or partyInRange()==0 ) then
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
+
         if GriphRH.QueuedSpell():ID() == S.EarthbindTotem:ID() and (not IsUsableSpell(S.EarthbindTotem) or S.EarthbindTotem:TimeSinceLastCast()<10) then
             GriphRH.queuedSpell = { GriphRH.Spell[7].Default, 0 }
         end
@@ -465,13 +469,14 @@ local function APL()
         if GriphRH.QueuedSpell():ID() == S.GroundingTotem:ID() and IsUsableSpell("Grounding Totem") and totemName4 ~= 'Grounding Totem' and S.GroundingTotem:TimeSinceLastCast()>2 and IsUsableSpell("Grounding Totem") then
             return GriphRH.QueuedSpell():Cast()
         end
-        if GriphRH.QueuedSpell():ID() == S.MagmaTotem:ID() and IsUsableSpell("Magma Totem") then
-            return GriphRH.QueuedSpell():Cast()
-        end
+ 
         if GriphRH.QueuedSpell():ID() == S.FrostShock:ID() and IsUsableSpell("Frost Shock") then
             return GriphRH.QueuedSpell():Cast()
         end
         if GriphRH.QueuedSpell():ID() == S.FireNovaTotem:ID() and IsUsableSpell("Fire Nova Totem") then
+            return GriphRH.QueuedSpell():Cast()
+        end
+        if GriphRH.QueuedSpell():ID() == S.MagmaTotem:ID() and IsUsableSpell("Magma Totem") then
             return GriphRH.QueuedSpell():Cast()
         end
         if GriphRH.QueuedSpell():ID() == S.WindfuryTotem:ID() and IsUsableSpell("Windfury Totem") and totemName4 ~= 'Windfury Totem' and totemName4 ~= 'Windfury Totem II' and S.WindfuryTotem:TimeSinceLastCast()>2 then
@@ -500,22 +505,22 @@ local function APL()
 -- WFweaponenchantIDs = {283, 284}
 -- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()==0 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-    if rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=683 and mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
+    if IsReady(SpellRank('Rockbiter Weapon')) and rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=683 and mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
-    if flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
+    if IsReady(SpellRank('Flametongue Weapon')) and flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
         return S.FlametongueWeapon:Cast()
     end
-    if windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=525 and mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+    if IsReady(SpellRank('Windfury Weapon')) and windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=525 and mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
-    if windfuryoh == true and (ohenchantseconds<30  or (offHandEnchantID~=525 and offHandEnchantID~=283 and offHandEnchantID~=284)) then
+    if IsReady(SpellRank('Windfury Weapon')) and windfuryoh == true and (ohenchantseconds<30  or (offHandEnchantID~=525 and offHandEnchantID~=283 and offHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
-    if rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=683 and offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+    if IsReady(SpellRank('Rockbiter Weapon')) and rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=683 and offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
-    if flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
+    if IsReady(SpellRank('Flametongue Weapon')) and flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
         return S.FlametongueWeapon:Cast()
     end
     end
@@ -580,6 +585,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.ChainLightning:Cast()
         end
 
+        if not Target:IsAPlayer() and Player:ManaPercentage()>25 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.MagmaTotem:Cast()
+        end
+
         if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
             return S.handrune:Cast()
         end
@@ -625,31 +634,33 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
+        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and (totemName4 == 'Grace of Air Totem' and not AuraUtil.FindAuraByName("Grace of Air", "player") or totemName4 == 'Windfury Totem III' or totemName4 == 'Windfury Totem' or totemName4 == 'Windfury Totem II') and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
+        and ((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I') and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
+        (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+        return S.totemicprojection:Cast()
+        end
+
     
-    
-        if not Target:IsAPlayer() and aoeTTD()> 3 and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if not Target:IsAPlayer() and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Wild Strikes", "player") and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
-        
+
+        if aoeTTD()> 3 and IsReady(SpellRank('Grace of Air Totem')) and  haveTotem4 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.GraceofAirTotem:Cast()
+        end        
         
         if Target:IsAPlayer() and IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.GroundingTotem:Cast()
         end  
 
-        if not Target:IsAPlayer() and Player:MovingFor()<1 and Player:ManaPercentage()>70 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.MagmaTotem:Cast()
-        end
+
 
         if IsReady(SpellRank('Strength of Earth Totem')) and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
             return S.StrengthofEarthTotem:Cast()
         end
 
-        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and (totemName4 == 'Windfury Totem III' or totemName4 == 'Windfury Totem' or totemName4 == 'Windfury Totem II') and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
-        and ((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I') and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
-        (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
-        return S.totemicprojection:Cast()
-        end
-        if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+
+        if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>30 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.SearingTotem:Cast()
         end
 
@@ -759,15 +770,17 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
     
     
-        if not Target:IsAPlayer() and aoeTTD()> 3 and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if not Target:IsAPlayer() and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Wild Strikes", "player") and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
-        
+
+        if aoeTTD()> 3 and IsReady(SpellRank('Grace of Air Totem')) and  haveTotem4 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.GraceofAirTotem:Cast()
+        end        
         
         if Target:IsAPlayer() and IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.GroundingTotem:Cast()
         end  
-
         if not Target:IsAPlayer() and Player:MovingFor()<1 and Player:ManaPercentage()>70 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.MagmaTotem:Cast()
         end
