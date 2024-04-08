@@ -28,7 +28,6 @@ GriphRH.Spell[5] = {
 	ShadowWordPain = Spell(589),
 	PowerWordFortitude = Spell(1243),
 	ShadowProtection = Spell(976),
-	shadowprotection = Spell(605), --mind control
 	Shoot = Spell(5019),
 	chestrune = Spell(20594),--stoneform
 	handrune = Spell(20554), --berserking
@@ -290,7 +289,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 	end	
 
 	if IsReady('Shadow Protection') and Player:IsMoving() and not AuraUtil.FindAuraByName("Shadow Protection","player") then
-	return S.shadowprotection:Cast()
+	return S.ShadowProtection:Cast()
 	end
 
 	if IsReady('Touch of Weakness') and Player:ManaPercentage()>80 and Player:IsMoving() and instanceType== 'none'  and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
