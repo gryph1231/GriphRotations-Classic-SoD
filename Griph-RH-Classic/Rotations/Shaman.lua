@@ -569,16 +569,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Stormstrike') and targetrange11() then
             return S.Stormstrike:Cast()
         end
-        if not IsCurrentSpell(6603) and targetrange11() then
-            return I.autoattack:ID()
-        end
-        if IsReady('Molten Blast') and RangeCount11()==1 then
-            return S.handrune:Cast()
-        end
-   
-        if IsReady('Lava Lash') and targetrange11() then
-            return S.handrune:Cast()
-        end
 
 
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
@@ -596,6 +586,19 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
             return S.ChainLightning:Cast()
         end
+
+
+        if not IsCurrentSpell(6603) and targetrange11() then
+            return I.autoattack:ID()
+        end
+        if IsReady('Molten Blast') and RangeCount11()==1 then
+            return S.handrune:Cast()
+        end
+   
+        if IsReady('Lava Lash') and targetrange11() then
+            return S.handrune:Cast()
+        end
+
         if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
             return S.LightningBolt:Cast()
         end
@@ -699,6 +702,25 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             if IsReady('Stormstrike') and targetrange11() then
                 return S.Stormstrike:Cast()
             end
+    
+    
+            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
+                return S.ChainLightning:Cast()
+            end
+    
+            if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+                return S.MagmaTotem:Cast()
+            end
+    
+            if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
+                return S.handrune:Cast()
+            end
+    
+            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+                return S.ChainLightning:Cast()
+            end
+    
+    
             if not IsCurrentSpell(6603) and targetrange11() then
                 return I.autoattack:ID()
             end
@@ -710,20 +732,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.handrune:Cast()
             end
     
- 
-            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
-                return S.ChainLightning:Cast()
-            end
-            if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
-                return S.handrune:Cast()
-            end
-    
-            if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
-                return S.ChainLightning:Cast()
-            end
-
-
-
             if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
                 return S.LightningBolt:Cast()
             end
@@ -775,9 +783,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if Target:IsAPlayer() and IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.GroundingTotem:Cast()
         end  
-        if not Target:IsAPlayer() and Player:MovingFor()<1 and Player:ManaPercentage()>70 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.MagmaTotem:Cast()
-        end
+  
 
         if IsReady(SpellRank('Strength of Earth Totem')) and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
             return S.StrengthofEarthTotem:Cast()
