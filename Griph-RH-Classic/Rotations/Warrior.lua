@@ -114,6 +114,7 @@ end
 
 if AuraUtil.FindAuraByName("Divine Protection","target") 
 or AuraUtil.FindAuraByName("Ice Block","target") 
+or AuraUtil.FindAuraByName("Blessing of Protection","player") 
 or AuraUtil.FindAuraByName("Blessing of Protection","target") 
 or AuraUtil.FindAuraByName("Invulnerability","target") 
 or AuraUtil.FindAuraByName("Dispersion","target") then
