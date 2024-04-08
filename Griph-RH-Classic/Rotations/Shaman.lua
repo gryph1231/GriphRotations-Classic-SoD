@@ -566,20 +566,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
      
 
-        if IsReady('Stormstrike') and targetrange11() then
-            return S.Stormstrike:Cast()
-        end
-        if not IsCurrentSpell(6603) and targetrange11() then
-            return I.autoattack:ID()
-        end
-        if IsReady('Molten Blast') and RangeCount11()==1 then
-            return S.handrune:Cast()
-        end
-   
-        if IsReady('Lava Lash') and targetrange11() then
-            return S.handrune:Cast()
-        end
-
 
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
             return S.ChainLightning:Cast()
@@ -600,17 +586,32 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.LightningBolt:Cast()
         end
 
+
+        if IsReady('Stormstrike') and targetrange11() then
+            return S.Stormstrike:Cast()
+        end
+        if not IsCurrentSpell(6603) and targetrange11() then
+            return I.autoattack:ID()
+        end
+        if IsReady('Molten Blast') and RangeCount11()==1 then
+            return S.handrune:Cast()
+        end
+   
+        if IsReady('Lava Lash') and targetrange11() then
+            return S.handrune:Cast()
+        end
+
+
         if (UnitHealthMax('target')>100000 and Target:TimeToDie()<10 or Target:HealthPercentage()<20 and Target:IsAPlayer()) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
 
 
-        if (not Target:IsAPlayer() and Player:ManaPercentage()>=30 or Target:IsAPlayer() and targetrange11()) and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or Target:TimeToDie()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
+        if (not Target:IsAPlayer() and Player:ManaPercentage()>=15 or Target:IsAPlayer() and targetrange11()) and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or Target:TimeToDie()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
 
-
-        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
+        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<15 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
         
@@ -622,12 +623,8 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.DiseaseCleansingTotem:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and UnitHealth('target')>3000 and Target:TimeToDie()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=15 and IsReady('Flame Shock') and UnitHealth('target')>3000 and aoeTTD()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
-        end
-
-        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and UnitHealth('target')>3000 and Target:TimeToDie()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
-            return S.flameshock1:Cast()
         end
 
         
@@ -701,19 +698,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
     
     
-            if IsReady('Stormstrike') and targetrange11() then
-                return S.Stormstrike:Cast()
-            end
-            if not IsCurrentSpell(6603) and targetrange11() then
-                return I.autoattack:ID()
-            end
-            if IsReady('Molten Blast') and RangeCount11()==1 then
-                return S.handrune:Cast()
-            end
-       
-            if IsReady('Lava Lash') and targetrange11() then
-                return S.handrune:Cast()
-            end
+ 
             if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
                 return S.ChainLightning:Cast()
             end
@@ -731,27 +716,36 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.LightningBolt:Cast()
             end
     
+            if IsReady('Stormstrike') and targetrange11() then
+                return S.Stormstrike:Cast()
+            end
+            if not IsCurrentSpell(6603) and targetrange11() then
+                return I.autoattack:ID()
+            end
+            if IsReady('Molten Blast') and RangeCount11()==1 then
+                return S.handrune:Cast()
+            end
+       
+            if IsReady('Lava Lash') and targetrange11() then
+                return S.handrune:Cast()
+            end
 
 
-
-        if  (UnitHealthMax('target')>100000 and Target:TimeToDie()<10 or  Target:HealthPercentage()<20 and Target:IsAPlayer() ) and IsReady('Earth Shock') and targetRange25 then
+        if (not Target:IsAPlayer() and Player:ManaPercentage()>=15 or Target:IsAPlayer() ) and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
-        if (not Target:IsAPlayer() and Player:ManaPercentage()>=30 or Target:IsAPlayer() ) and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or Target:TimeToDie()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
-            return S.EarthShock:Cast()
-        end
 
 
-        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<30 and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
+        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<15 and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
                     
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()>=30 and IsReady('Flame Shock') and UnitHealth('target')>3000 and Target:TimeToDie()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()>=20 and IsReady('Flame Shock') and UnitHealth('target')>3000 and aoeTTD()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
 
-        if not Target:IsAPlayer() and Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and UnitHealth('target')>3000 and Target:TimeToDie()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+        if not Target:IsAPlayer() and Player:ManaPercentage()<20 and IsReady('Flame Shock(rank 1)') and UnitHealth('target')>3000 and aoeTTD()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.flameshock1:Cast()
         end
 
