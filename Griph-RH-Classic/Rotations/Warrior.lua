@@ -137,7 +137,16 @@ local castchannelTime = math.random(275, 500) / 1000
 
 local spellwidgetfort= UnitCastingInfo("target")
 -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
-
+if AuraUtil.FindAuraByName("Commanding Shout","player") then
+    commandingshoutbuffremains = select(6,AuraUtil.FindAuraByName("CommandingShout","player","PLAYER"))- GetTime()
+else
+    commandingshoutbuffremains = 0
+end
+if AuraUtil.FindAuraByName("Battle Shout","player") then
+    battleshoutbuffremains = select(6,AuraUtil.FindAuraByName("Battle Shout","player","PLAYER"))- GetTime()
+else
+    battleshoutbuffremains = 0
+end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -187,11 +196,11 @@ local spellwidgetfort= UnitCastingInfo("target")
             return S.Overpower:Cast()
         end	
       
-        if Target:IsAPlayer() and IsReady("Battle Shout") and not AuraUtil.FindAuraByName("Battle Shout","player") then
+        if Target:IsAPlayer() and IsReady("Battle Shout") and (not AuraUtil.FindAuraByName("Battle Shout","player") or battleshoutbuffremains<3) then
             return S.BattleShout:Cast()
         end	
 
-        if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
+        if Target:IsAPlayer() and IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
             return S.commandingshout:Cast()
         end	
 
@@ -219,11 +228,11 @@ local spellwidgetfort= UnitCastingInfo("target")
             return S.Whirlwind:Cast()
         end
 
-        if  IsReady("Battle Shout") and not AuraUtil.FindAuraByName("Battle Shout","player") then
+        if IsReady("Battle Shout") and (not AuraUtil.FindAuraByName("Battle Shout","player") or battleshoutbuffremains<3) then
             return S.BattleShout:Cast()
         end	
 
-        if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
+        if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
             return S.commandingshout:Cast()
         end	
 
@@ -278,13 +287,13 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.MortalStrike:Cast()
         end	
 
-    if Target:IsAPlayer() and IsReady("Battle Shout") and not AuraUtil.FindAuraByName("Battle Shout","player") then
-        return S.BattleShout:Cast()
-    end	
+        if Target:IsAPlayer() and IsReady("Battle Shout") and (not AuraUtil.FindAuraByName("Battle Shout","player") or battleshoutbuffremains<3) then
+            return S.BattleShout:Cast()
+        end	
 
-    if Target:IsAPlayer() and IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
-        return S.commandingshout:Cast()
-    end	
+        if Target:IsAPlayer() and IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
+            return S.commandingshout:Cast()
+        end	
 
     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and battlestance == true then
         return S.BattleStance:Cast()
@@ -350,11 +359,11 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     return S.Execute:Cast()
     end	
 
-    if IsReady("Battle Shout") and not AuraUtil.FindAuraByName("Battle Shout","player") then
+    if IsReady("Battle Shout") and (not AuraUtil.FindAuraByName("Battle Shout","player") or battleshoutbuffremains<3) then
         return S.BattleShout:Cast()
     end	
 
-    if IsReady("Commanding Shout") and not AuraUtil.FindAuraByName("Commanding Shout","player") and not AuraUtil.FindAuraByName("Blood Pact","target") then
+    if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
         return S.commandingshout:Cast()
     end	
 
