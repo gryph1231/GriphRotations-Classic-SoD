@@ -530,9 +530,8 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 ---------------------------------IN COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   if (Player:AffectingCombat() or isTanking==true) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
-   and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Ghost Wolf", "player")
-   and (Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) then 
+   if (Player:AffectingCombat() or isTanking==true or Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
+   and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
   
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -618,6 +617,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.earthshock1:Cast()
         end
         
+        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.LightningShield:Cast()
+        end
         if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
             return S.PoisonCleansingTotem:Cast()
         end
@@ -631,9 +633,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
         
-        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.LightningShield:Cast()
-        end
+
         if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and (totemName4 == 'Grace of Air Totem' and not AuraUtil.FindAuraByName("Grace of Air", "player") or totemName4 == 'Windfury Totem III' or totemName4 == 'Windfury Totem' or totemName4 == 'Windfury Totem II') and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
         and ((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I') and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
         (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
@@ -748,6 +748,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.earthshock1:Cast()
         end
                     
+        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.LightningShield:Cast()
+        end
 
         if not Target:IsAPlayer() and Player:ManaPercentage()>=20 and IsReady('Flame Shock') and UnitHealth('target')>3000 and aoeTTD()>10 and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
@@ -794,6 +797,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
         return S.totemicprojection:Cast()
         end
+
         if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>40 and RangeCount11()==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.SearingTotem:Cast()
         end
@@ -836,7 +840,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Earth Shock(rank 1)') and Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL")) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
-
+       if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.LightningShield:Cast()
+        end
+        
         if Player:ManaPercentage()>=30 and IsReady('Flame Shock') and targetRange25 and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
             return S.FlameShock:Cast()
         end
