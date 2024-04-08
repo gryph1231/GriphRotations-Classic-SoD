@@ -239,6 +239,9 @@ local spellwidgetfort= UnitCastingInfo("target")
         if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
             return S.HeroicStrike:Cast()
         end
+        if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 80 then
+            return S.Hamstring:Cast()
+        end
     end
     end
 
@@ -362,6 +365,9 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
     if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
         return S.HeroicStrike:Cast()
+    end
+    if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 80 then
+        return S.Hamstring:Cast()
     end
 end
 end

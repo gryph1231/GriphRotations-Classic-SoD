@@ -174,10 +174,10 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     local castchannelTime = math.random(275, 500) / 1000
 
-    local targetttd20= (Target:TimeToDie()>20 or UnitHealth('target')>2500 or Target:IsAPlayer() and Target:HealthPercentage()>65)
-    local targetttd10= (Target:TimeToDie()>10 or UnitHealth('target')>2250 or Target:IsAPlayer() and Target:HealthPercentage()>60)
-    local targetttd8= (Target:TimeToDie()>8 or UnitHealth('target')>2000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
-    local targetttd3= (Target:TimeToDie()<3 or Target:IsAPlayer() and Target:HealthPercentage()<20)
+    local targetttd20= (aoeTTD()>20 or UnitHealth('target')>2500 or Target:IsAPlayer() and Target:HealthPercentage()>65)
+    local targetttd10= (aoeTTD()>10 or UnitHealth('target')>2250 or Target:IsAPlayer() and Target:HealthPercentage()>60)
+    local targetttd8= (aoeTTD()>8 or UnitHealth('target')>2000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
+    local targetttd3= (aoeTTD()<3 or Target:IsAPlayer() and Target:HealthPercentage()<20)
 
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
@@ -312,7 +312,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         if namecuttothechase ~= 'Cut to the Chase' and SnDbuffremains<1 and Player:ComboPoints()>=3 and (targetttd20 or inRange25>1 and aoeTTD()>5) then
             return S.SliceandDice:Cast()
         end
-
+        if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
+            return S.SliceandDice:Cast()
+        end
 
         if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and CheckInteractDistance("target", 3) and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
             return S.legrune:Cast()
@@ -336,12 +338,10 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves== 'Honor Among Thieves' and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=5 or Player:ComboPoints()>=4 and Player:Energy()>=70) then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=2 and targetttd3 and deadlypoisonstack >=3) then
+        if IsReady('Envenom') and CheckInteractDistance("target", 3) and (Player:ComboPoints()>=3 and targetttd3 and deadlypoisonstack >=3) then
             return S.legrune:Cast()
         end
-        -- if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
-        --     return S.SliceandDice:Cast()
-        -- end
+
 
         if IsReady('Envenom') and CheckInteractDistance("target", 3) and finish and deadlypoisonstack>=1 then
             return S.legrune:Cast()
