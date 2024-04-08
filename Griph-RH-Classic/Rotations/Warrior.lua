@@ -77,7 +77,12 @@ local function APL()
     local nameflagellation = GetSpellInfo('Flagellation' )
     local nameprecisetiming = GetSpellInfo('Precise Timing' )
 
-   
+    if Player:IsCasting() or Player:IsChanneling() then
+        return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
+    elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") 
+    or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+        return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+    end
 
     if AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
         renddebuff = select(6,AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL")) - GetTime()
@@ -139,7 +144,7 @@ local castchannelTime = math.random(275, 500) / 1000
 local spellwidgetfort= UnitCastingInfo("target")
 -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
 if AuraUtil.FindAuraByName("Commanding Shout","player") then
-    commandingshoutbuffremains = select(6,AuraUtil.FindAuraByName("CommandingShout","player","PLAYER"))- GetTime()
+    commandingshoutbuffremains = select(6,AuraUtil.FindAuraByName("Commanding Shout","player","PLAYER"))- GetTime()
 else
     commandingshoutbuffremains = 0
 end
@@ -155,7 +160,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+    if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
 	
         if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
             return I.autoattack:ID()
@@ -175,7 +180,8 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             end	
     
     
-            if IsReady("Rampage") and CheckInteractDistance("target",2) then
+
+            if IsReady("Rampage") and CheckInteractDistance("target",2) and namerampage == 'Rampage' then
                 return S.wristrune:Cast()
             end	
     
@@ -273,7 +279,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------2H ARMS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
-if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and arms == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and arms == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
 	
     if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
         return I.autoattack:ID()
@@ -297,7 +303,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         end	
 
 
-        if IsReady("Rampage") and CheckInteractDistance("target",2) then
+        if IsReady("Rampage") and CheckInteractDistance("target",2) and namerampage == 'Rampage' then
             return S.wristrune:Cast()
         end	
 
