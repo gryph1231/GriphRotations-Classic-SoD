@@ -46,7 +46,7 @@ GriphRH.Spell[1] = {
     commandingshout = Spell(20549), --GGL war stomp - BP keybind is /cast commanding shout
     handrune = Spell(20580),--GGL shadowmeld - BP keybind /cast hands rune ability -- used for quick strike, victory rush (not in profile yet)
     feetrune = Spell(7744), --GGL will of the forsaken - BP keybind /cast feet rune ability -- used for intervene (not in profile yet)/rallying cry/engraged regeneration (not in profile yet)
-  
+    wristrune = Spell(20594), --GGL stone form -- BP /cast wrist rune ability
 };
 
 local S = GriphRH.Spell[1]
@@ -147,6 +147,8 @@ if AuraUtil.FindAuraByName("Battle Shout","player") then
 else
     battleshoutbuffremains = 0
 end
+local namerampage = GetSpellInfo('Rampage')
+
 local nametasteforblood = GetSpellInfo('Taste for Blood')
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -167,18 +169,24 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
                 return S.Pummel:Cast()
             end
+            if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
+                return S.handrune:Cast()
+            end	
+    
+    
+            if IsReady("Rampage") and CheckInteractDistance("target",2) then
+                return S.wristrune:Cast()
+            end	
+    
             
-        if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
-            return S.handrune:Cast()
-        end	
-
+            if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+                return S.Hamstring:Cast()
+            end
+    
             if nametasteforblood=='Taste for Blood' and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
                 return S.Rend:Cast()
             end
-
-        if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
-            return S.Hamstring:Cast()
-        end
+    
 
         if GetShapeshiftFormID() ~= 19 and (HL.CombatTime()>2.5 or S.SweepingStrikes:CooldownRemains()>Player:GCD()*2) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
             return S.BerserkerStance:Cast()
@@ -287,12 +295,21 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
             return S.handrune:Cast()
         end	
 
+
+        if IsReady("Rampage") and CheckInteractDistance("target",2) then
+            return S.wristrune:Cast()
+        end	
+
+        
+        if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+            return S.Hamstring:Cast()
+        end
+
         if nametasteforblood=='Taste for Blood' and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
             return S.Rend:Cast()
         end
-    if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
-        return S.Hamstring:Cast()
-    end
+
+
 
     if Target:IsAPlayer() and IsReady("Mortal Strike") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Mortal Strike","target","PLAYER|HARMFUL")  then
         return S.MortalStrike:Cast()
