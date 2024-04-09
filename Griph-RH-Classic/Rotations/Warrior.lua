@@ -181,7 +181,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
     
     
 
-            if IsReady("Rampage") and CheckInteractDistance("target",2) and namerampage == 'Rampage' then
+            if IsReady("Rampage") and CheckInteractDistance("target",2) and namerampage == 'Rampage'  and GriphRH.CDsON() then
                 return S.wristrune:Cast()
             end	
     
@@ -199,7 +199,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             return S.BerserkerStance:Cast()
         end
 
-        if IsReady("Death Wish") and CheckInteractDistance("target",3) then
+        if IsReady("Death Wish") and CheckInteractDistance("target",3) and GriphRH.CDsON() then
             return S.DeathWish:Cast()
         end	
         if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
