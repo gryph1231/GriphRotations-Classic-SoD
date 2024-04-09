@@ -1002,3 +1002,60 @@ function partyInRange()
     
     return range_counter
 end
+
+
+
+
+
+    -- Variables to hold the time of the last melee swings and weapon speeds
+local lastMainHandSwingTime = 0
+local lastOffHandSwingTime = 0
+local mainHandSpeed, offHandSpeed = GetWeaponSpeed()
+
+local function GetWeaponSpeed()
+    return UnitAttackSpeed("player")
+end
+
+local function UpdateWeaponSpeed()
+    mainHandSpeed, offHandSpeed = GetWeaponSpeed()
+end
+
+local function UpdateLastSwingTime(event, ...)
+    local timestamp, eventType, _, sourceGUID, _, _, _, _, _, _, _, isOffHand = CombatLogGetCurrentEventInfo()
+
+    if sourceGUID == UnitGUID("player") and (eventType == "SWING_DAMAGE" or eventType == "SWING_MISSED") then
+        UpdateWeaponSpeed()  -- Update weapon speed every time a swing occurs to ensure it's current
+
+        if isOffHand then
+            lastOffHandSwingTime = timestamp
+        else
+            lastMainHandSwingTime = timestamp
+        end
+    end
+end
+
+-- Register the event with a frame to listen for combat log updates and update weapon speed
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        UpdateLastSwingTime(event, ...)
+    elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+        UpdateWeaponSpeed()
+    end
+end)
+
+-- Function to get the last swing time and calculate the next expected swing time for main hand and offhand
+function GetNextSwingTimes()
+    local currentTime = GetTime()
+    local nextMainHandSwing = lastMainHandSwingTime + mainHandSpeed - currentTime
+    local nextOffHandSwing = lastOffHandSwingTime + offHandSpeed - currentTime
+
+    -- Ensure that the next swing time is not negative
+    nextMainHandSwing = nextMainHandSwing >= 0 and nextMainHandSwing or 0
+    nextOffHandSwing = nextOffHandSwing >= 0 and nextOffHandSwing or 0
+
+    return nextMainHandSwing, nextOffHandSwing
+end
+

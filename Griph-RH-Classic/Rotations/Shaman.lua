@@ -75,6 +75,8 @@ GriphRH.Spell[7] = {
         esr1 = Spell(408681),
         GraceofAirTotem = Spell(8835),
      MagmaTotem3 = Spell(10586),
+     weaponsync = Spell(25908), --tranquil air totem
+
 };
 
 local S = GriphRH.Spell[7]
@@ -113,7 +115,6 @@ end
 
 local function APL()
 
--- print(GCDRemaining())
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -218,77 +219,6 @@ local function APL()
         local castchannelTime = math.random(275, 500) / 1000
 
 
-
-    --     inRangeParty1 = (CheckInteractDistance("party1", 4))
-    --     inRangeParty2 = (CheckInteractDistance("party2", 4));
-    --     inRangeParty3 = (CheckInteractDistance("party3", 4));
-    --     inRangeParty4 = (CheckInteractDistance("party4", 4));
-    --  if inRangeParty1 == true or inRangeParty2 == true or inRangeParty3 == true or inRangeParty4 == true then
-    --     partymemberinrange = true
-    --  else
-    --     partymemberinrange = false
-    --  end
-    --  if nameoverload == 'Overload' then
-    --     elemental = true
-    --     enhdps = false
-    --     enhtank = false
-    --  elseif IsEquippedItemType("Shield") then
-    --     elemental = false
-    --     enhdps = false
-    --     enhtank = true
-    --  else 
-    --     enhdps = true
-    --     enhtank = false
-    --     elemental = false
-    --  end
-    --  local rockbitermh, rockbiteroh, flametonguemh, flametongueoh, windfurymh, windfuryoh = false, false, false, false, false, false
-    --  local dualWielding = HasMainhandWeapon() and HasOffhandWeapon() 
-    --  if not dualWielding then
-    --     rockbiteroh = false
-    --     flametongueoh = false
-    --     windfuryoh = false
-    --  end
-    --  if dualWielding and not S.FlametongueWeaponR1:IsAvailable()  then
-    --     rockbitermh = true
-    --     rockbiteroh = true
-    --  end
-    --  if dualWielding and S.FlametongueWeaponR1:IsAvailable()  then
-    --     flametongueoh = true
-    --     rockbiteroh = false
-    --     windfuryoh = false
-    --  end
-    --     if not HasMainhandWeapon() then
-    --         rockbitermh = false
-    --         windfurymh = false
-    --         flametonguemh = false
-    --     else
-     
-    
-    --         if enhdps ==true then
-    --             if S.WindfuryWeaponR1:IsAvailable() then
-    --                 windfurymh = true
-    --             else
-    --                 rockbitermh = true
-    --             end
-    --         end
-                    
-    --         if elemental == true then
-    --             if S.FlametongueWeaponR1:IsAvailable()  then
-    --             flametonguemh = true
-    --             else
-    --                 rockbitermh = true
-    --             end
-    --         end
-            
-    --         if enhtank == true then
-    --             if  nameWayofEarth == 'Way of Earth' then
-    --                 rockbitermh = true
-    --                 elseif  S.WindfuryWeaponR1:IsAvailable()  and nameWayofEarth~= 'Way of Earth' then
-    --                     windfurymh = true
-    --                 end
-    --             end
-
-    --     end
 
 
      if partyInRange()>=1 then
@@ -499,11 +429,7 @@ local function APL()
             GriphRH.queuedSpell = { GriphRH.Spell[7].totemicprojection, 0 }
             return GriphRH.QueuedSpell():Cast()
         end
-        -- print( GetUnitSpeed("target") /7 *100)
--- print(mainHandEnchantID)
-    -- FTweaponenchantIDs = {5, 4, 3, 523}
--- WFweaponenchantIDs = {283, 284}
--- RBweaponenchantIDs = {29, 6, 1, 503, 1663}
+
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()<.25 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
     if IsReady(SpellRank('Rockbiter Weapon')) and rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=683 and mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
@@ -532,7 +458,6 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
    if (Player:AffectingCombat() or isTanking==true or Target:AffectingCombat() or IsCurrentSpell(6603) or S.LightningBolt:InFlight() or S.LavaBurst:InFlight()) and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
    and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
-  
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------ENHDPS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -540,7 +465,12 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
     if enhdps == true  then
 
-   
+        if targetrange11()and Target:Exists() and not Target:IsDeadOrGhost() and IsPlayerAttacking('target') == true
+        and delta and delta > 0.15 and OHPercent > 50 and ((OHPercent > MHPercent and MHPercent >= 40 
+        and MHPercent < 44) or (OHPercent - MHPercent) >= 50) then
+            return S.weaponsync:Cast()
+        end
+    
 
         if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and targetRange30  then
             return S.legrune:Cast()
@@ -574,9 +504,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.ChainLightning:Cast()
         end
 
-        if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.MagmaTotem:Cast()
-        end
+   
 
         if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30  then
             return S.handrune:Cast()
@@ -598,9 +526,12 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.handrune:Cast()
         end
 
-        if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
-            return S.LightningBolt:Cast()
-        end
+
+
+
+        -- if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+        --     return S.LightningBolt:Cast()
+        -- end
 
 
 
@@ -620,6 +551,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
+
+        if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.MagmaTotem:Cast()
+        end
+
         if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
             return S.PoisonCleansingTotem:Cast()
         end

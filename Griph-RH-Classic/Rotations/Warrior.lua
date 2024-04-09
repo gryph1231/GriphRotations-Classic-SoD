@@ -222,7 +222,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             return S.BattleShout:Cast()
         end	
 
-        if Target:IsAPlayer() and IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
+        if Target:IsAPlayer() and IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","player") then
             return S.commandingshout:Cast()
         end	
 
@@ -254,7 +254,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             return S.BattleShout:Cast()
         end	
 
-        if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
+        if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","player") then
             return S.commandingshout:Cast()
         end	
 
@@ -326,7 +326,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
             return S.BattleShout:Cast()
         end	
 
-        if Target:IsAPlayer() and IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
+        if Target:IsAPlayer() and IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","player") then
             return S.commandingshout:Cast()
         end	
 
@@ -398,7 +398,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleShout:Cast()
     end	
 
-    if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","target") then
+    if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","player") then
         return S.commandingshout:Cast()
     end	
 
