@@ -143,12 +143,12 @@ local castchannelTime = math.random(275, 500) / 1000
 
 local spellwidgetfort= UnitCastingInfo("target")
 -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
-if AuraUtil.FindAuraByName("Commanding Shout","player") then
+if AuraUtil.FindAuraByName("Commanding Shout","player","PLAYER") then
     commandingshoutbuffremains = select(6,AuraUtil.FindAuraByName("Commanding Shout","player","PLAYER"))- GetTime()
 else
     commandingshoutbuffremains = 0
 end
-if AuraUtil.FindAuraByName("Battle Shout","player") then
+if AuraUtil.FindAuraByName("Battle Shout","player","PLAYER") then
     battleshoutbuffremains = select(6,AuraUtil.FindAuraByName("Battle Shout","player","PLAYER"))- GetTime()
 else
     battleshoutbuffremains = 0
