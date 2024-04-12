@@ -136,7 +136,7 @@ local function APL()
         or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
             return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
         end
-
+        local nameovercharged = GetSpellInfo('Overcharged' )
         local namerollingthunder = GetSpellInfo('Rolling Thunder' )
         local namemoltenblast = GetSpellInfo('Molten Blast' )
         local nameshieldmastery = GetSpellInfo('Shield Mastery' )
@@ -519,9 +519,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
 
 
-        -- if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
-        --     return S.LightningBolt:Cast()
-        -- end
+        if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
+            return S.LightningBolt:Cast()
+        end
 
 
 
@@ -616,6 +616,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             if IsReady('Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
                 return S.HealingWave:Cast()
             end
+
+            if IsReady('Stormstrike') and targetrange11() then
+                return S.Stormstrike:Cast()
+            end
     
             if  (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 and GriphRH.InterruptsON() then
                 return S.EarthShock:Cast()
@@ -624,15 +628,29 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             if IsReady('Earth Shock(rank 1)') and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 and GriphRH.InterruptsON() then
                 return S.earthshock1:Cast()
             end
-
-            if IsReady('Stormstrike') and targetrange11() then
-                return S.Stormstrike:Cast()
+                
+            if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and nameovercharged == 'Overcharged' then
+                return S.LightningShield:Cast()
             end
-    
+
+            if not IsCurrentSpell(6603) and targetrange11() then
+                return I.autoattack:ID()
+            end
+            if IsReady('Molten Blast') and targetrange11() then
+                return S.handrune:Cast()
+            end
+       
+            if IsReady('Lava Lash') and targetrange11() then
+                return S.handrune:Cast()
+            end
+            if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>3 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+                return S.MagmaTotem:Cast()
+            end
     
             if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and inRange25>1 then
                 return S.ChainLightning:Cast()
             end
+
     
             if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
                 return S.MagmaTotem:Cast()
@@ -647,16 +665,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             end
     
     
-            if not IsCurrentSpell(6603) and targetrange11() then
-                return I.autoattack:ID()
-            end
-            if IsReady('Molten Blast') and RangeCount11()==1 then
-                return S.handrune:Cast()
-            end
-       
-            if IsReady('Lava Lash') and targetrange11() then
-                return S.handrune:Cast()
-            end
+ 
     
             if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and targetRange30 then
                 return S.LightningBolt:Cast()
@@ -665,12 +674,12 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
 
 
-        if (not Target:IsAPlayer() and Player:ManaPercentage()>=15 or Target:IsAPlayer() ) and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
+        if (not Target:IsAPlayer() and Player:ManaPercentage()>=25 or Target:IsAPlayer() ) and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and targetRange25 then
             return S.EarthShock:Cast()
         end
 
 
-        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<15 and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
+        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<25 and (isTanking==false and targetrange11() and nameWayofEarth == 'Way of Earth' or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and targetRange25 then
             return S.earthshock1:Cast()
         end
                     
@@ -687,6 +696,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
 
+                
+        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.LightningShield:Cast()
+        end
+
         if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
             return S.PoisonCleansingTotem:Cast()
         end
@@ -695,10 +709,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.DiseaseCleansingTotem:Cast()
         end
 
-        
-        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.LightningShield:Cast()
-        end
+
     
     
         if not Target:IsAPlayer() and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Wild Strikes", "player") and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then

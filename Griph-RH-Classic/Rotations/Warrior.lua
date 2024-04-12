@@ -13,6 +13,7 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 
 GriphRH.Spell[1] = {
+    MortalStriker2 = Spell(21555),
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
@@ -190,7 +191,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
                 return S.Hamstring:Cast()
             end
     
-            if nametasteforblood=='Taste for Blood' and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
+            if nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
                 return S.Rend:Cast()
             end
     
@@ -312,9 +313,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
             return S.Hamstring:Cast()
         end
 
-        if nametasteforblood=='Taste for Blood' and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
+        if nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
             return S.Rend:Cast()
         end
+
 
 
 
@@ -369,11 +371,11 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady('Slam') and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
         return S.Slam:Cast()
     end
-    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
+    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable() or S.MortalStriker2:IsAvailable() and S.MortalStriker2:CooldownRemains() >= 1.5 or not S.MortalStriker2:IsAvailable()) then
         return S.chestrune:Cast()
     end
 
-    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
+    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable() or S.MortalStriker2:IsAvailable() and S.MortalStriker2:CooldownRemains() >= 1.5 or not S.MortalStriker2:IsAvailable()) then
         return S.Whirlwind:Cast()
     end
 
