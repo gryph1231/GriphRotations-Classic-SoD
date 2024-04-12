@@ -101,7 +101,7 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") or AuraUtil.FindAuraByName("Taste for Blood","player") or checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
+if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30 or not Target:IsAPlayer()) and nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") or AuraUtil.FindAuraByName("Taste for Blood","player") or checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
     battlestance = true
     berserkerstance = false
 else
