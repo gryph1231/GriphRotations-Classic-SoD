@@ -101,7 +101,7 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
+if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") or AuraUtil.FindAuraByName("Taste for Blood","player") or checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
     battlestance = true
     berserkerstance = false
 else
@@ -191,7 +191,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
                 return S.Hamstring:Cast()
             end
     
-            if nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
+            if nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Taste for Blood","player") then
                 return S.Rend:Cast()
             end
     
@@ -313,7 +313,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
             return S.Hamstring:Cast()
         end
 
-        if nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
+        if nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Taste for Blood","player") then
             return S.Rend:Cast()
         end
 
