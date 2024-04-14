@@ -101,13 +101,32 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30 or not Target:IsAPlayer()) and nametasteforblood=='Taste for Blood' and checkOverpower() == false and IsReady("Rend") or AuraUtil.FindAuraByName("Taste for Blood","player") or checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
-    battlestance = true
-    berserkerstance = false
+
+
+if GetShapeshiftFormID() == 19 then
+    playerinBerserkerStance = true
 else
-    battlestance = false
-    berserkerstance = true
+    playerinBerserkerStance = false
 end
+
+if GetShapeshiftFormID() == 17 then
+    playerinBattleStance = true
+else
+    playerinBattleStance = false
+end
+
+if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    return S.BerserkerRage:Cast()
+end
+
+if CheckInteractDistance("target",3) and playerinBattleStance and (IsReady("Berserker Rage") and not AuraUtil.FindAuraByName("Bloodrage","player") and S.Bloodrage:TimeSinceLastCast()>5 and checkOverpower() == false and (S.SweepingStrikes:CooldownRemains()>2 and S.SweepingStrikes:IsAvailable() and RangeCount11()<=1 or not S.SweepingStrikes:IsAvailable() or not GriphRH.AoEON() or not GriphRH.CDsON())) then
+    berserkerstance = true
+    battlestance = false
+else
+    berserkerstance = false
+    battlestance = true
+end
+
 
 if AuraUtil.FindAuraByName("Blessing of Freedom","target") 
 or AuraUtil.FindAuraByName("Free Action","target")
