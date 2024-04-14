@@ -115,17 +115,15 @@ else
     playerinBattleStance = false
 end
 
-if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
-    return S.BerserkerRage:Cast()
-end
 
-if CheckInteractDistance("target",3) and playerinBattleStance and (IsReady("Berserker Rage") and not AuraUtil.FindAuraByName("Bloodrage","player") and S.Bloodrage:TimeSinceLastCast()>5 and checkOverpower() == false and (S.SweepingStrikes:CooldownRemains()>2 and S.SweepingStrikes:IsAvailable() and RangeCount11()<=1 or not S.SweepingStrikes:IsAvailable() or not GriphRH.AoEON() or not GriphRH.CDsON())) then
+if CheckInteractDistance("target",3) and playerinBattleStance and (instanceTypepvp == 'pvp' or Target:IsAPlayer()) and (IsReady("Berserker Rage") and not AuraUtil.FindAuraByName("Bloodrage","player") and S.Bloodrage:TimeSinceLastCast()>5 and checkOverpower() == false and (S.SweepingStrikes:CooldownRemains()>2 and S.SweepingStrikes:IsAvailable() and RangeCount11()<=1 or not S.SweepingStrikes:IsAvailable() or not GriphRH.AoEON() or not GriphRH.CDsON())) then
     berserkerstance = true
     battlestance = false
 else
     berserkerstance = false
     battlestance = true
 end
+
 
 
 if AuraUtil.FindAuraByName("Blessing of Freedom","target") 
@@ -192,7 +190,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
 
         if stoprotation == false then 
 
-            if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+            if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
                 return S.Pummel:Cast()
             end
             if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
@@ -215,7 +213,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             end
     
 
-        if GetShapeshiftFormID() ~= 19 and (HL.CombatTime()>2.5 or S.SweepingStrikes:CooldownRemains()>Player:GCD()*2) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
+        if GetShapeshiftFormID() ~= 19 and (HL.CombatTime()>2.5 or S.SweepingStrikes:CooldownRemains()>Player:GCD()*2) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<30 then
             return S.BerserkerStance:Cast()
         end
 
@@ -315,9 +313,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
 
     if stoprotation == false then 
-        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
             return S.Pummel:Cast()
         end
+
         if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
             return S.handrune:Cast()
         end	
