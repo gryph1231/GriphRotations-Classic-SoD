@@ -16,14 +16,14 @@ local Item = HL.Item;
 GriphRH.Spell[8] = {
 	ArcaneIntellect = Spell(1459),
 	ImprovedScorch = Spell(12873),
-	shadowprotection = Spell(605), --mind control
+	
 	Shoot = Spell(5019),
 	Scorch = Spell(2948),
 	Evocation = Spell(12051),
 	Combustion = Spell(11129),
-	-- legrune = Spell(20580), --shadowmeld
+
 	Pyroblast = Spell(12523),
-	feetrune = Spell(1706), -- levitate
+	
 	Fireball = Spell(133),
 	ScorchDebuff = Spell(22959),
 	HotStreak = Spell(400625),
