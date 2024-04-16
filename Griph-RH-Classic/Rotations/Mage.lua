@@ -175,8 +175,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	end
 
 
-	
-	if IsReady('Scorch') and targetRange30 and (Target:DebuffStack(S.ScorchDebuff) < 5 or Target:DebuffRemains(S.ScorchDebuff) <= 5) and not Player:IsMoving() then
+	if IsReady('Scorch') and S.ImprovedScorch:IsAvailable() and targetRange30 and (Target:DebuffStack(S.ScorchDebuff) < 5 or Target:DebuffRemains(S.ScorchDebuff) <= 5) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
 	if IsReady("Arcane Power") and targetRange30 and GriphRH.CDsON()  then
@@ -204,9 +203,14 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.FireBlast:Cast()
 	end
 
+	if IsReady('Fireball') and not S.ImprovedScorch:IsAvailable() and not Player:IsMoving() and targetRange30 then
+		return S.Fireball:Cast()
+	end
+
 	if IsReady('Scorch') and not Player:IsMoving() and targetRange30 then
 		return S.Scorch:Cast()
 	end
+
 	if IsReady('Fireball') and not Player:IsMoving() and targetRange30 then
 		return S.Fireball:Cast()
 	end
