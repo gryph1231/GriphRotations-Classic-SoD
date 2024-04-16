@@ -21,9 +21,9 @@ GriphRH.Spell[8] = {
 	Scorch = Spell(2948),
 	Evocation = Spell(12051),
 	Combustion = Spell(11129),
-
+	IceBlock = Spell(11958), 
 	Pyroblast = Spell(12523),
-	
+	ArcanePower = Spell(12042),
 	Fireball = Spell(133),
 	ScorchDebuff = Spell(22959),
 	HotStreak = Spell(400625),
@@ -36,6 +36,7 @@ GriphRH.Spell[8] = {
 	ManaShield = Spell(1463),
 	legrune = Spell(7744), --will of the forsaken - BP /cast leg rune ability
     handrune = Spell(20554), --berserking - BP /cast hands rune ability
+	waistrune = Spell(20589),--escape artist - BP /cast waist rune ability
 };
 
 local S = GriphRH.Spell[8]
@@ -130,6 +131,7 @@ end
 
 
 
+local namefrostfirebolt = GetSpellInfo('Frostfire Bolt' )
 
 local namelivingflame = GetSpellInfo('Living Flame' )
 local namelivingbomb = GetSpellInfo('Living Bomb' )
@@ -143,7 +145,9 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.FireBlast:Cast()
 	end
 
-
+	if IsReady("Ice Block") and Player:HealthPercentage()<10 then
+		return S.IceBlock:Cast()
+	end
 
 	if IsReady("Counterspell") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetRange30 and GriphRH.InterruptsON() then
 		return S.Counterspell:Cast()
@@ -156,17 +160,16 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	-- if IsReady("Evocation") and Player:ManaPercentage()<=15 and instanceType~= 'pvp' and instanceType~= 'none' and GriphRH.CDsON() and Player:StoppedFor()>3 then
 	-- 	return S.Evocation:Cast()
 	-- end
-	if IsReady("Combustion") and targetRange30 and GriphRH.CDsON() and Target:DebuffStack(S.ScorchDebuff) >=5 
-	and (AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL") 
-	and AuraUtil.FindAuraByName("Living Flame", "target", "PLAYER|HARMFUL") or namelivingbomb ~= "Living Bomb" and namelivingflame~= "Living Flame") then
-		return S.Combustion:Cast()
-	end
+
+
 	if IsReady("Living Bomb") and targetRange30 and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
 		return S.handrune:Cast()
 	end
+
 	if IsReady("Living Flame")  and targetRange30 then
 		return S.legrune:Cast()
 	end
+
 	if IsReady('Pyroblast') and Player:Buff(S.HotStreak) and targetRange30 then
 		return S.Pyroblast:Cast()
 	end
@@ -176,10 +179,24 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady('Scorch') and targetRange30 and (Target:DebuffStack(S.ScorchDebuff) < 5 or Target:DebuffRemains(S.ScorchDebuff) <= 5) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
-	
+	if IsReady("Arcane Power") and targetRange30 and GriphRH.CDsON()  then
+		return S.ArcanePower:Cast()
+	end
+	if IsReady("Combustion") and targetRange30 and GriphRH.CDsON() and Target:DebuffStack(S.ScorchDebuff) >=5 
+	and (AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")) then
+		return S.Combustion:Cast()
+	end
 
+	if IsReady("Icy Veins") and targetRange30 and GriphRH.CDsON() and (AuraUtil.FindAuraByName("Living Bomb", "player")) then
+		return S.legrune:Cast()
+	end
 	
-	if IsReady('Fireball') and targetRange30 and (AuraUtil.FindAuraByName("Combustion", "player") or AuraUtil.FindAuraByName("Icy Veins", "player")) and not Player:IsMoving() then
+	if IsReady('Frostfire Bolt') and not Player:IsMoving() then
+		return S.waistrune:Cast()
+	end
+	
+	
+	if IsReady('Fireball') and namefrostfirebolt ~= 'Frostfire Bolt' and targetRange30 and (AuraUtil.FindAuraByName("Combustion", "player") or AuraUtil.FindAuraByName("Icy Veins", "player")) and not Player:IsMoving() then
 		return S.Fireball:Cast()
 	end
 	
