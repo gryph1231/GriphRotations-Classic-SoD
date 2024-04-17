@@ -16,7 +16,7 @@ local Item = HL.Item;
 GriphRH.Spell[8] = {
 	ArcaneIntellect = Spell(1459),
 	ImprovedScorch = Spell(12873),
-	
+	FrostNova = Spell(122),
 	Shoot = Spell(5019),
 	Scorch = Spell(2948),
 	Evocation = Spell(12051),
@@ -74,6 +74,7 @@ S.Shoot:RegisterInFlight()
 
 
 local function APL()
+    local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
 	local Shoot = 0
 
@@ -130,7 +131,7 @@ end
 -- end
 
 
-
+--updated to frost nova
 local namefrostfirebolt = GetSpellInfo('Frostfire Bolt' )
 
 local namelivingflame = GetSpellInfo('Living Flame' )
@@ -138,9 +139,13 @@ local namelivingbomb = GetSpellInfo('Living Bomb' )
 
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Frostbolt:InFlight() or S.Fireball:InFlight()) and not Target:IsDeadOrGhost() then 
+if IsReady("Frost Nova")  and RangeCount11()>=1 and Player:IsMoving() and isTanking == true then
+		return S.FrostNova:Cast()
+	end
 
-
-
+	if IsReady("Arcane Explosion")  and RangeCount11()>2 and Player:IsMoving() then
+		return S.ArcaneExplosion:Cast()
+	end
 	if IsReady('Fire Blast') and targetRange30 and (UnitHealth('target')<200 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20)  then
 		return S.FireBlast:Cast()
 	end
@@ -181,6 +186,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady("Arcane Power") and targetRange30 and GriphRH.CDsON()  then
 		return S.ArcanePower:Cast()
 	end
+
 	if IsReady("Combustion") and targetRange30 and GriphRH.CDsON() and Target:DebuffStack(S.ScorchDebuff) >=5 
 	and (AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")) then
 		return S.Combustion:Cast()
@@ -199,9 +205,18 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Fireball:Cast()
 	end
 	
+	if IsReady('Fireball') and not Player:IsMoving() and targetRange30 and (not IsReady('Fire Blast') or HL.CombatTime()<1) then
+		return S.Fireball:Cast()
+	end
+
 	if IsReady('Fire Blast') and targetRange30 then
 		return S.FireBlast:Cast()
 	end
+
+	if IsReady("Ice Lance")  and targetRange30 then
+		return S.handrune:Cast()
+	end
+
 
 	if IsReady('Fireball') and not S.ImprovedScorch:IsAvailable() and not Player:IsMoving() and targetRange30 then
 		return S.Fireball:Cast()
