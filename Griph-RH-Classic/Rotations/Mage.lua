@@ -15,6 +15,7 @@ local Item = HL.Item;
 
 GriphRH.Spell[8] = {
 	ArcaneIntellect = Spell(1459),
+	ArcaneExplosion = Spell(1449),
 	ImprovedScorch = Spell(12873),
 	FrostNova = Spell(122),
 	Shoot = Spell(5019),
