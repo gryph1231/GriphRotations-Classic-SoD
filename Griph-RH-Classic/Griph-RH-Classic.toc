@@ -30,6 +30,7 @@ Rotations\Hunter.lua
 Rotations\Shaman.lua
 Rotations\Paladin.lua
 Rotations\Warrior.lua
+Rotations\Mage.lua
 Rotations\Druid.lua
 Rotations\Priest.lua
 

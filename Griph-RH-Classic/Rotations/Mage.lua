@@ -133,10 +133,10 @@ end
 
 
 --updated to frost nova
-local namefrostfirebolt = GetSpellInfo('Frostfire Bolt' )
+local namefrostfirebolt = GetSpellInfo('Frostfire Bolt')
 
-local namelivingflame = GetSpellInfo('Living Flame' )
-local namelivingbomb = GetSpellInfo('Living Bomb' )
+local namelivingflame = GetSpellInfo('Living Flame')
+local namelivingbomb = GetSpellInfo('Living Bomb')
 
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Frostbolt:InFlight() or S.Fireball:InFlight()) and not Target:IsDeadOrGhost() then 
@@ -168,11 +168,11 @@ if IsReady("Frost Nova")  and RangeCount11()>=1 and Player:IsMoving() and isTank
 	-- end
 
 
-	if IsReady("Living Bomb") and targetRange30 and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
+	if IsReady("Living Bomb") and namelivingflame == 'Living Bomb' and targetRange30 and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
 		return S.handrune:Cast()
 	end
 
-	if IsReady("Living Flame")  and targetRange30 then
+	if IsReady("Living Flame")  and targetRange30 and namelivingflame == 'Living Flame' then
 		return S.legrune:Cast()
 	end
 
@@ -197,7 +197,7 @@ if IsReady("Frost Nova")  and RangeCount11()>=1 and Player:IsMoving() and isTank
 		return S.legrune:Cast()
 	end
 	
-	if IsReady('Frostfire Bolt') and not Player:IsMoving() then
+	if IsReady('Frostfire Bolt') and not Player:IsMoving() and namefrostfirebolt == 'Frostfire Bolt' then
 		return S.waistrune:Cast()
 	end
 	

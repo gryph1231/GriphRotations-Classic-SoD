@@ -1007,55 +1007,70 @@ end
 
 
 
-    -- Variables to hold the time of the last melee swings and weapon speeds
-local lastMainHandSwingTime = 0
-local lastOffHandSwingTime = 0
-local mainHandSpeed, offHandSpeed = GetWeaponSpeed()
 
-local function GetWeaponSpeed()
-    return UnitAttackSpeed("player")
-end
+
+
+-- Variables to hold the time of the last melee swings
+local lastMainHandSwingTime = GetTime()
+local lastOffHandSwingTime = GetTime()
+local mainHandSpeed, offHandSpeed
 
 local function UpdateWeaponSpeed()
-    mainHandSpeed, offHandSpeed = GetWeaponSpeed()
+    mainHandSpeed, offHandSpeed = UnitAttackSpeed("player")
 end
 
-local function UpdateLastSwingTime(event, ...)
-    local timestamp, eventType, _, sourceGUID, _, _, _, _, _, _, _, isOffHand = CombatLogGetCurrentEventInfo()
+-- Update weapon speeds on load
+UpdateWeaponSpeed()
 
-    if sourceGUID == UnitGUID("player") and (eventType == "SWING_DAMAGE" or eventType == "SWING_MISSED") then
-        UpdateWeaponSpeed()  -- Update weapon speed every time a swing occurs to ensure it's current
-
-        if isOffHand then
-            lastOffHandSwingTime = timestamp
-        else
-            lastMainHandSwingTime = timestamp
-        end
-    end
-end
-
--- Register the event with a frame to listen for combat log updates and update weapon speed
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-frame:SetScript("OnEvent", function(self, event, ...)
+local function OnCombatLogEvent(self, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        UpdateLastSwingTime(event, ...)
+        local timestamp, eventType, hideCaster, sourceGUID, _, _, _, _, _, _, _, spellName, _, _, _, _, _, _, _, _, isOffHand = CombatLogGetCurrentEventInfo()
+        if sourceGUID == UnitGUID("player") then
+            if eventType == "SWING_DAMAGE" or eventType == "SWING_MISSED" then
+                -- Check if the swing was from the main hand or off hand
+                if isOffHand then
+                    lastOffHandSwingTime = GetTime()
+                else
+                    lastMainHandSwingTime = GetTime()
+                end
+            end
+        end
     elseif event == "PLAYER_EQUIPMENT_CHANGED" then
         UpdateWeaponSpeed()
     end
-end)
-
--- Function to get the last swing time and calculate the next expected swing time for main hand and offhand
-function GetNextSwingTimes()
-    local currentTime = GetTime()
-    local nextMainHandSwing = lastMainHandSwingTime + mainHandSpeed - currentTime
-    local nextOffHandSwing = lastOffHandSwingTime + offHandSpeed - currentTime
-
-    -- Ensure that the next swing time is not negative
-    nextMainHandSwing = nextMainHandSwing >= 0 and nextMainHandSwing or 0
-    nextOffHandSwing = nextOffHandSwing >= 0 and nextOffHandSwing or 0
-
-    return nextMainHandSwing, nextOffHandSwing
 end
 
+-- Create a frame to listen for relevant events
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+frame:SetScript("OnEvent", OnCombatLogEvent)
+
+-- Function to get the time since the last swing for main hand and offhand
+function GetLastSwingTimes()
+    local currentTime = GetTime()
+    local timeSinceMainHandSwing = currentTime - lastMainHandSwingTime
+    local timeSinceOffHandSwing = currentTime - lastOffHandSwingTime
+
+    -- If the main hand is ready to swing again but hasn't, reset the time since the last main hand swing to 0
+    if mainHandSpeed and timeSinceMainHandSwing >= mainHandSpeed then
+        timeSinceMainHandSwing = 0
+        lastMainHandSwingTime = currentTime - mainHandSpeed  -- Set to one swing cycle in the past
+    end
+
+    -- If the off hand is ready to swing again but hasn't, reset the time since the last off hand swing to 0
+    if offHandSpeed and timeSinceOffHandSwing >= offHandSpeed then
+        timeSinceOffHandSwing = 0
+        lastOffHandSwingTime = currentTime - offHandSpeed  -- Set to one swing cycle in the past
+    end
+
+    return timeSinceMainHandSwing, timeSinceOffHandSwing
+end
+
+-- Make sure the weapon speeds are updated when the player's equipment changes
+frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+
+-- Example usage:
+-- local mhTime, ohTime = GetLastSwingTimes()
+-- print("Main Hand: "..mhTime.."s since last swing.")
+-- print("Off Hand: "..ohTime.."s since last swing.")
