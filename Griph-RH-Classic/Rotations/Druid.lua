@@ -19,7 +19,12 @@ GriphRH.Spell[11] = {
 	BearForm = Spell(5487),
 	Mangle = Spell(407993),
 	Claw = Spell(1082),
+	MarkoftheWild = Spell(6756),
+	Thorns = Spell(782),
+	OmenofClarity = Spell(16864),
 	Shred = Spell(5221),
+	Clearcasting = Spell(16870),
+	Prowl = Spell(5215),
 	SavageRoar = Spell(407988),
 	Rip = Spell(1079),
 	Powershift = Spell(5225), -- track humanoids
@@ -51,62 +56,6 @@ end
 
 local function bool(val)
     return val ~= 0
-end
-
-local function RangeCount(range_check)
-local range_counter = 0
-    
-	if range_check then
-		for i=1,40 do
-			local unitID = "nameplate" .. i
-			if UnitExists("nameplate"..i) then           
-				local nameplate_guid = UnitGUID("nameplate"..i) 
-				local npc_id = select(6, strsplit("-",nameplate_guid))
-				if npc_id ~='120651' and npc_id ~='161895' then
-					if UnitCanAttack("player",unitID) and IsActionInRange(range_check,unitID) and UnitHealthMax(unitID) > 5
-					and UnitName(unitID) ~= "Incorporeal Being" then
-						range_counter = range_counter + 1
-					end                    
-				end
-			end
-		end
-	else
-		range_counter = 0
-	end
-    
-    return range_counter
-end
-
-local function CleaveCount()
-local cleave_counter = 0
-     
-        for i=1,40 do
-			local unitID = "nameplate" .. i
-            if UnitExists("nameplate"..i) then           
-                local nameplate_guid = UnitGUID("nameplate"..i) 
-                local npc_id = select(6, strsplit("-",nameplate_guid))
-                if npc_id ~='120651' and npc_id ~='161895' then
-                    if UnitCanAttack("player",unitID) and IsActionInRange(37,unitID) and UnitHealthMax(unitID) > 5
-					and UnitName(unitID) ~= "Incorporeal Being"	then
-                        cleave_counter = cleave_counter + 1
-                    end                    
-                end
-            end
-        end
-    
-    return cleave_counter
-end
-
-local function TargetinRange(range_check)
-	if range_check then
-		if IsActionInRange(range_check,"target") then
-			return true
-		else
-			return false
-		end
-	else
-		return false	
-	end
 end
 
 local function IsReady(spell,range_check,aoe_check)
@@ -259,16 +208,13 @@ end)
 
 
 local function APL()
-RangeCount()
-TargetTTD()
-TargetinRange()
-IsReady()
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or Player:Buff(S.Prowl) then
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
 end 
 
@@ -285,6 +231,17 @@ if FrontTimer < Player:GCD() then
 	Front = false
 end
 
+local finisher_condition = 
+	(Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
+	or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
+	or Player:ComboPoints() >= 4 and Player:BuffRemains(S.SavageRoar) < 4)
+	or (aoeTTD() < 2 and 
+	   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
+	or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
+	or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
+	or (Player:ComboPoints() == 4 and Player:BuffRemains(S.SavageRoar) < 20)
+	or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24)))
+	or (Player:ComboPoints() >= 5 and aoeTTD() > 12 and not Target:Debuff(S.Rip))
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -298,54 +255,84 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-
+if not Player:AffectingCombat() and not Player:Buff(S.CatForm) then
+	if GriphRH.InterruptsON() then
+		if IsReady('Omen of Clarity') and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
+			return S.OmenofClarity:Cast()
+		end
+		
+		if IsReady('Mark of the Wild') and (not Player:Buff(S.MarkoftheWild) 
+        or (not AuraUtil.FindAuraByName("Mark of the Wild", "target") and Target:IsAPlayer() 
+        and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 75 then
+			return S.MarkoftheWild:Cast()
+		end	
+		
+		-- if IsReady('Thorns') and not (Player:Buff(S.Thorns) or (not AuraUtil.FindAuraByName("Thorns", "target") and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 60 then
+			-- return S.Thorns:Cast()
+		-- end
+	end
+end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:CanAttack(Target) and Player:Buff(S.CatForm) and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
-	if not IsCurrentSpell(6603) and TargetinRange(37) then
+if IsReady('Omen of Clarity') and GriphRH.InterruptsON() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
+	return S.OmenofClarity:Cast()
+end
+
+if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
+	if IsReady('Cat Form') and not Player:Buff(S.CatForm) then
+		return S.CatForm:Cast()
+	end
+
+	if not IsCurrentSpell(6603) and targetrange11() then
 		return Item(135274, { 13, 14 }):ID()
 	end
 
-	if (Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
-	or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 7 
-	or Player:ComboPoints() >= 3 and Player:BuffRemains(S.SavageRoar) < 4)
-	or (TargetTTD() < 2 and 
-	   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
-	or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
-	or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
-	or (Player:ComboPoints() == 4 and Player:BuffRemains(S.SavageRoar) < 20)
-	or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
-		if IsReady('Savage Roar') then
-			return S.SavageRoar:Cast()
-		elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 5 and GriphRH.CDsON() then
-			return S.Powershift:Cast()
+	if Player:Buff(S.CatForm)then
+		if (Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
+		or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
+		or Player:ComboPoints() >= 4 and Player:BuffRemains(S.SavageRoar) < 4)
+		or (aoeTTD() < 2 and 
+		   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
+		or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
+		or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
+		or (Player:ComboPoints() == 4 and Player:BuffRemains(S.SavageRoar) < 20)
+		or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
+			if IsReady('Savage Roar') then
+				return S.SavageRoar:Cast()
+			elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 5 and GriphRH.CDsON() then
+				return S.Powershift:Cast()
+			end
 		end
-	end
 
-	if Player:ComboPoints() >= 5 and not Target:Debuff(S.Rip) then
-		if IsReady('Rip',true) then
-			return S.Rip:Cast()
-		elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 10 and GriphRH.CDsON() then
+		if Player:ComboPoints() >= 5 and aoeTTD() > 12 and not Target:Debuff(S.Rip) then
+			if IsReady('Rip',true) then
+				return S.Rip:Cast()
+			elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 10 and GriphRH.CDsON() then
+				return S.Powershift:Cast()
+			end
+		end
+		
+		if Player:Buff(S.Clearcasting) then
+			if IsReady('Shred',true) and Behind ~= false then
+				return S.Shred:Cast()
+			end
+			
+			if IsReady('Claw',true) then
+				return S.Claw:Cast()
+			end
+		end
+		
+		if IsReady('Claw',true) then
+			return S.Claw:Cast()
+		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and targetrange11() and Player:Energy() < 20 and GriphRH.CDsON() then
 			return S.Powershift:Cast()
 		end
+		
+		-- if IsReady('Cat Form') and GriphRH.CDsON() and Player:Energy() < 10 then
+			-- return S.Powershift:Cast()
+		-- end
 	end
-	
-	-- if IsReady('Shred',true) and Behind ~= false then
-		-- return S.Shred:Cast()
-	-- elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 40 and GriphRH.CDsON() then
-		-- return S.Powershift:Cast()
-	-- end
-	
-	if IsReady('Claw',true) then
-		return S.Claw:Cast()
-	elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 20 and GriphRH.CDsON() then
-		return S.Powershift:Cast()
-	end
-	
-	-- if IsReady('Cat Form') and GriphRH.CDsON() and Player:Energy() < 10 then
-		-- return S.Powershift:Cast()
-	-- end
 end
 
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
