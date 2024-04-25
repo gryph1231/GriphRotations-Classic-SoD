@@ -13,7 +13,7 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 local Pet = Unit.Pet;
 
-RubimRH.Spell[11] = {
+GriphRH.Spell[11] = {
 	Wrath = Spell(5177),
 	CatForm = Spell(768),
 	BearForm = Spell(5487),
@@ -25,7 +25,7 @@ RubimRH.Spell[11] = {
 	Powershift = Spell(5225), -- track humanoids
 };
 
-local S = RubimRH.Spell[11]
+local S = GriphRH.Spell[11]
 
 S.Claw.TextureSpellID = { 16827 }
 S.SavageRoar.TextureSpellID = { 5209 }
@@ -288,12 +288,12 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if not RubimRH.queuedSpell[1]:CanCast() or not RubimRH.queuedSpell[1]:IsAvailable() then
-	RubimRH.queuedSpell = { RubimRH.Spell[3].Default, 0 }
+if not GriphRH.queuedSpell[1]:CanCast() or not GriphRH.queuedSpell[1]:IsAvailable() then
+	GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }
 end
 
-if RubimRH.QueuedSpell():CanCast() then
-	return RubimRH.QueuedSpell():Cast()
+if GriphRH.QueuedSpell():CanCast() then
+	return GriphRH.QueuedSpell():Cast()
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
@@ -318,7 +318,7 @@ if Player:CanAttack(Target) and Player:Buff(S.CatForm) and (Target:AffectingComb
 	or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
 		if IsReady('Savage Roar') then
 			return S.SavageRoar:Cast()
-		elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 5 and RubimRH.CDsON() then
+		elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 5 and GriphRH.CDsON() then
 			return S.Powershift:Cast()
 		end
 	end
@@ -326,24 +326,24 @@ if Player:CanAttack(Target) and Player:Buff(S.CatForm) and (Target:AffectingComb
 	if Player:ComboPoints() >= 5 and not Target:Debuff(S.Rip) then
 		if IsReady('Rip',true) then
 			return S.Rip:Cast()
-		elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 10 and RubimRH.CDsON() then
+		elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 10 and GriphRH.CDsON() then
 			return S.Powershift:Cast()
 		end
 	end
 	
 	-- if IsReady('Shred',true) and Behind ~= false then
 		-- return S.Shred:Cast()
-	-- elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 40 and RubimRH.CDsON() then
+	-- elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 40 and GriphRH.CDsON() then
 		-- return S.Powershift:Cast()
 	-- end
 	
 	if IsReady('Claw',true) then
 		return S.Claw:Cast()
-	elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 20 and RubimRH.CDsON() then
+	elseif IsReady('Cat Form') and TargetinRange(37) and Player:Energy() < 20 and GriphRH.CDsON() then
 		return S.Powershift:Cast()
 	end
 	
-	-- if IsReady('Cat Form') and RubimRH.CDsON() and Player:Energy() < 10 then
+	-- if IsReady('Cat Form') and GriphRH.CDsON() and Player:Energy() < 10 then
 		-- return S.Powershift:Cast()
 	-- end
 end
@@ -351,6 +351,6 @@ end
 	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
 end
 
-RubimRH.Rotation.SetAPL(11, APL);
-RubimRH.Rotation.SetPvP(11, PvP)
-RubimRH.Rotation.SetPASSIVE(11, PASSIVE);
+GriphRH.Rotation.SetAPL(11, APL);
+GriphRH.Rotation.SetPvP(11, PvP)
+GriphRH.Rotation.SetPASSIVE(11, PASSIVE);
