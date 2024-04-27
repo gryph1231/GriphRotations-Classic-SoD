@@ -25,14 +25,14 @@ GriphRH.Spell[11] = {
 	OmenofClarity = Spell(16864),
 	Shred = Spell(5221),
 	Clearcasting = Spell(16870),
-	Prowl = Spell(5215),
+	Prowl = Spell(6783),
 	SavageRoar = Spell(407988),
 	Furor = Spell(17061),
 	TigersFury = Spell(5217),
 	Rip = Spell(1079),
-	handsrune= Spell(20549), -- bp macro /use hands rune ability -- ggl war stomp
+	MangleCat= Spell(20549), -- bp macro /cast Mangle(Cat) -- ggl war stomp
 	Innervate = Spell(29166),
-	legsrune = Spell(20580), --bp macro /use legs rune ability -- ggl keybind to shadowmeld
+	legsrune = Spell(24977), --bp macro /use legs rune ability -- ggl keybind to insect swarm
 	Powershift = Spell(5225), -- track humanoids
 };
 
@@ -117,6 +117,8 @@ if FrontTimer < Player:GCD() then
 	Front = false
 end
 
+local nameMangle = GetSpellInfo('Mangle')
+
 local finisher_condition = 
 	(Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
 	or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
@@ -141,7 +143,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if not Player:AffectingCombat() and not Player:Buff(S.CatForm) then
+if not Player:AffectingCombat() then
 	if GriphRH.InterruptsON() then
 		if IsReady('Omen of Clarity') and not AuraUtil.FindAuraByName("Omen of Clarity", "player") and not AuraUtil.FindAuraByName("Prowl", "player") then
 			return S.OmenofClarity:Cast()
@@ -179,6 +181,11 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return Item(135274, { 13, 14 }):ID()
 	end
 
+	if IsReady('Rip') and CheckInteractDistance("target", 3) and (UnitHealth('target')<200 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and Player:ComboPoints()>=3  then
+		return S.Rip:Cast()
+	end
+
+
 	if IsReady('Innervate') and Player:ManaPercentage()<=40 and Player:Energy()<= 20 and Player:Mana()>= 53 + 410 and Player:Mana()>= 410 then
 		return S.Innervate:Cast()
 	end
@@ -193,7 +200,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return S.CatForm:Cast()
 	end
 
-	if IsReady("Tiger's Fury") and (Player:Energy()<20 or EnergyTimeToNextTick()>Player:GCD() and Player:Energy()<=40)  then
+	if IsReady("Tiger's Fury") and (Player:Energy()<20 or EnergyTimeToNextTick()>Player:GCD() and Player:Energy()<=40) and not AuraUtil.FindAuraByName("Tiger's Fury","player") then
 		return S.TigersFury:Cast()
 	end
 
@@ -201,8 +208,8 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return S.legsrune:Cast()
 	end
 
-	if IsReady("Mangle") and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Mangle","target","PLAYER|HARMFUL") then
-		return S.handsrune:Cast()
+	if Player:Energy()>=35 and nameMangle =='Mangle'  and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Mangle","target","PLAYER|HARMFUL") then
+		return S.MangleCat:Cast()
 	end
 
 
@@ -219,8 +226,8 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return S.Shred:Cast()
 	end
 
-	if IsReady("Mangle") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= 410 and EnergyTimeToNextTick()>1 then
-		return S.handsrune:Cast()
+	if Player:Energy()>=35 and nameMangle =='Mangle' and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= 410 and EnergyTimeToNextTick()>1 then
+		return S.MangleCat:Cast()
 	end
 
 	if IsReady("Rake") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= 410 and EnergyTimeToNextTick()>1 and not AuraUtil.FindAuraByName("Rake","target","PLAYER|HARMFUL") then
