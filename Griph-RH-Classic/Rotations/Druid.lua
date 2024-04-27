@@ -146,9 +146,7 @@ if not Player:AffectingCombat() and not Player:Buff(S.CatForm) then
 			return S.OmenofClarity:Cast()
 		end
 		
-		if IsReady('Mark of the Wild') and (not Player:Buff(S.MarkoftheWild) 
-        or (not AuraUtil.FindAuraByName("Mark of the Wild", "target") and Target:IsAPlayer() 
-        and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 75 then
+		if IsReady('Mark of the Wild') and not AuraUtil.FindAuraByName("Mark of the Wild", "target") then
 			return S.MarkoftheWild:Cast()
 		end	
 		
