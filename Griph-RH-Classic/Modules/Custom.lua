@@ -1074,3 +1074,29 @@ frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 -- local mhTime, ohTime = GetLastSwingTimes()
 -- print("Main Hand: "..mhTime.."s since last swing.")
 -- print("Off Hand: "..ohTime.."s since last swing.")
+
+
+local lastEnergyTick = GetTime()
+local ENERGY_TICK_TIME = 2
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("UNIT_POWER_UPDATE")
+frame:SetScript("OnEvent", function(self, event, ...)
+    local unitId, powerType = ...
+    if unitId == "player" and powerType == "ENERGY" then
+        local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
+        local maxEnergy = UnitPowerMax("player", Enum.PowerType.Energy)
+        if currentEnergy < maxEnergy then
+            lastEnergyTick = GetTime()
+        end
+    end
+end)
+
+function EnergyTimeToNextTick()
+    local timeSinceLastTick = GetTime() - lastEnergyTick
+    local timeToNextTick = ENERGY_TICK_TIME - timeSinceLastTick
+    if timeToNextTick < 0 then
+        timeToNextTick = ENERGY_TICK_TIME
+    end
+    return timeToNextTick
+end

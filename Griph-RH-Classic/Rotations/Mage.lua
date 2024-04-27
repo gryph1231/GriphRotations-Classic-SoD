@@ -247,6 +247,8 @@ end--end in combat rotation here
 
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
 
+
+
 	if IsReady('Arcane Intellect') and not AuraUtil.FindAuraByName("Arcane Intellect","player") and Player:IsMoving() then
 		return S.ArcaneIntellect:Cast()
 	end
