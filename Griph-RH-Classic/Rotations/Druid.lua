@@ -31,13 +31,14 @@ GriphRH.Spell[11] = {
 	TigersFury = Spell(5217),
 	Rip = Spell(1079),
 	Innervate = Spell(29166),
+	legsrune = Spell(20580), --bp macro /use legs rune ability -- ggl keybind to shadowmeld
 	Powershift = Spell(5225), -- track humanoids
 };
 
 local S = GriphRH.Spell[11]
 
 S.Claw.TextureSpellID = { 16827 }
-S.SavageRoar.TextureSpellID = { 5209 }
+-- S.SavageRoar.TextureSpellID = { 5209 }
 
 -- if not Item.Druid then
     -- Item.Druid = {}
@@ -191,7 +192,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	end
 
 	if IsReady("Savage Roar") and not AuraUtil.FindAuraByName("Savage Roar", "player")  then
-		return S.SavageRoar:Cast()
+		return S.legsrune:Cast()
 	end
 
 	if IsReady("Mangle") and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Mangle","target","PLAYER|HARMFUL") then
