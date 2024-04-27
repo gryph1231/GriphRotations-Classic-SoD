@@ -18,6 +18,7 @@ GriphRH.Spell[11] = {
 	CatForm = Spell(768),
 	BearForm = Spell(5487),
 	Mangle = Spell(407993),
+	Rake = Spell(1822),
 	Claw = Spell(1082),
 	MarkoftheWild = Spell(6756),
 	Thorns = Spell(782),
@@ -26,7 +27,10 @@ GriphRH.Spell[11] = {
 	Clearcasting = Spell(16870),
 	Prowl = Spell(5215),
 	SavageRoar = Spell(407988),
+	Furor = Spell(17061),
+	TigersFury = Spell(5217),
 	Rip = Spell(1079),
+	Innervate = Spell(29166),
 	Powershift = Spell(5225), -- track humanoids
 };
 
@@ -58,136 +62,7 @@ local function bool(val)
     return val ~= 0
 end
 
-local function IsReady(spell,range_check,aoe_check)
-	local start,duration,enabled = GetSpellCooldown(tostring(spell))
-	local usable, noMana = IsUsableSpell(tostring(spell))
-	local range_counter = 0
 
-	if duration and start then 
-		cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
-		--gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
-	end
-
-	if cooldown_remains and cooldown_remains < 0 then 
-		cooldown_remains = 0 
-	end
-	
-	-- if gcd_remains and gcd_remains < 0 then 
-		-- gcd_remains = 0 
-	-- end
-
-	if aoe_check then
-		if Spell then
-			for i = 1, 40 do
-				local unitID = "nameplate" .. i
-				if UnitExists(unitID) then           
-					local nameplate_guid = UnitGUID(unitID) 
-					local npc_id = select(6, strsplit("-", nameplate_guid))
-					if npc_id ~= '120651' and npc_id ~= '161895' then
-						if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
-							range_counter = range_counter + 1
-						end                    
-					end
-				end
-			end
-		end
-	end
-
-
-	-- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
-	if usable and enabled and cooldown_remains < 0.5 then
-		if range_check then
-			if IsSpellInRange(spell,"target") == 1 then 
-				return true
-			else
-				return false
-			end
-		elseif aoe_check and not range_check then
-			if range_counter >= aoe_check then
-				return true
-			else
-				return false
-			end
-		elseif range_check and aoe_check then
-			return 'Input range check or aoe check, not both'
-		elseif not range_check and not aoe_check then
-			return true
-		end
-	else
-		return false
-	end
-end
-
-local function target_is_dummy()
-    local x = UnitName("target")
-    local targetisdummy = false
-
-    if x then
-        name = x:sub(-5)
-    end
-
-    if Target:Exists() then
-        if name == 'Dummy' or name == 'elist' then
-            targetisdummy = true
-        end
-    else
-        targetisdummy = false
-    end
-
-    return targetisdummy
-end
-
-local function TargetTTD()
-    local currHealth = {}
-    local currHealthMax = {}
-    local allGUID = {}
-    local areaTTD = {}
-    local areaTTD_Predicted = {}
-    local areaDPS = {}
-    local count = 1
-    local highest = 0
-
-    for id = 1, 40 do
-        local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID)
-            and ((UnitHealth(unitID) / UnitHealthMax(unitID)) * 100) < 100 then
-            if UnitGUID('Target') then
-                currTarget = UnitGUID('Target')
-            end
-
-            table.insert(allGUID, UnitGUID(unitID))
-            table.insert(currHealth, UnitHealth(unitID))
-            table.insert(currHealthMax, UnitHealthMax(unitID))
-
-            if #allGUID >= 1 and UnitGUID('Target') then
-                while (UnitGUID('Target') ~= allGUID[count]) do
-                    count = count + 1
-                    break
-                end
-            end
-
-            if #currHealthMax >= 1 then
-                for id = 1, #currHealthMax do
-                    dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) /
-                        HL.CombatTime("nameplate" .. #currHealthMax)
-                    if #currHealthMax ~= count then
-                        areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
-                        --areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / (dps + playerDPS)
-                    else
-                        areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / dps
-                    end
-                end
-            end
-        end
-    end
-    if target_is_dummy() then
-        return 8675309
-    elseif #currHealthMax >= 1 and areaTTD_Predicted[count] then
-        return areaTTD_Predicted[count]
-    else
-        return 1
-    end
-end
 
 if not behindCheck then
     behindCheck = CreateFrame("Frame")
@@ -208,14 +83,23 @@ end)
 
 
 local function APL()
+	local nameberserk = GetSpellInfo('Berserk')
+
+
+	if AuraUtil.FindAuraByName("Savage Roar","player") then
+		SRbuffremains = select(6,AuraUtil.FindAuraByName("Savage Roar","player","PLAYER"))- GetTime()
+	else
+		SRbuffremains = 0
+	end
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or Player:Buff(S.Prowl) then
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end 
 
 local BehindTimer = GetTime() - BehindCheckTimer
@@ -288,54 +172,103 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return Item(135274, { 13, 14 }):ID()
 	end
 
-	if Player:Buff(S.CatForm)then
-		if (Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
-		or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
-		or Player:ComboPoints() >= 4 and Player:BuffRemains(S.SavageRoar) < 4)
-		or (aoeTTD() < 2 and 
-		   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
-		or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
-		or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
-		or (Player:ComboPoints() == 4 and Player:BuffRemains(S.SavageRoar) < 20)
-		or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
-			if IsReady('Savage Roar') then
-				return S.SavageRoar:Cast()
-			elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 5 and GriphRH.CDsON() then
-				return S.Powershift:Cast()
-			end
-		end
+	if IsReady('Innervate') and Player:ManaPercentage()<=40 and Player:Energy()<= 20 and Player:Mana()>= Player:ManaMax()*0.05 + Player:ManaMax()*0.55 and Player:Mana()>= Player:ManaMax()*0.55 then
+		return S.Innervate:Cast()
+	end
 
-		if Player:ComboPoints() >= 5 and aoeTTD() > 12 and not Target:Debuff(S.Rip) then
-			if IsReady('Rip',true) then
-				return S.Rip:Cast()
-			elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 10 and GriphRH.CDsON() then
-				return S.Powershift:Cast()
-			end
-		end
+
+	if IsReady('Cat Form') 
+	and ((not AuraUtil.FindAuraByName("Berserk", "player") and Player:Energy()< 20 
+	or AuraUtil.FindAuraByName("Berserk", "player") and nameberserk == 'Berserk' or Player:Energy()<60)
+	or Player:Mana()>= Player:ManaMax()*0.55 
+	or S.Furor:IsAvailable())
+	then
+		return S.CatForm:Cast()
+	end
+
+	if IsReady("Tiger's Fury") and (Player:Energy()<20 or EnergyTimeToNextTick()>Player:GCD() and Player:Energy()<=40)  then
+		return S.TigersFury:Cast()
+	end
+
+	if IsReady("Savage Roar") and not AuraUtil.FindAuraByName("Savage Roar", "player")  then
+		return S.SavageRoar:Cast()
+	end
+
+	if IsReady("Mangle") and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Mangle","target","PLAYER|HARMFUL") then
+		return S.Mangle:Cast()
+	end
+
+
+	if IsReady("Shred") and CheckInteractDistance("target", 3) and Behind ~= false and AuraUtil.FindAuraByName("Clearcasting", "player")  then
+		return S.Shred:Cast()
+	end
+
+
+	if IsReady("Rip") and CheckInteractDistance("target", 3) and Player:ComboPoints()>=5 and SRbuffremains >=7 and aoeTTD()>=10 and not AuraUtil.FindAuraByName("Rip","target","PLAYER|HARMFUL")  then
+		return S.Rip:Cast()
+	end
+
+	if IsReady("Shred") and CheckInteractDistance("target", 3) and Behind ~= false then
+		return S.Shred:Cast()
+	end
+
+	if IsReady("Mangle") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= Player:ManaMax()*0.55 and EnergyTimeToNextTick()>1 then
+		return S.Mangle:Cast()
+	end
+
+	if IsReady("Rake") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= Player:ManaMax()*0.55 and EnergyTimeToNextTick()>1 and not AuraUtil.FindAuraByName("Rake","target","PLAYER|HARMFUL") then
+		return S.Rake:Cast()
+	end
+
+
+	-- if Player:Buff(S.CatForm)then
+	-- 	if (Player:ComboPoints() >= 1 and not Player:Buff(S.SavageRoar) 
+	-- 	or Player:ComboPoints() >= 5 and Player:BuffRemains(S.SavageRoar) < 8 
+	-- 	or Player:ComboPoints() >= 4 and Player:BuffRemains(S.SavageRoar) < 4)
+	-- 	or (aoeTTD() < 2 and 
+	-- 	   ((Player:ComboPoints() == 1 and Player:BuffRemains(S.SavageRoar) < 10)
+	-- 	or (Player:ComboPoints() == 2 and Player:BuffRemains(S.SavageRoar) < 13)
+	-- 	or (Player:ComboPoints() == 3 and Player:BuffRemains(S.SavageRoar) < 16)
+	-- 	or (Player:ComboPoints() == 4 and Player:BuffRemains(S.SavageRoar) < 20)
+	-- 	or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
+	-- 		if IsReady('Savage Roar') then
+	-- 			return S.SavageRoar:Cast()
+	-- 		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 5 and GriphRH.CDsON() then
+	-- 			return S.Powershift:Cast()
+	-- 		end
+	-- 	end
+
+	-- 	if Player:ComboPoints() >= 5 and aoeTTD() > 12 and not Target:Debuff(S.Rip) then
+	-- 		if IsReady('Rip',true) then
+	-- 			return S.Rip:Cast()
+	-- 		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 10 and GriphRH.CDsON() then
+	-- 			return S.Powershift:Cast()
+	-- 		end
+	-- 	end
 		
-		if Player:Buff(S.Clearcasting) then
-			if IsReady('Shred',true) and Behind ~= false then
-				return S.Shred:Cast()
-			end
+	-- 	if Player:Buff(S.Clearcasting) then
+	-- 		if IsReady('Shred',true) and Behind ~= false then
+	-- 			return S.Shred:Cast()
+	-- 		end
 			
-			if IsReady('Claw',true) then
-				return S.Claw:Cast()
-			end
-		end
+	-- 		if IsReady('Claw',true) then
+	-- 			return S.Claw:Cast()
+	-- 		end
+	-- 	end
 		
-		if IsReady('Claw',true) then
-			return S.Claw:Cast()
-		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and targetrange11() and Player:Energy() < 20 and GriphRH.CDsON() then
-			return S.Powershift:Cast()
-		end
+	-- 	if IsReady('Claw',true) then
+	-- 		return S.Claw:Cast()
+	-- 	elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and targetrange11() and Player:Energy() < 20 and GriphRH.CDsON() then
+	-- 		return S.Powershift:Cast()
+	-- 	end
 		
 		-- if IsReady('Cat Form') and GriphRH.CDsON() and Player:Energy() < 10 then
 			-- return S.Powershift:Cast()
 		-- end
-	end
+	--end
 end
 
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 GriphRH.Rotation.SetAPL(11, APL);

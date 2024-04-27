@@ -174,10 +174,11 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
     local castchannelTime = math.random(275, 500) / 1000
 
-    local targetttd20= (aoeTTD()>20 or UnitHealth('target')>2500 or Target:IsAPlayer() and Target:HealthPercentage()>65)
-    local targetttd10= (aoeTTD()>10 or UnitHealth('target')>2250 or Target:IsAPlayer() and Target:HealthPercentage()>60)
-    local targetttd8= (aoeTTD()>8 or UnitHealth('target')>2000 or Target:IsAPlayer() and Target:HealthPercentage()>50)
-    local targetttd3= (aoeTTD()<3 or Target:IsAPlayer() and Target:HealthPercentage()<20)
+    local targetttd20= (aoeTTD()>20 or UnitHealth('target')>2500 or Target:IsAPlayer() and Target:HealthPercentage()>75)
+    local targetttd10= (aoeTTD()>10 or UnitHealth('target')>2250 or Target:IsAPlayer() and Target:HealthPercentage()>65 and Target:HealthPercentage()<=75)
+    local targetttd8= (aoeTTD()>8 or UnitHealth('target')>2000 or Target:IsAPlayer() and Target:HealthPercentage()>55 and Target:HealthPercentage()<=65)
+    local targetttd6= (aoeTTD()>6 or UnitHealth('target')>1750 or Target:IsAPlayer() and Target:HealthPercentage()<=55)
+    local targetttd3= (aoeTTD()>3 or Target:IsAPlayer() and Target:HealthPercentage()<20)
 
     if Player:IsCasting() or Player:IsChanneling() then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
@@ -277,6 +278,30 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
              else
                 garroteedebuff = 0 
             end
+
+
+            if namehonoramongthieves == 'Honor Among Thieves' and
+                 (Player:ComboPoints()<=1   
+                or
+                 Player:Energy()>=70 and (S.AdrenalineRush:IsAvailable() and AuraUtil.FindAuraByName("Adrenaline Rush", "player") and Player:Energy()>=50
+                        or EnergyTimeToNextTick()<1
+                        or namemasterofsublety =='Master of Sublety' and AuraUtil.FindAuraByName("Master of Sublety", "player") and Player:ComboPoints()<=3)
+                or targetttd6) then
+                            
+
+                            build = true
+                        else
+                            build = false
+                        end
+              
+
+             
+
+
+
+
+                
+
     if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
     and not AuraUtil.FindAuraByName("Food", "player") and (not AuraUtil.FindAuraByName("Vanish", "player") or AuraUtil.FindAuraByName("Cold Blood", "player")) and not AuraUtil.FindAuraByName("Food & Drink", "player")
     and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
@@ -306,12 +331,13 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.Rupture:Cast()
         end
 
-        if namecuttothechase == 'Cut to the Chase' and not AuraUtil.FindAuraByName("Slice and Dice", "player") and Player:ComboPoints()>=1 and (targetttd10 or inRange25>1 and aoeTTD()>5) then
+        if IsReady("Slice and Dice") and namecuttothechase == 'Cut to the Chase' and not AuraUtil.FindAuraByName("Slice and Dice", "player") and Player:ComboPoints()>=1 and (targetttd10 or inRange25>1 and aoeTTD()>5) then
             return S.SliceandDice:Cast()
         end
-        if namecuttothechase ~= 'Cut to the Chase' and SnDbuffremains<1 and Player:ComboPoints()>=3 and (targetttd20 or inRange25>1 and aoeTTD()>5) then
+        if  IsReady("Slice and Dice") and namecuttothechase ~= 'Cut to the Chase' and SnDbuffremains<1 and Player:ComboPoints()>=3 and (targetttd20 or inRange25>1 and aoeTTD()>5) then
             return S.SliceandDice:Cast()
         end
+        
         if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and CheckInteractDistance("target", 3) and finish then
             return S.SliceandDice:Cast()
         end
@@ -368,7 +394,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5  then
+        if IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <5 and namemutilate == 'Mutilate' and (build == true or namehonoramongthieves ~= 'Honor Among Thieves') then
             return S.handrune:Cast()
         end
 
@@ -380,7 +406,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' then
+        if  IsReady('Saber Slash') and CheckInteractDistance("target", 3) and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' and (build == true or namehonoramongthieves ~= 'Honor Among Thieves') then
             return S.handrune:Cast()
         end
 
@@ -423,7 +449,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
                 return S.handrune:Cast()
             end
 
-            if S.Mutilate:CanCast() and CheckInteractDistance("target", 3) and Player:ComboPoints() <4 and namemutilate == 'Mutilate' then
+            if  IsReady('Mutilate') and CheckInteractDistance("target", 3) and Player:ComboPoints() <4 and namemutilate == 'Mutilate' then
                 return S.handrune:Cast()
             end
     
