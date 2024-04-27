@@ -13,6 +13,7 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 
 GriphRH.Spell[1] = {
+    
     MortalStriker2 = Spell(21555),
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
@@ -174,6 +175,14 @@ end
 local namerampage = GetSpellInfo('Rampage')
 
 local nametasteforblood = GetSpellInfo('Taste for Blood')
+
+
+
+if AuraUtil.FindAuraByName("Consumed By Rage","player") then
+    CbRstack = select(3,AuraUtil.FindAuraByName("Consumed By Rage","player"))
+else
+    CbRstack = 0
+end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------DW FURY----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,7 +273,7 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
             return S.chestrune:Cast()
         end
         
-        if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) then
+        if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and Player:Rage()>50 then
             return S.Whirlwind:Cast()
         end
 
@@ -277,20 +286,22 @@ local nametasteforblood = GetSpellInfo('Taste for Blood')
         end	
 
 
-        if IsReady('Quick Strike')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+        if IsReady('Quick Strike') and CbRstack>4 and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
             return S.handrune:Cast()
         end
         
-        if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
+        if IsReady('Cleave') and CbRstack>4 and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
             return S.Cleave:Cast()
         end
         
-        if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
+        if IsReady('Heroic Strike') and CbRstack>4 and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
             return S.HeroicStrike:Cast()
         end
-        if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 80 then
+        
+        if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 95 then
             return S.Hamstring:Cast()
         end
+
     end
     end
 
@@ -378,9 +389,6 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Whirlwind:Cast()
     end
 
-    if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) and Player:Rage()>=30 then
-        return S.Execute:Cast()
-    end	
 
     if IsReady("Mortal Strike") and CheckInteractDistance("target",2) then
     return S.MortalStrike:Cast()
@@ -430,7 +438,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
         return S.HeroicStrike:Cast()
     end
-    if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 80 then
+    if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 95 then
         return S.Hamstring:Cast()
     end
 end

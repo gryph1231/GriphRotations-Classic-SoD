@@ -30,6 +30,7 @@ GriphRH.Spell[11] = {
 	Furor = Spell(17061),
 	TigersFury = Spell(5217),
 	Rip = Spell(1079),
+	handsrune= Spell(20549), -- bp macro /use hands rune ability -- ggl war stomp
 	Innervate = Spell(29166),
 	legsrune = Spell(20580), --bp macro /use legs rune ability -- ggl keybind to shadowmeld
 	Powershift = Spell(5225), -- track humanoids
@@ -142,14 +143,21 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if not Player:AffectingCombat() and not Player:Buff(S.CatForm) then
 	if GriphRH.InterruptsON() then
-		if IsReady('Omen of Clarity') and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
+		if IsReady('Omen of Clarity') and not AuraUtil.FindAuraByName("Omen of Clarity", "player") and not AuraUtil.FindAuraByName("Prowl", "player") then
 			return S.OmenofClarity:Cast()
 		end
 		
-		if IsReady('Mark of the Wild') and not AuraUtil.FindAuraByName("Mark of the Wild", "player") then
+		if IsReady('Mark of the Wild') and not AuraUtil.FindAuraByName("Mark of the Wild", "player") and not AuraUtil.FindAuraByName("Prowl", "player") then
 			return S.MarkoftheWild:Cast()
 		end	
-		
+
+		if IsReady('Cat Form') and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") then
+			return S.CatForm:Cast()
+		end
+
+		if AuraUtil.FindAuraByName("Cat Form", "player") and not AuraUtil.FindAuraByName("Prowl", "player") and IsReady("Prowl") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and Player:IsMoving() then
+			return S.Prowl:Cast()
+		end
 		-- if IsReady('Thorns') and not (Player:Buff(S.Thorns) or (not AuraUtil.FindAuraByName("Thorns", "target") and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 60 then
 			-- return S.Thorns:Cast()
 		-- end
@@ -171,7 +179,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return Item(135274, { 13, 14 }):ID()
 	end
 
-	if IsReady('Innervate') and Player:ManaPercentage()<=40 and Player:Energy()<= 20 and Player:Mana()>= Player:ManaMax()*0.05 + Player:ManaMax()*0.55 and Player:Mana()>= Player:ManaMax()*0.55 then
+	if IsReady('Innervate') and Player:ManaPercentage()<=40 and Player:Energy()<= 20 and Player:Mana()>= 53 + 410 and Player:Mana()>= 410 then
 		return S.Innervate:Cast()
 	end
 
@@ -179,7 +187,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	if IsReady('Cat Form') 
 	and ((not AuraUtil.FindAuraByName("Berserk", "player") and Player:Energy()< 20 
 	or AuraUtil.FindAuraByName("Berserk", "player") and nameberserk == 'Berserk' or Player:Energy()<60)
-	or Player:Mana()>= Player:ManaMax()*0.55 
+	or Player:Mana()>= 410
 	or S.Furor:IsAvailable())
 	then
 		return S.CatForm:Cast()
@@ -194,7 +202,7 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	end
 
 	if IsReady("Mangle") and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Mangle","target","PLAYER|HARMFUL") then
-		return S.Mangle:Cast()
+		return S.handsrune:Cast()
 	end
 
 
@@ -211,11 +219,11 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 		return S.Shred:Cast()
 	end
 
-	if IsReady("Mangle") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= Player:ManaMax()*0.55 and EnergyTimeToNextTick()>1 then
-		return S.Mangle:Cast()
+	if IsReady("Mangle") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= 410 and EnergyTimeToNextTick()>1 then
+		return S.handsrune:Cast()
 	end
 
-	if IsReady("Rake") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= Player:ManaMax()*0.55 and EnergyTimeToNextTick()>1 and not AuraUtil.FindAuraByName("Rake","target","PLAYER|HARMFUL") then
+	if IsReady("Rake") and CheckInteractDistance("target", 3) and S.Furor:IsAvailable() and Player:Mana()>= 410 and EnergyTimeToNextTick()>1 and not AuraUtil.FindAuraByName("Rake","target","PLAYER|HARMFUL") then
 		return S.Rake:Cast()
 	end
 
