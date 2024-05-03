@@ -117,7 +117,7 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and playerinBattleStance and (instanceTypepvp == 'pvp' or Target:IsAPlayer()) and (IsReady("Berserker Rage") and not AuraUtil.FindAuraByName("Bloodrage","player") and S.Bloodrage:TimeSinceLastCast()>5 and checkOverpower() == false and (S.SweepingStrikes:CooldownRemains()>2 and S.SweepingStrikes:IsAvailable() and RangeCount11()<=1 or not S.SweepingStrikes:IsAvailable() or not GriphRH.AoEON() or not GriphRH.CDsON())) then
+if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
     berserkerstance = true
     battlestance = false
 else
