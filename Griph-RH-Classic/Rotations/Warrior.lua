@@ -14,7 +14,7 @@ local Item = HL.Item;
 
 GriphRH.Spell[1] = {
     
-    MortalStriker2 = Spell(21555),
+    MortalStrike2 = Spell(21555),
     ConsumedByRage = Spell(425418),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
@@ -124,7 +124,7 @@ else
     berserkerstance = false
     battlestance = true
 end
-
+local usewwST = (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable() or S.MortalStrike2:IsAvailable() and S.MortalStrike2:CooldownRemains() >= 1.5 or not S.MortalStrike2:IsAvailable()) 
 
 
 if AuraUtil.FindAuraByName("Blessing of Freedom","target") 
@@ -177,6 +177,7 @@ local namerampage = GetSpellInfo('Rampage')
 local nametasteforblood = GetSpellInfo('Taste for Blood')
 
 
+local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
 
 if AuraUtil.FindAuraByName("Consumed By Rage","player") then
     CbRstack = select(3,AuraUtil.FindAuraByName("Consumed By Rage","player"))
@@ -231,7 +232,7 @@ end
             return S.BerserkerRage:Cast()
         end
     
-        if IsReady("Bloodrage") and (S.BerserkerRage:CooldownRemains()>2 or instanceTypepvp == 'pvp') and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+        if IsReady("Bloodrage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
             return S.Bloodrage:Cast()
         end
 
@@ -295,7 +296,7 @@ end
             return S.HeroicStrike:Cast()
         end
         
-        if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 95 and  AuraUtil.FindAuraByName("Wild Strikes","player") then
+        if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
             return S.Hamstring:Cast()
         end
 
@@ -363,7 +364,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BerserkerRage:Cast()
     end
 
-    if IsReady("Bloodrage") and (not S.BerserkerRage:IsAvailable() or S.BerserkerRage:CooldownRemains()>2 or instanceTypepvp == 'pvp') and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    if IsReady("Bloodrage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
 
@@ -382,19 +383,18 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady('Slam') and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
         return S.Slam:Cast()
     end
-    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
+    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and usewwST then
         return S.chestrune:Cast()
     end
 
-    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable()) then
+    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and usewwST then
         return S.Whirlwind:Cast()
     end
 
+
     if IsReady('Quick Strike') 
     and CheckInteractDistance("target",2) 
-    and (not S.MortalStrike:IsAvailable() 
-    or S.MortalStrike:IsAvailable() 
-    and S.MortalStrike:CooldownRemains() >= 1.5) 
+    and usewwST
     and (not S.Whirlwind:IsAvailable() 
     or S.Whirlwind:IsAvailable() 
     and S.Whirlwind:CooldownRemains() >= 1.5) 
@@ -422,6 +422,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
     if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
         return S.HeroicStrike:Cast()
+    end
+
+    if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
+        return S.Hamstring:Cast()
     end
 end
 end
