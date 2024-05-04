@@ -14,6 +14,11 @@ local Item = HL.Item;
 local Pet = Unit.Pet;
 
 GriphRH.Spell[11] = {
+	MoonkinForm = Spell(24858),
+	Moonfire = Spell(8921),
+	Sunfire = Spell(414684),
+	Starfire = Spell(2912),
+	Starsurge = Spell(417157),
 	Wrath = Spell(5177),
 	CatForm = Spell(768),
 	BearForm = Spell(5487),
@@ -33,7 +38,7 @@ GriphRH.Spell[11] = {
 	MangleCat= Spell(20549), -- bp macro /cast Mangle(Cat) -- ggl war stomp
 	Innervate = Spell(29166),
 	legsrune = Spell(24977), --bp macro /use legs rune ability -- ggl keybind to insect swarm
-	Powershift = Spell(5225), -- track humanoids
+	handsrune = Spell(2637), --bp macro /use hands rune ability -- ggl keybind to hibernate
 };
 
 local S = GriphRH.Spell[11]
@@ -86,6 +91,7 @@ end)
 
 local function APL()
 	local nameberserk = GetSpellInfo('Berserk')
+	targetRange30 = TargetInRange("Wrath")
 
 
 	if AuraUtil.FindAuraByName("Savage Roar","player") then
@@ -116,6 +122,27 @@ end
 if FrontTimer < Player:GCD() then
 	Front = false
 end
+
+local targetttd9= (aoeTTD()>9 or UnitHealth('target')>2000 or Target:IsAPlayer() and Target:HealthPercentage()>55 and Target:HealthPercentage()<=65)
+
+if AuraUtil.FindAuraByName("Sunfire","target","PLAYER|HARMFUL") then
+	sunfiredebuff = select(6,AuraUtil.FindAuraByName("Sunfire","target","PLAYER|HARMFUL")) - GetTime()
+	  else
+		sunfiredebuff = 0 
+	 end
+	 if AuraUtil.FindAuraByName("Moonfire","target","PLAYER|HARMFUL") then
+		sunfiredebuff = select(6,AuraUtil.FindAuraByName("Moonfire","target","PLAYER|HARMFUL")) - GetTime()
+		  else
+			sunfiredebuff = 0 
+		 end
+ if S.MoonkinForm:IsAvailable() then
+	moonkindps = true
+	feraldps = false
+
+ else 
+	moonkindps = false
+	feraldps = true
+ end
 
 local nameMangle = GetSpellInfo('Mangle')
 
@@ -152,8 +179,10 @@ if not Player:AffectingCombat() then
 		if IsReady('Mark of the Wild') and not AuraUtil.FindAuraByName("Mark of the Wild", "player") and not AuraUtil.FindAuraByName("Prowl", "player") then
 			return S.MarkoftheWild:Cast()
 		end	
-
-		if IsReady('Cat Form') and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") then
+		if IsReady('Moonkin Form') and moonkindps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") then
+			return S.MoonkinForm:Cast()
+		end
+		if IsReady('Cat Form') and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") then
 			return S.CatForm:Cast()
 		end
 
@@ -165,15 +194,15 @@ if not Player:AffectingCombat() then
 		-- end
 	end
 end
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Rotation-----------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
+
 if IsReady('Omen of Clarity') and GriphRH.InterruptsON() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
 	return S.OmenofClarity:Cast()
 end
-
-if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
-	if IsReady('Cat Form') and not Player:Buff(S.CatForm) then
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+--feraldps-----------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if Player:CanAttack(Target) and feraldps==true and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
+	if IsReady('Cat Form') and not Player:Buff(S.CatForm)  then
 		return S.CatForm:Cast()
 	end
 
@@ -282,6 +311,46 @@ if Player:CanAttack(Target) and (Target:AffectingCombat() or IsCurrentSpell(6603
 	--end
 end
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+--Moonkin-----------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if Player:CanAttack(Target) and moonkindps==true and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
+	if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and not AuraUtil.FindAuraByName("Cat Form", "player")  then
+		return S.MoonkinForm:Cast()
+	end
+
+	if not IsCurrentSpell(6603) and targetrange11() then
+		return Item(135274, { 13, 14 }):ID()
+	end
+
+
+
+	if IsReady('Innervate') and Player:ManaPercentage()<=40  then
+		return S.Innervate:Cast()
+	end
+
+
+
+	if IsReady("Starsurge") and targetRange30 then
+		return S.legsrune:Cast()
+	end
+	if IsReady("Starfire") and targetRange30 and not AuraUtil.FindAuraByName("Starsurge", "player") and not Player:IsMoving() then
+		return S.Starfire:Cast()
+	end
+
+	if IsReady("Sunfire") and targetRange30 and sunfiredebuff<Player:GCD() and (targetttd9 or Player:IsMoving()) and S.Sunfire:TimeSinceLastCast()>Player:GCD()+ 0.2 then
+		return S.Sunfire:Cast()
+	end
+	if IsReady("Moonfire") and targetRange30 and moonfiredebuff<Player:GCD() and (targetttd9 or Player:IsMoving()) and S.Moonfire:TimeSinceLastCast()>Player:GCD()+0.2 then
+		return S.Moonfire:Cast()
+	end
+
+	if IsReady("Wrath") and targetRange30 and not Player:IsMoving() then
+		return S.Wrath:Cast()
+	end
+
+
+end
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
