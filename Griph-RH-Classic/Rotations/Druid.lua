@@ -19,7 +19,14 @@ GriphRH.Spell[11] = {
 	Sunfire = Spell(414684),
 	Starfire = Spell(2912),
 	Starsurge = Spell(417157),
-	Wrath = Spell(5177),
+	Wrath1 = Spell(5176),
+	Wrath2 = Spell(5177),
+	Wrath3 = Spell(5178),
+	Wrath4 = Spell(5179),
+	Wrath5 = Spell(5180),
+	Wrath6 = Spell(6780),
+	Wrath7 = Spell(8905),
+	Wrath8 = Spell(9912),
 	CatForm = Spell(768),
 	BearForm = Spell(5487),
 	Mangle = Spell(407993),
@@ -56,6 +63,14 @@ S.Claw.TextureSpellID = { 16827 }
 	-- trinket2 = Item(25628, { 13, 14 }),
 -- };
 -- local I = Item.Druid.Feral;
+S.Wrath1:RegisterInFlight()
+S.Wrath2:RegisterInFlight()
+S.Wrath3:RegisterInFlight()
+S.Wrath4:RegisterInFlight()
+S.Wrath5:RegisterInFlight()
+S.Wrath6:RegisterInFlight()
+S.Wrath7:RegisterInFlight()
+S.Wrath8:RegisterInFlight()
 
 local function num(val)
     if val then
@@ -143,7 +158,7 @@ if AuraUtil.FindAuraByName("Sunfire","target","PLAYER|HARMFUL") then
 	moonkindps = false
 	feraldps = true
  end
-
+local wrathinflgiht = (S.Wrath1:InFlight() or  S.Wrath2:InFlight() or  S.Wrath3:InFlight() or  S.Wrath4:InFlight() or  S.Wrath5:InFlight() or  S.Wrath6:InFlight() or  S.Wrath7:InFlight() or  S.Wrath8:InFlight())
 local nameMangle = GetSpellInfo('Mangle')
 
 local finisher_condition = 
@@ -314,7 +329,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Moonkin-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:CanAttack(Target) and moonkindps==true and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
+if Player:CanAttack(Target) and moonkindps==true and (Target:AffectingCombat() or IsCurrentSpell(6603) or wrathinflgiht) and not Target:IsDeadOrGhost() then 
 	if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and not AuraUtil.FindAuraByName("Cat Form", "player")  then
 		return S.MoonkinForm:Cast()
 	end
@@ -346,7 +361,7 @@ if Player:CanAttack(Target) and moonkindps==true and (Target:AffectingCombat() o
 	end
 
 	if IsReady("Wrath") and targetRange30 and not Player:IsMoving() then
-		return S.Wrath:Cast()
+		return S.Wrath1:Cast()
 	end
 
 
