@@ -118,8 +118,8 @@ end
 
 
 if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
-    berserkerstance = true
-    battlestance = false
+    berserkerstance = false
+    battlestance = true
 else
     berserkerstance = false
     battlestance = true

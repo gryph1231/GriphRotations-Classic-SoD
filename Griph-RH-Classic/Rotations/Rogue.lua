@@ -29,9 +29,9 @@ GriphRH.Spell[4] = {
     DeadlyPoison = Spell(27187),
     Eviscerate = Spell(6761),
     ExposeArmor = Spell(26866),
-    Garrote = Spell(48676),
+    Garrote = Spell(703),
     KidneyShot = Spell(408),
-    Rupture = Spell(48672),
+    Rupture = Spell(1943),
     SnD = Spell(6774),
     Backstab = Spell(53),
     Feint = Spell(48659),
@@ -103,6 +103,24 @@ end
 
 
 
+if not behindCheck then
+    behindCheck = CreateFrame("Frame")
+end
+
+local BehindCheckTimer = 0
+local FrontCheckTimer = 0
+
+local frame = behindCheck
+frame:RegisterEvent("UI_ERROR_MESSAGE")
+frame:SetScript("OnEvent", function(self,event,errorType,message)
+	if message == 'You must be behind your target' then
+		BehindCheckTimer = GetTime()
+	elseif message == 'You must be in front of your target' then
+		FrontCheckTimer = GetTime()
+	end	
+end)
+
+
 
 
 
@@ -135,6 +153,19 @@ else
 end
 
 
+local BehindTimer = GetTime() - BehindCheckTimer
+local FrontTimer = GetTime() - FrontCheckTimer
+local Behind
+local Front
+
+if BehindTimer < Player:GCD() then
+	Behind = false
+end
+
+if FrontTimer < Player:GCD() then
+	Front = false
+end
+
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -146,7 +177,6 @@ if targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=4 then
     finish = true
 else finish = false
 end
-   
 
 local spellwidgetfort= UnitCastingInfo("target")
 local namehonoramongthieves = GetSpellInfo('Honor Among Thieves')
@@ -186,7 +216,6 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
     end
-
 
     if inRange25 == 0 then
         GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
@@ -237,7 +266,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         return GriphRH.QueuedSpell():Cast()
     end
 
-    local GetItemCooldown =  (C_Container and C_Container.GetItemCooldown(7676)) or nil
+    local GetItemCooldown =  (C_Container and C_Container.GetItemCooldown(7676)) or 0
 
     if 300-GetTime()+GetItemCooldown<=0 then
         thistleteaoffcooldown = true
@@ -276,9 +305,12 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         if AuraUtil.FindAuraByName("Garrote","target","PLAYER|HARMFUL") then
            garrotedebuff = select(6,AuraUtil.FindAuraByName("Garrote","target","PLAYER|HARMFUL")) - GetTime()
              else
-                garroteedebuff = 0 
+                garrotedebuff = 0 
             end
 
+            -- print('rupturetime:',rupturedebuff)
+            -- print('garrootetime:',garrotedebuff)
+            -- print('is garrote castable:',IsReady('Garrote'))
 
             if namehonoramongthieves == 'Honor Among Thieves' and
                  (Player:ComboPoints()<=1   
@@ -296,7 +328,6 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
               
 
              
-
 
 
 
@@ -325,8 +356,8 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
 
 
         if namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
-        or  rupturedebuff <1 and AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL") 
-        or garrotedebuff<1.5 and AuraUtil.FindAuraByName("Garrote","target","PLAYER|HARMFUL"))
+        or  rupturedebuff <1  
+        or garrotedebuff<1.5 )
         and Player:ComboPoints()>=3 and targetttd8 then
             return S.Rupture:Cast()
         end
@@ -410,7 +441,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if IsReady('Backstab') and namemutilate ~= 'Mutilate' and CheckInteractDistance("target", 3) and not Player:IsTanking(Target) then
+        if IsReady('Backstab') and namemutilate ~= 'Mutilate' and CheckInteractDistance("target", 3) and not Player:IsTanking(Target) and Behind ~= false then
             return S.Backstab:Cast()
         end
 
@@ -433,9 +464,11 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             if IsReady('Stealth') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
                 return S.Stealth:Cast()
             end
-            if IsReady('Garrote') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
+         
+            if IsReady('Garrote') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' and Behind ~= false then
                 return S.Garrote:Cast()
             end
+
             if IsReady('Ambush') and CheckInteractDistance("target", 3) and namemutilate ~='mutilate' then
                 return S.Ambush:Cast()
             end
@@ -443,7 +476,6 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             if IsReady('Shadowstrike') and AuraUtil.FindAuraByName("Stealth", "player") and (inRange25 >=1 or targetRange30) then
                 return S.handrune:Cast()
             end
-
 
             if  IsReady('Quick Draw') and (inRange25==1 or targetRange30) and Player:ComboPoints() < 5 and namequickdraw == 'Quick Draw'  then
                 return S.handrune:Cast()
