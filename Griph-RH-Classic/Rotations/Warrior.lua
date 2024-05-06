@@ -16,6 +16,7 @@ GriphRH.Spell[1] = {
     
     MortalStrike2 = Spell(21555),
     ConsumedByRage = Spell(425418),
+    ShieldBash = Spell(72),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
     Charge = Spell(100),
@@ -86,6 +87,7 @@ local function APL()
     or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
     end
+    -- print(namegladiator)
 
     if AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
         renddebuff = select(6,AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL")) - GetTime()
@@ -98,7 +100,7 @@ if HasMainhandWeapon() and HasOffhandWeapon() and namegladiator~='Gladiator Stan
     dwfury = true
     arms = false
     glad = false
-elseif  namegladiator=='Gladiator Stance' then
+elseif namegladiator=='Gladiator Stance' then
     glad = true
     dwfury = false
     arms = false
@@ -107,7 +109,6 @@ else
     arms = true
     dwfury = false
 end
-
 
 
 if GetShapeshiftFormID() == 19 then
@@ -123,7 +124,7 @@ else
 end
 
 
-if CheckInteractDistance("target",3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
+if targetrange11() and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
     berserkerstance = false
     battlestance = true
 else
@@ -207,7 +208,7 @@ end
 
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
 	
-        if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
+        if not IsCurrentSpell(6603) and targetrange11()then
             return I.autoattack:ID()
         end
      
@@ -217,48 +218,48 @@ end
 
         if stoprotation == false then 
 
-            if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+            if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetrange11() and GriphRH.InterruptsON() then
                 return S.Pummel:Cast()
             end
-            if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
+            if IsReady("Victory Rush") and targetrange11() and Player:HealthPercentage()<50 then
                 return S.handrune:Cast()
             end	
     
     
 
-            if IsReady("Rampage") and CheckInteractDistance("target",2) and namerampage == 'Rampage'  and GriphRH.CDsON() then
+            if IsReady("Rampage") and targetrange11() and namerampage == 'Rampage'  and GriphRH.CDsON() then
                 return S.wristrune:Cast()
             end	
     
             
-            if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+            if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and targetrange11() and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
                 return S.Hamstring:Cast()
             end
     
 
     
 
-        if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") and CheckInteractDistance("target",3) then
+        if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") and targetrange11()then
             return S.BerserkerStance:Cast()
         end
 
-        if IsReady("Death Wish") and CheckInteractDistance("target",3) and GriphRH.CDsON() then
+        if IsReady("Death Wish") and targetrange11() and GriphRH.CDsON() then
             return S.DeathWish:Cast()
         end	
-        if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and targetrange11() and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
             return S.BerserkerRage:Cast()
         end
     
-        if IsReady("Bloodrage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+        if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and targetrange11() and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
             return S.Bloodrage:Cast()
         end
 
 
-        if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
+        if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11()then
             return S.Execute:Cast()
         end	
 
-        if IsReady("Heroic Strike") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
+        if IsReady("Heroic Strike") and Target:HealthPercentage()<=20 and targetrange11() and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
             return S.HeroicStrike:Cast()
         end	
 
@@ -272,23 +273,23 @@ end
         end	
 
 
-        if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and CheckInteractDistance("target",2) then
+        if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11()then
             return S.Whirlwind:Cast()
         end
         
-        if IsReady('Bloodthirst') and CheckInteractDistance("target",2) then
+        if IsReady('Bloodthirst') and targetrange11()then
             return S.Bloodthirst:Cast()
         end
         
-        if IsReady('Slam')  and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
+        if IsReady('Slam')  and targetrange11() and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
             return S.Slam:Cast()
         end
         
-        if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
+        if IsReady('Raging Blow')  and targetrange11() and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
             return S.chestrune:Cast()
         end
         
-        if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and Player:Rage()>50 then
+        if IsReady('Whirlwind')  and targetrange11() and Player:Rage()>50 then
             return S.Whirlwind:Cast()
         end
 
@@ -301,19 +302,19 @@ end
         end	
 
 
-        if IsReady('Quick Strike') and CbRstack>4 and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+        if IsReady('Quick Strike')  and targetrange11() and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
             return S.handrune:Cast()
         end
         
-        if IsReady('Cleave') and CbRstack>4 and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
+        if IsReady('Cleave')  and not IsCurrentSpell(SpellRank('Cleave')) and targetrange11() and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
             return S.Cleave:Cast()
         end
         
-        if IsReady('Heroic Strike') and CbRstack>4 and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
+        if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and targetrange11() and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
             return S.HeroicStrike:Cast()
         end
         
-        if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
+        if  IsReady("Hamstring") and targetrange11() and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
             return S.Hamstring:Cast()
         end
 
@@ -325,31 +326,31 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and arms == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
 	
-    if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
+    if not IsCurrentSpell(6603) and targetrange11()then
         return I.autoattack:ID()
     end
 
     if Target:IsAPlayer() and IsReady("Rallying Cry") and inRange25>=1 and Player:HealthPercentage()<=15 then
         return S.feetrune:Cast()
     end	
-    if IsReady("Intercept") and not CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+    if IsReady("Intercept") and nottargetrange11() and GriphRH.InterruptsON() then
         return S.Charge:Cast()
     end
 
 
 
     if stoprotation == false then 
-        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetrange11() and GriphRH.InterruptsON() then
             return S.Pummel:Cast()
         end
-        if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
+        if IsReady("Victory Rush") and targetrange11() and Player:HealthPercentage()<50 then
             return S.handrune:Cast()
         end	
-    if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+    if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and targetrange11() and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
         return S.Hamstring:Cast()
     end
 
-    if Target:IsAPlayer() and IsReady("Mortal Strike") and CheckInteractDistance("target",2) and not AuraUtil.FindAuraByName("Mortal Strike","target","PLAYER|HARMFUL")  then
+    if Target:IsAPlayer() and IsReady("Mortal Strike") and targetrange11() and not AuraUtil.FindAuraByName("Mortal Strike","target","PLAYER|HARMFUL")  then
         return S.MortalStrike:Cast()
         end	
 
@@ -365,52 +366,53 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.BattleStance:Cast()
     end
 
-    if IsReady("Sweeping Strikes") and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL") and CheckInteractDistance("target",2) and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() then
+    if IsReady("Sweeping Strikes") and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL") and targetrange11() and RangeCount10()>1 and GriphRH.CDsON() and GriphRH.AoEON() then
         return S.SweepingStrikes:Cast()
     end
 
-    if IsReady("Overpower") and CheckInteractDistance("target",3) then
+    if IsReady("Overpower") and targetrange11()then
         return S.Overpower:Cast()
     end
 
-    if GetShapeshiftFormID() ~= 19 and (HL.CombatTime()>2.5 or S.SweepingStrikes:CooldownRemains()>Player:GCD()*2) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and CheckInteractDistance("target",3) and Player:Rage()<50 then
+    if GetShapeshiftFormID() ~= 19 and (HL.CombatTime()>2.5 or S.SweepingStrikes:CooldownRemains()>Player:GCD()*2) and S.BattleStance:TimeSinceLastCast()>2 and berserkerstance == true and IsReady("Berserker Stance") and targetrange11() and Player:Rage()<50 then
         return S.BerserkerStance:Cast()
     end
     
-    if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and targetrange11() and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
     end
 
-    if IsReady("Bloodrage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and targetrange11() and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
 
-    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and CheckInteractDistance("target",2) then
+
+    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11()then
         return S.Whirlwind:Cast()
     end
 
-    if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) and Player:Rage()>=30 then
+    if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11() and Player:Rage()>=30 then
         return S.Execute:Cast()
     end	
 
-    if IsReady("Mortal Strike") and CheckInteractDistance("target",2) then
+    if IsReady("Mortal Strike") and targetrange11()then
     return S.MortalStrike:Cast()
     end	
 
-    if IsReady('Slam') and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
+    if IsReady('Slam') and targetrange11() and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
         return S.Slam:Cast()
     end
-    if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and usewwST then
+    if IsReady('Raging Blow')  and targetrange11() and usewwST then
         return S.chestrune:Cast()
     end
 
-    if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and usewwST then
+    if IsReady('Whirlwind')  and targetrange11() and usewwST then
         return S.Whirlwind:Cast()
     end
 
 
     if IsReady('Quick Strike') 
-    and CheckInteractDistance("target",2) 
+    and targetrange11()
     and usewwST
     and (not S.Whirlwind:IsAvailable() 
     or S.Whirlwind:IsAvailable() 
@@ -420,7 +422,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end
 
 
-    if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
+    if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11()then
     return S.Execute:Cast()
     end	
 
@@ -433,17 +435,18 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
 
-    if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave'))  and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
+    if IsReady('Cleave') and not IsCurrentSpell(SpellRank('Cleave'))  and targetrange11() and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
         return S.Cleave:Cast()
     end
 
-    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
+    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and targetrange11() and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
         return S.HeroicStrike:Cast()
     end
 
-    if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
+    if  IsReady("Hamstring") and targetrange11() and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
         return S.Hamstring:Cast()
     end
+end
 end
 
 
@@ -457,11 +460,9 @@ end
 if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and glad == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
 	
 
-    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and battlestance == true then
-        return S.Glad:Cast()
-    end
 
-    if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
+
+    if not IsCurrentSpell(6603) and targetrange11()then
         return I.autoattack:ID()
     end
  
@@ -476,46 +477,49 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if stoprotation == false then 
 
 
-
-        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
+        if IsReady("Shield Bash") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetrange11() and GriphRH.InterruptsON() then
+            return S.ShieldBash:Cast()
+        end
+        if IsReady("Pummel") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetrange11() and GriphRH.InterruptsON() then
             return S.Pummel:Cast()
         end
-        if IsReady("Victory Rush") and CheckInteractDistance("target",2) and Player:HealthPercentage()<50 then
+        if IsReady("Victory Rush") and targetrange11() and Player:HealthPercentage()<50 then
             return S.handrune:Cast()
         end	
 
 
-        if IsReady("Rampage") and CheckInteractDistance("target",2) and namerampage == 'Rampage'  and GriphRH.CDsON() then
+        if IsReady("Rampage") and targetrange11() and namerampage == 'Rampage'  and GriphRH.CDsON() then
             return S.wristrune:Cast()
         end	
 
         
-        if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and CheckInteractDistance("target",2) and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
+        if Target:IsAPlayer() and hamstringTarget== true and IsReady("Hamstring") and targetrange11() and (GetUnitSpeed("target") /7 *100)>65 and not AuraUtil.FindAuraByName("Hamstring","target","PLAYER|HARMFUL") then
             return S.Hamstring:Cast()
         end
 
 
 
-    if IsReady("Death Wish") and CheckInteractDistance("target",3) and GriphRH.CDsON() and (Target:TimeToDie()<30 or HL.CombatTime()>10 and Target:TimeToDie()>180 or Target:IsAPlayer()) then
+    if IsReady("Death Wish") and targetrange11() and GriphRH.CDsON() and (Target:TimeToDie()<30 or HL.CombatTime()>10 and Target:TimeToDie()>180 or Target:IsAPlayer()) then
         return S.DeathWish:Cast()
     end	
-    if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+    if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and targetrange11() and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
         return S.BerserkerRage:Cast()
     end
 
-    if IsReady("Bloodrage") and CheckInteractDistance("target",3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+    if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and targetrange11() and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
         return S.Bloodrage:Cast()
     end
-    if IsReady("Sunder Armor") and CheckInteractDistance("target",2) and Target:TimeToDie()>30 and (sunderarmorstack<5 or sunderarmorremains<2) then
+
+    if IsReady("Sunder Armor") and targetrange11() and Target:TimeToDie()>30 and (sunderarmorstack<5 or sunderarmorremains<2) then
         return S.SunderArmor:Cast()
     end	
 
 
-    if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) then
+    if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11() then
         return S.Execute:Cast()
     end	
 
-    if IsReady("Heroic Strike") and Target:HealthPercentage()<=20 and CheckInteractDistance("target",2) and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
+    if IsReady("Heroic Strike") and Target:HealthPercentage()<=20 and targetrange11() and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
         return S.HeroicStrike:Cast()
     end	
 
@@ -529,23 +533,23 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
 
-    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and CheckInteractDistance("target",2) then
+    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11() then
         return S.Whirlwind:Cast()
     end
     
-    -- if IsReady('Bloodthirst') and CheckInteractDistance("target",2) then
+    -- if IsReady('Bloodthirst') and targetrange11()then
     --     return S.Bloodthirst:Cast()
     -- end
     
-    -- if IsReady('Slam')  and CheckInteractDistance("target",2) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
+    -- if IsReady('Slam')  and targetrange11() and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
     --     return S.Slam:Cast()
     -- end
     
-    -- if IsReady('Raging Blow')  and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
+    -- if IsReady('Raging Blow')  and targetrange11() and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
     --     return S.chestrune:Cast()
     -- end
     
-    -- if IsReady('Whirlwind')  and CheckInteractDistance("target",2) and Player:Rage()>50 then
+    -- if IsReady('Whirlwind')  and targetrange11() and Player:Rage()>50 then
     --     return S.Whirlwind:Cast()
     -- end
 
@@ -558,24 +562,24 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
 
-    -- if IsReady('Quick Strike') and CbRstack>4 and CheckInteractDistance("target",2) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+    -- if IsReady('Quick Strike') and CbRstack>4 and targetrange11() and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
     --     return S.handrune:Cast()
     -- end
     
-    if IsReady('Cleave') and CbRstack>4 and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
+    if IsReady('Cleave')  and not IsCurrentSpell(SpellRank('Cleave')) and targetrange11() and Player:Rage() >= 80 and RangeCount10() > 1 and GriphRH.AoEON() then
         return S.Cleave:Cast()
     end
     
-    if IsReady('Heroic Strike') and CbRstack>4 and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target",2) and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
+    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and targetrange11() and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
         return S.HeroicStrike:Cast()
     end
     
-    if  IsReady("Hamstring") and CheckInteractDistance("target",2) and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
+    if  IsReady("Hamstring") and targetrange11() and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
         return S.Hamstring:Cast()
     end
 
 
-end
+
 
 
 end
@@ -600,7 +604,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return S.BattleStance:Cast()
     end
 
-    if GetShapeshiftFormID() == 17 and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and Target:Exists() and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and targetRange25 then
+    if (GetShapeshiftFormID() == 17 or GetShapeshiftFormID() == 24)  and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and Target:Exists() and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and targetRange25 then
         return S.Charge:Cast()
     end
 
