@@ -355,7 +355,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         end 
 
 
-        if namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
+        if IsReady('Rupture') and namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
         or  rupturedebuff <1  
         or garrotedebuff<1.5 )
         and Player:ComboPoints()>=3 and targetttd8 then
