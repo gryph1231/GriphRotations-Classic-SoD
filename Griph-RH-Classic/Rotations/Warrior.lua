@@ -510,6 +510,9 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Bloodrage:Cast()
     end
 
+    if IsReady("Overpower") and targetrange11()then
+        return S.Overpower:Cast()
+    end
     if IsReady("Sunder Armor") and targetrange11() and Target:TimeToDie()>30 and (sunderarmorstack<5 or sunderarmorremains<2) then
         return S.SunderArmor:Cast()
     end	
