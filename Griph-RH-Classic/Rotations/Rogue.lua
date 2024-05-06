@@ -152,7 +152,6 @@ else
     BDbuffremains = 0
 end
 
-
 local BehindTimer = GetTime() - BehindCheckTimer
 local FrontTimer = GetTime() - FrontCheckTimer
 local Behind
@@ -355,7 +354,8 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         end 
 
 
-        if IsReady('Rupture') and namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
+        if IsReady('Rupture') and UnitCreatureType("target") ~= "Elemental"
+        and namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
         or  rupturedebuff <1  
         or garrotedebuff<1.5 )
         and Player:ComboPoints()>=3 and targetttd8 then
@@ -465,7 +465,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
                 return S.Stealth:Cast()
             end
          
-            if IsReady('Garrote') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' and Behind ~= false then
+            if IsReady('Garrote') and UnitCreatureType("target") ~= "Elemental" and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' and Behind ~= false then
                 return S.Garrote:Cast()
             end
 

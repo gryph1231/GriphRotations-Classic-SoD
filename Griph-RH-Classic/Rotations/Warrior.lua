@@ -208,7 +208,7 @@ end
 
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and dwfury == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
 	
-        if not IsCurrentSpell(6603) and targetrange11()then
+        if not IsCurrentSpell(6603) and targetrange11() then
             return I.autoattack:ID()
         end
      
@@ -239,7 +239,7 @@ end
 
     
 
-        if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") and targetrange11()then
+        if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") and targetrange11() then
             return S.BerserkerStance:Cast()
         end
 
@@ -255,7 +255,7 @@ end
         end
 
 
-        if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11()then
+        if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11() then
             return S.Execute:Cast()
         end	
 
@@ -273,11 +273,11 @@ end
         end	
 
 
-        if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11()then
+        if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11() then
             return S.Whirlwind:Cast()
         end
         
-        if IsReady('Bloodthirst') and targetrange11()then
+        if IsReady('Bloodthirst') and targetrange11() then
             return S.Bloodthirst:Cast()
         end
         
@@ -326,7 +326,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and arms == true and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
 	
-    if not IsCurrentSpell(6603) and targetrange11()then
+    if not IsCurrentSpell(6603) and targetrange11() then
         return I.autoattack:ID()
     end
 
@@ -370,7 +370,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.SweepingStrikes:Cast()
     end
 
-    if IsReady("Overpower") and targetrange11()then
+    if IsReady("Overpower") and targetrange11() then
         return S.Overpower:Cast()
     end
 
@@ -387,7 +387,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end
 
 
-    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11()then
+    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11() then
         return S.Whirlwind:Cast()
     end
 
@@ -395,7 +395,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Execute:Cast()
     end	
 
-    if IsReady("Mortal Strike") and targetrange11()then
+    if IsReady("Mortal Strike") and targetrange11() then
     return S.MortalStrike:Cast()
     end	
 
@@ -422,7 +422,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end
 
 
-    if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11()then
+    if IsReady("Execute") and Target:HealthPercentage()<=20 and targetrange11() then
     return S.Execute:Cast()
     end	
 
@@ -462,7 +462,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
 
 
-    if not IsCurrentSpell(6603) and targetrange11()then
+    if not IsCurrentSpell(6603) and targetrange11() then
         return I.autoattack:ID()
     end
  
@@ -510,9 +510,14 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Bloodrage:Cast()
     end
 
-    if IsReady("Overpower") and targetrange11()then
+    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11() then
+        return S.Whirlwind:Cast()
+    end
+
+    if IsReady("Overpower") and targetrange11() then
         return S.Overpower:Cast()
     end
+    
     if IsReady("Sunder Armor") and targetrange11() and Target:TimeToDie()>30 and (sunderarmorstack<5 or sunderarmorremains<2) then
         return S.SunderArmor:Cast()
     end	
@@ -522,9 +527,17 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Execute:Cast()
     end	
 
-    if IsReady("Heroic Strike") and Target:HealthPercentage()<=20 and targetrange11() and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
+    if IsReady("Cleave") and RangeCount11() > 1 and Target:HealthPercentage()<=20 and targetrange11() and not IsCurrentSpell(SpellRank('Cleave')) and targetrange11() then
+        return S.Cleave:Cast()
+    end	
+
+    if IsReady("Heroic Strike") and RangeCount11() == 1 and Target:HealthPercentage()<=20 and targetrange11() and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
         return S.HeroicStrike:Cast()
     end	
+
+
+
+
 
   
     if Target:IsAPlayer() and IsReady("Battle Shout") and (not AuraUtil.FindAuraByName("Battle Shout","player") or battleshoutbuffremains<3) then
@@ -536,11 +549,14 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
 
-    if IsReady('Whirlwind') and RangeCount10() > 1 and GriphRH.AoEON() and targetrange11() then
-        return S.Whirlwind:Cast()
-    end
     
-    -- if IsReady('Bloodthirst') and targetrange11()then
+
+
+
+
+
+    
+    -- if IsReady('Bloodthirst') and targetrange11() then
     --     return S.Bloodthirst:Cast()
     -- end
     
@@ -576,7 +592,10 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and targetrange11() and Player:Rage() >= 80 and (RangeCount10() == 1 or not GriphRH.AoEON()) then
         return S.HeroicStrike:Cast()
     end
-    
+    if IsReady("Sunder Armor") and Player:Rage()>80 and targetrange11()   then
+        return S.SunderArmor:Cast()
+    end	
+
     if  IsReady("Hamstring") and targetrange11() and Player:Rage() >= 90 and (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
         return S.Hamstring:Cast()
     end
