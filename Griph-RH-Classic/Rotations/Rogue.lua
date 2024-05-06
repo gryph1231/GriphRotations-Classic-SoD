@@ -327,7 +327,16 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
               
 
              
-
+                        if AuraUtil.FindAuraByName("Divine Protection","target") 
+                        or AuraUtil.FindAuraByName("Ice Block","target") 
+                        or AuraUtil.FindAuraByName("Blessing of Protection","player") 
+                        or AuraUtil.FindAuraByName("Blessing of Protection","target") 
+                        or AuraUtil.FindAuraByName("Invulnerability","target") 
+                        or AuraUtil.FindAuraByName("Dispersion","target") then
+                            stoprotation = true
+                        else
+                            stoprotation = false
+                        end
 
 
                 
@@ -338,6 +347,9 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
             return I.autoattack:ID()
         end
+
+        if stoprotation == false then 
+
 
         if S.Kick:CooldownRemains()<2 and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
             return S.Kick:Cast()
@@ -353,6 +365,18 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         return  S.ThistleTea:Cast()
         end 
 
+
+        if IsReady('Gouge') and Behind == false and Target:IsAPlayer() and CheckInteractDistance("target", 3) and HL.CombatTime()<3 then
+            return S.Gouge:Cast()
+        end
+
+        if IsReady('Kidney Shot') and Player:ComboPoints()>=4 and Target:IsAPlayer() and CheckInteractDistance("target", 3) then
+            return S.KidneyShot:Cast()
+        end
+        if IsReady('Between the Eyes') and Player:ComboPoints()>=4 and Target:IsAPlayer() and CheckInteractDistance("target", 3) then
+            return S.legrune:Cast()
+        end
+ 
 
         if IsReady('Rupture') and UnitCreatureType("target") ~= "Elemental"
         and namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
@@ -449,6 +473,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.SinisterStrike:Cast()
         end
     end
+    end
    
 
     end
@@ -464,7 +489,11 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             if IsReady('Stealth') and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' then
                 return S.Stealth:Cast()
             end
-         
+
+            if IsReady('Cheap Shot') and Target:IsAPlayer() and CheckInteractDistance("target", 3) then
+                return S.CheapShot:Cast()
+            end
+
             if IsReady('Garrote') and UnitCreatureType("target") ~= "Elemental" and CheckInteractDistance("target", 3) and namecarnage == 'Carnage' and Behind ~= false then
                 return S.Garrote:Cast()
             end
