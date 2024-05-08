@@ -378,7 +378,7 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         end
  
 
-        if IsReady('Rupture') and UnitCreatureType("target") ~= "Elemental"
+        if IsReady('Rupture') and UnitCreatureType("target") ~= "Elemental" and not AuraUtil.FindAuraByName("Rupture","target","PLAYER|HARMFUL")  
         and namecarnage == 'Carnage' and (not AuraUtil.FindAuraByName("Carnage","target","PLAYER|HARMFUL")  
         or  rupturedebuff <1  
         or garrotedebuff<1.5 )
