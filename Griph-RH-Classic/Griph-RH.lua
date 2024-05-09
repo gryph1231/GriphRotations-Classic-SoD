@@ -209,7 +209,7 @@ function GriphRH.mainRotation(option)
         return 133731, false
     end
 
-    if Player:IsMounted() or (select(3, UnitClass("player")) == 11 and (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 5)) then
+    if Player:IsMounted() then
         return 134176, false
     end
 
