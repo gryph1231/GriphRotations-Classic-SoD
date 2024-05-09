@@ -115,7 +115,6 @@ local function APL()
 	else
 		SRbuffremains = 0
 	end
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -146,9 +145,9 @@ if AuraUtil.FindAuraByName("Sunfire","target","PLAYER|HARMFUL") then
 		sunfiredebuff = 0 
 	 end
 	 if AuraUtil.FindAuraByName("Moonfire","target","PLAYER|HARMFUL") then
-		sunfiredebuff = select(6,AuraUtil.FindAuraByName("Moonfire","target","PLAYER|HARMFUL")) - GetTime()
+		moonfiredebuff = select(6,AuraUtil.FindAuraByName("Moonfire","target","PLAYER|HARMFUL")) - GetTime()
 		  else
-			sunfiredebuff = 0 
+			moonfiredebuff = 0 
 		 end
  if S.MoonkinForm:IsAvailable() then
 	moonkindps = true
@@ -182,11 +181,15 @@ end
 if GriphRH.QueuedSpell():CanCast() then
 	return GriphRH.QueuedSpell():Cast()
 end
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if not Player:AffectingCombat() then
-	if GriphRH.InterruptsON() then
+
+
+
 		if IsReady('Omen of Clarity') and not AuraUtil.FindAuraByName("Omen of Clarity", "player") and not AuraUtil.FindAuraByName("Prowl", "player") and not AuraUtil.FindAuraByName("Cat Form", "player") and not AuraUtil.FindAuraByName("Travel Form", "player") and not AuraUtil.FindAuraByName("Moonkin Form", "player") then
 			return S.OmenofClarity:Cast()
 		end
@@ -196,11 +199,11 @@ if not Player:AffectingCombat() then
 		end	
 
 		
-		if IsReady('Travel Form') and not AuraUtil.FindAuraByName("Cat Form", "player") and not AuraUtil.FindAuraByName("Moonkin Form", "player") and not AuraUtil.FindAuraByName("Travel Form", "player")  and not AuraUtil.FindAuraByName("Dash", "player")  and travelform and not Player:IsCasting() and not Player:IsChanneling() and Player:IsMoving() then
+		if IsReady('Travel Form') and not AuraUtil.FindAuraByName("Travel Form", "player")  and not AuraUtil.FindAuraByName("Dash", "player")  and travelform and not Player:IsCasting() and not Player:IsChanneling() and Player:IsMoving() then
 			return S.TravelForm:Cast()
 		end
 
-		if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and moonkindps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+		if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and moonkindps==true and not Player:Buff(S.CatForm) and  not AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.MoonkinForm:Cast()
 		end
 		if IsReady('Cat Form') and not AuraUtil.FindAuraByName("Cat Form", "player") and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
@@ -213,7 +216,7 @@ if not Player:AffectingCombat() then
 		-- if IsReady('Thorns') and not (Player:Buff(S.Thorns) or (not AuraUtil.FindAuraByName("Thorns", "target") and not Player:CanAttack(Target) and Target:Exists() and not Target:IsDeadOrGhost())) and Player:Mana() > 263 + 60 then
 			-- return S.Thorns:Cast()
 		-- end
-	end
+	
 end
 
 if IsReady('Omen of Clarity') and GriphRH.InterruptsON() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
@@ -355,14 +358,17 @@ if Player:CanAttack(Target) and moonkindps==true and (Target:AffectingCombat() o
 	if IsReady("Starsurge") and targetRange30 then
 		return S.legsrune:Cast()
 	end
-	if IsReady("Starfire") and targetRange30 and not AuraUtil.FindAuraByName("Starsurge", "player") and not Player:IsMoving() then
+	if IsReady("Starfire") and targetRange30 and  AuraUtil.FindAuraByName("Starsurge", "player") and not Player:IsMoving() then
 		return S.Starfire:Cast()
 	end
 
 	if IsReady("Sunfire") and targetRange30 and sunfiredebuff<Player:GCD() and (targetttd9 or Player:IsMoving()) and S.Sunfire:TimeSinceLastCast()>Player:GCD()+ 0.2 then
-		return S.Sunfire:Cast()
+		return S.handsrune:Cast()
 	end
-	if IsReady("Moonfire") and targetRange30 and moonfiredebuff<Player:GCD() and (targetttd9 or Player:IsMoving()) and S.Moonfire:TimeSinceLastCast()>Player:GCD()+0.2 then
+	if IsReady("Moonfire") and targetRange30 
+	and moonfiredebuff<Player:GCD() 
+	and (targetttd9 or Player:IsMoving()) 
+	and S.Moonfire:TimeSinceLastCast()>Player:GCD()+0.2 then
 		return S.Moonfire:Cast()
 	end
 
@@ -376,5 +382,3 @@ end
 end
 
 GriphRH.Rotation.SetAPL(11, APL);
-GriphRH.Rotation.SetPvP(11, PvP)
-GriphRH.Rotation.SetPASSIVE(11, PASSIVE);
