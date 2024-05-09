@@ -34,6 +34,7 @@ GriphRH.Spell[11] = {
 	Claw = Spell(1082),
 	MarkoftheWild = Spell(6756),
 	Thorns = Spell(782),
+	TravelForm = Spell(783),
 	OmenofClarity = Spell(16864),
 	Shred = Spell(5221),
 	Clearcasting = Spell(16870),
@@ -124,7 +125,7 @@ if Player:IsCasting() or Player:IsChanneling() then
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or Player:Buff(S.Prowl) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end 
-
+local travelform =  (not Player:IsCasting() and not Player:IsChanneling() and not Target:Exists())
 local BehindTimer = GetTime() - BehindCheckTimer
 local FrontTimer = GetTime() - FrontCheckTimer
 local Behind
@@ -187,17 +188,23 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if not Player:AffectingCombat() then
 	if GriphRH.InterruptsON() then
-		if IsReady('Omen of Clarity') and not AuraUtil.FindAuraByName("Omen of Clarity", "player") and not AuraUtil.FindAuraByName("Prowl", "player") then
+		if IsReady('Omen of Clarity') and not AuraUtil.FindAuraByName("Omen of Clarity", "player") and not AuraUtil.FindAuraByName("Prowl", "player") and not AuraUtil.FindAuraByName("Cat Form", "player") and not AuraUtil.FindAuraByName("Travel Form", "player") and not AuraUtil.FindAuraByName("Moonkin Form", "player") then
 			return S.OmenofClarity:Cast()
 		end
 		
-		if IsReady('Mark of the Wild') and not AuraUtil.FindAuraByName("Mark of the Wild", "player") and not AuraUtil.FindAuraByName("Prowl", "player") then
+		if IsReady('Mark of the Wild') and not AuraUtil.FindAuraByName("Mark of the Wild", "player") and not AuraUtil.FindAuraByName("Prowl", "player") and not AuraUtil.FindAuraByName("Cat Form", "player") and not AuraUtil.FindAuraByName("Travel Form", "player") and not AuraUtil.FindAuraByName("Moonkin Form", "player") then
 			return S.MarkoftheWild:Cast()
 		end	
-		if IsReady('Moonkin Form') and moonkindps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") then
+
+		
+		if IsReady('Travel Form') and AuraUtil.FindAuraByName("Dash", "player")  and travelform and not Player:IsCasting() and not Player:IsChanneling() and Player:IsMoving() then
+			return S.TravelForm:Cast()
+		end
+
+		if IsReady('Moonkin Form') and moonkindps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.MoonkinForm:Cast()
 		end
-		if IsReady('Cat Form') and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") then
+		if IsReady('Cat Form') and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.CatForm:Cast()
 		end
 
