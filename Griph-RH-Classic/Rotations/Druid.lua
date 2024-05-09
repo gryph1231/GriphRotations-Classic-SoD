@@ -43,7 +43,7 @@ GriphRH.Spell[11] = {
 	Furor = Spell(17061),
 	TigersFury = Spell(5217),
 	Rip = Spell(1079),
-	MangleCat= Spell(20549), 
+	MangleCat= Spell(20549),
 	Innervate = Spell(29166),
 	legsrune = Spell(24977), --bp macro /use legs rune ability -- ggl keybind to insect swarm
 	handsrune = Spell(2637), --bp macro /use hands rune ability -- ggl keybind to hibernate
@@ -115,7 +115,6 @@ local function APL()
 	else
 		SRbuffremains = 0
 	end
-
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
@@ -197,14 +196,14 @@ if not Player:AffectingCombat() then
 		end	
 
 		
-		if IsReady('Travel Form') and AuraUtil.FindAuraByName("Dash", "player")  and travelform and not Player:IsCasting() and not Player:IsChanneling() and Player:IsMoving() then
+		if IsReady('Travel Form') and not AuraUtil.FindAuraByName("Cat Form", "player") and not AuraUtil.FindAuraByName("Moonkin Form", "player") and not AuraUtil.FindAuraByName("Travel Form", "player")  and not AuraUtil.FindAuraByName("Dash", "player")  and travelform and not Player:IsCasting() and not Player:IsChanneling() and Player:IsMoving() then
 			return S.TravelForm:Cast()
 		end
 
-		if IsReady('Moonkin Form') and moonkindps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+		if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and moonkindps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.MoonkinForm:Cast()
 		end
-		if IsReady('Cat Form') and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+		if IsReady('Cat Form') and not AuraUtil.FindAuraByName("Cat Form", "player") and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.CatForm:Cast()
 		end
 
