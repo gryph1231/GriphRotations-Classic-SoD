@@ -168,7 +168,7 @@ if IsReady("Frost Nova")  and RangeCount11()>=1 and Player:IsMoving() and isTank
 	-- end
 
 
-	if IsReady("Living Bomb") and namelivingflame == 'Living Bomb' and targetRange30 and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
+	if IsReady("Living Bomb") and namelivingbomb == 'Living Bomb' and targetRange30 and not AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")  then
 		return S.handrune:Cast()
 	end
 
