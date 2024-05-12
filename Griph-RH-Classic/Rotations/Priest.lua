@@ -32,6 +32,7 @@ GriphRH.Spell[5] = {
 	chestrune = Spell(20594),--stoneform
 	handrune = Spell(20554), --berserking
 	legrune = Spell(20580), --shadowmeld
+	helmrune = Spell(14751), --inner focus
 	VoidPlague = Spell(425204),
 	InnerFire = Spell(588),
 	CureDisease = Spell(528),
@@ -212,18 +213,23 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.CureDisease:Cast()
 	end
 
-	if IsReady('Homunculi') and targetRange30 and GriphRH.CDsON() then
-		return S.legrune:Cast()
-	end
+
+	
+
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
 	if IsReady("Dispersion") and instanceType~= 'pvp' and instanceType~= 'none' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
 		return S.feetrune:Cast()
 	end	
-
+	if IsReady('Eye of the Void') and targetRange30 and GriphRH.CDsON() then
+		return S.helmrune:Cast()
+	end
 	if IsReady('Void Plague') and targetRange30 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 		return S.chestrune:Cast()
+	end
+	if IsReady('Homunculi') and targetRange30 and GriphRH.CDsON() then
+		return S.legrune:Cast()
 	end
 
 	if IsReady('Shadow Word: Pain') and targetRange30 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
