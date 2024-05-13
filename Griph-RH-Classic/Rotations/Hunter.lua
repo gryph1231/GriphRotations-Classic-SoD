@@ -16,7 +16,8 @@ local Pet = Unit.Pet;
 GriphRH.Spell[3] = {
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),
-	ChimeraShotz = Spell(14280), --viper sting
+	ChimeraShotz = Spell(19801), --tranq shot
+	ViperSting = Spell(14279),
 	BestialWrath = Spell(19574),
 	RaptorStrike = Spell(14262),
 	AutoShot = Spell(75),
@@ -43,10 +44,12 @@ GriphRH.Spell[3] = {
 	FlankingStrikez = Spell(16832), --pet claw
 	Counterattack = Spell(19306),
 	SerpentSting = Spell(13550),
+	RapidFire = Spell(3045),
 	WingClip = Spell(14267),
 	ConcussiveShot = Spell(5116),
 	FeedPet = Spell(6991),
 	Flare = Spell(1543),
+	Intimidation = Spell(19577),
 	FeedPetBuff = Spell(1539),
 	FeignDeath = Spell(5384),
 	FrostTrap = Spell(409520),
@@ -217,28 +220,16 @@ ManaPct()
 PetActive()
 PetHapiness()
 StingTime()
---/dump GetMouseFocus().skillLineAbilityID
 
--- local function OnEvent(self, event, errorType, message, x)
-	-- if self == 'player' and errorType == 'CRITICAL' then
-		-- print('asdfadsfadsf')
-	-- end
+-- if currentBottomRightSpellID then 
+-- 	return Spell(tonumber(currentBottomRightSpellID)):Cast() 
 -- end
 
--- local f = CreateFrame("Frame")
--- f:RegisterEvent("UNIT_COMBAT")
--- f:SetScript("OnEvent", OnEvent)
-
-
--- local function OnEvent(self, event, unitTarget, event1, flagText, amount, schoolMask)
--- 	if unitTarget == 'target' and event1 == 'DODGE' then
--- 		print('asdfdsaf')
--- 	end
--- end
-
--- local f = CreateFrame("Frame")
--- f:RegisterEvent("UNIT_COMBAT")
--- f:SetScript("OnEvent", OnEvent)
+if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
@@ -246,28 +237,42 @@ StingTime()
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 local AutoShot = 0
 
 for ActionSlot = 1, 120 do
 	local ActionText = GetActionTexture(ActionSlot)
+	
 	local name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo('Auto Shot')
+	--local name1, rank1, icon1, castTime1, minRange1, maxRange1, spellID1, originalIcon1 = GetSpellInfo('Shoot')
 	
 	if ActionText == icon then
 		AutoShot = ActionSlot
 	end
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
---Spell Queue-----------------------------------------------------------------------------------------------------------------------------------------
+--Spell Queue-------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
+if S.BestialWrath:ID() == GriphRH.queuedSpell[1]:ID() then
+	if PetActive() and S.BestialWrath:CooldownRemains() < 2 then
+		return S.BestialWrath:Cast()
+	end
+
+	if S.RapidFire:CooldownRemains() < 2 and not Player:IsMoving() and IsSpellInRange('Auto Shot', 'target') == 1 then
+		return S.RapidFire:Cast()
+	end
+end
+
 if GriphRH.queuedSpell[1]:CooldownRemains() > 2 or not UnitAffectingCombat('player')
 	or (S.AspectoftheCheetah:ID() == GriphRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player"))
-	or (S.ConcussiveShot:ID() == GriphRH.queuedSpell[1]:ID() and IsSpellInRange('Auto Shot', 'target') == 0)
+	or ((S.ConcussiveShot:ID() == GriphRH.queuedSpell[1]:ID() or S.ViperSting:ID() == GriphRH.queuedSpell[1]:ID()) and IsSpellInRange('Auto Shot', 'target') == 0)
 	or (S.WingClip:ID() == GriphRH.queuedSpell[1]:ID() and not CheckInteractDistance("target",3))
 	or (S.BestialWrath:ID() == GriphRH.queuedSpell[1]:ID() and not PetActive())
-	or (S.WingClip:ID() == GriphRH.queuedSpell[1]:ID() and not AuraUtil.FindAuraByName("Wing Clip", "target"))
+	or (S.WingClip:ID() == GriphRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Wing Clip", "target", "HARMFUL"))
+	or (S.Intimidation:ID() == GriphRH.queuedSpell[1]:ID() and not PetActive())
+	or (S.ViperSting:ID() == GriphRH.queuedSpell[1]:ID() and UnitPower('target', SPELL_POWER_MANA) <= 0)
 	or ((S.FrostTrap:ID() == GriphRH.queuedSpell[1]:ID() or S.ExplosiveTrap:ID() == GriphRH.queuedSpell[1]:ID()) and (AuraUtil.FindAuraByName("Silence","HARMFUL") or AuraUtil.FindAuraByName("Sonic Burst","HARMFUL"))) then
 	GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }
 end
@@ -290,12 +295,16 @@ if S.AspectoftheCheetah:ID() == GriphRH.queuedSpell[1]:ID() and S.AspectoftheChe
 	return S.AspectoftheCheetah:Cast()
 end
 
-if S.BestialWrath:ID() == GriphRH.queuedSpell[1]:ID() and PetActive() and S.BestialWrath:CooldownRemains() < 2 then
-	return S.BestialWrath:Cast()
-end
-
 if S.BloodFury:ID() == GriphRH.queuedSpell[1]:ID() and S.BloodFury:CooldownRemains() < 2 then
 	return S.BloodFury:Cast()
+end
+
+if S.ViperSting:ID() == GriphRH.queuedSpell[1]:ID() and S.ViperSting:CooldownRemains() < 2 then
+	return S.ViperSting:Cast()
+end
+
+if S.Intimidation:ID() == GriphRH.queuedSpell[1]:ID() and S.Intimidation:CooldownRemains() < 2 and PetActive() then
+	return S.Intimidation:Cast()
 end
 
 if S.ConcussiveShot:ID() == GriphRH.queuedSpell[1]:ID() and S.ConcussiveShot:CooldownRemains() < 2 then
@@ -320,9 +329,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:AffectingCombat() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
-and ((AuraUtil.FindAuraByName("Dazed", "player") and UnitAffectingCombat('player'))
-or CleaveCount() >= 1 or S.AutoShot:InFlight()) then
+if Player:AffectingCombat() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and ((AuraUtil.FindAuraByName("Dazed", "player") and UnitAffectingCombat('player')) or CleaveCount() >= 1 or S.AutoShot:InFlight()) then
 	return S.AspectoftheCheetahCancel:Cast()
 end
 
@@ -337,6 +344,7 @@ or (UnitAffectingCombat('player') and CheckInteractDistance("target",3))) then
 end
 
 if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCurrentSpell(6603) or IsAutoRepeatAction(AutoShot)) and not Target:IsDeadOrGhost() then 
+
 	if not IsAutoRepeatAction(AutoShot) and not Player:IsMoving() and IsSpellInRange('Auto Shot', 'target') == 1 then
 		return S.AutoShotz:Cast()
 	end
@@ -353,12 +361,12 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 		return S.Carvez:Cast()
 	end
 	
-	if IsReady('Flanking Strike',1) and CheckInteractDistance("target",3) then
-		return S.FlankingStrikez:Cast()
-	end
-
 	if IsReady('Raptor Strike') and CheckInteractDistance("target",3) then
 		return S.RaptorStrike:Cast()
+	end
+
+	if IsReady('Flanking Strike',1) and CheckInteractDistance("target",3) then
+		return S.FlankingStrikez:Cast()
 	end
 
 	if IsReady('Carve') and CheckInteractDistance("target",3) and IsCurrentSpell(6603) then
@@ -410,18 +418,26 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 
 	if IsReady('Serpent Sting',1) and UnitName('target') ~= "Incendiary Bomb" and not S.SerpentSting:InFlight() and GriphRH.CDsON() 
 	and (not AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") 
-	or (AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") and StingTime() <= Player:GCD())) then
+	or (AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") and StingTime() <= Player:GCD())) and not AuraUtil.FindAuraByName("Viper Sting","target","PLAYER|HARMFUL") then
 		return S.SerpentSting:Cast()
 	end
 
 	if IsReady('Arcane Shot',1) and GriphRH.CDsON() then
 		return S.ArcaneShot:Cast()
 	end
+	
+	-- if IsReady('Wing Clip') and CheckInteractDistance("target",3) then
+		-- return S.WingClip:Cast()
+	-- end
 end
 
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 GriphRH.Rotation.SetAPL(3, APL);
-GriphRH.Rotation.SetPvP(3, PvP)
+GriphRH.Rotation.SetPvP(3, PvP);
 GriphRH.Rotation.SetPASSIVE(3, PASSIVE);
+
+
+
+
