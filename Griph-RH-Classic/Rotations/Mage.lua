@@ -139,6 +139,14 @@ local namelivingflame = GetSpellInfo('Living Flame')
 local namelivingbomb = GetSpellInfo('Living Bomb')
 
 
+
+if AuraUtil.FindAuraByName("Scorch","target","PLAYER|HARMFUL") then
+	scorchstack =select(3,AuraUtil.FindAuraByName("Scorch","target","PLAYER|HARMFUL"))
+else
+	scorchstack = 0
+end
+
+
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Frostbolt:InFlight() or S.Fireball:InFlight()) and not Target:IsDeadOrGhost() then 
 if IsReady("Frost Nova")  and RangeCount11()>=1 and Player:IsMoving() and isTanking == true then
 		return S.FrostNova:Cast()
@@ -181,14 +189,14 @@ if IsReady("Frost Nova")  and RangeCount11()>=1 and Player:IsMoving() and isTank
 	end
 
 
-	if IsReady('Scorch') and S.ImprovedScorch:IsAvailable() and targetRange30 and (Target:DebuffStack(S.ScorchDebuff) < 5 or Target:DebuffRemains(S.ScorchDebuff) <= 5) and not Player:IsMoving() then
+	if IsReady('Scorch') and S.ImprovedScorch:IsAvailable() and targetRange30 and (scorchstack < 5 or Target:DebuffRemains(S.ScorchDebuff) <= 5) and not Player:IsMoving() then
 		return S.Scorch:Cast()
 	end
 	if IsReady("Arcane Power") and targetRange30 and GriphRH.CDsON()  then
 		return S.ArcanePower:Cast()
 	end
 
-	if IsReady("Combustion") and targetRange30 and GriphRH.CDsON() and Target:DebuffStack(S.ScorchDebuff) >=5 
+	if IsReady("Combustion") and targetRange30 and GriphRH.CDsON() and scorchstack >=5 
 	and (AuraUtil.FindAuraByName("Living Bomb", "target", "PLAYER|HARMFUL")) then
 		return S.Combustion:Cast()
 	end
