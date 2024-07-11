@@ -51,7 +51,7 @@ GriphRH.Spell[7] = {
     Stormstrike = Spell(17364),
     ChainHeal = Spell(1064),
     -- MoltenBlast = Spell(425339),
-    legrune = Spell(20572),
+    shamanisticrage = Spell(20572), --blood fury
 	ElementalMastery = Spell(16166),
 
     DiseaseCleansingTotem = Spell(8170),
@@ -114,13 +114,24 @@ end
 
 
 local function APL()
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        targetRange25 = TargetInRange("Earth Shock")
 
-        targetRange30 = TargetInRange("Lightning Bolt")
+inRange5 = RangeCount(5)
+-- inRange8 = RangeCount(8)
+inRange10 = RangeCount(10)
+-- inRange15 = RangeCount(15)
+inRange20 = RangeCount(20)
+inRange25 = RangeCount(25)
+inRange30 = RangeCount(30)
+targetRange5 = IsItemInRange(8149, "target") --works
+-- targetRange8 = IsItemInRange(135432, "target")
+targetRange10 = IsItemInRange(17626, "target") --works
+-- targetRange15 = IsItemInRange(6451, "target")
+targetRange20 = IsItemInRange(10645, "target")--works
+targetRange25 = IsItemInRange(13289, "target") --works
+targetRange30 = IsItemInRange(835, "target") --works
     
         local inRange25 = 0
         for i = 1, 40 do
@@ -471,12 +482,12 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     
 
         if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and targetRange30  then
-            return S.legrune:Cast()
+            return S.shamanisticrage:Cast()
         end
 
 
-        if IsReady('Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
-            return S.HealingWave:Cast()
+        if IsReady('Lesser Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
+            return S.LesserHealingWave:Cast()
         end
 
         if IsReady('Stormstrike') and targetrange11() then
@@ -573,7 +584,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.WindfuryTotem:Cast()
         end
 
-        if aoeTTD()> 3 and IsReady(SpellRank('Grace of Air Totem')) and  haveTotem4 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if partyInRange()<1 and aoeTTD()> 3 and IsReady(SpellRank('Grace of Air Totem')) and  haveTotem4 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.GraceofAirTotem:Cast()
         end        
         
@@ -610,13 +621,13 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
 
             if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and targetRange30  then
-                return S.legrune:Cast()
+                return S.shamanisticrage:Cast()
             end
     
 
     
-            if IsReady('Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
-                return S.HealingWave:Cast()
+            if IsReady('Lesser Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
+                return S.LesserHealingWave:Cast()
             end
 
             if IsReady('Stormstrike') and targetrange11() then
@@ -645,7 +656,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             if IsReady('Lava Lash') and targetrange11() then
                 return S.handrune:Cast()
             end
-            if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>3 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            if not Target:IsAPlayer() and Player:ManaPercentage()>85 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>3 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
                 return S.MagmaTotem:Cast()
             end
     
@@ -654,7 +665,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             end
 
     
-            if not Target:IsAPlayer() and (Player:ManaPercentage()>50 or HL.CombatTime()<5) and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            if not Target:IsAPlayer() and Player:ManaPercentage()>85 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount11()>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
                 return S.MagmaTotem:Cast()
             end
     
@@ -758,7 +769,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
         if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and targetRange30  then
-            return S.legrune:Cast()
+            return S.shamanisticrage:Cast()
         end
 
         if IsReady('Chain Lightning') and targetRange30 and inRange25>1 then
@@ -879,8 +890,8 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.LightningShield:Cast()
         end
     
-        if IsReady('Healing Wave') and Player:HealthPercentage()<80 and Player:BuffStack(S.MaelstromWeapon)>=5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.HealingWave:Cast()
+        if IsReady('Lesser Healing Wave') and Player:HealthPercentage()<80 and Player:BuffStack(S.MaelstromWeapon)>=5 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.LesserHealingWave:Cast()
         end
 
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false -- ninja icon tga file location

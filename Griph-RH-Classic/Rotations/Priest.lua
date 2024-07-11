@@ -70,7 +70,20 @@ S.MindSpike:RegisterInFlight()
 
 
 local function APL()
-
+	inRange5 = RangeCount(5)
+	-- inRange8 = RangeCount(8)
+	inRange10 = RangeCount(10)
+	-- inRange15 = RangeCount(15)
+	inRange20 = RangeCount(20)
+	inRange25 = RangeCount(25)
+	inRange30 = RangeCount(30)
+	targetRange5 = IsItemInRange(8149, "target") --works
+	-- targetRange8 = IsItemInRange(135432, "target")
+	targetRange10 = IsItemInRange(17626, "target") --works
+	-- targetRange15 = IsItemInRange(6451, "target")
+	targetRange20 = IsItemInRange(10645, "target")--works
+	targetRange25 = IsItemInRange(13289, "target") --works
+	targetRange30 = IsItemInRange(835, "target") --works
 	local Shoot = 0
 
 	for ActionSlot = 1, 120 do
@@ -81,11 +94,7 @@ local function APL()
 			Shoot = ActionSlot
 		end
 	end
-	if S.MindBlast:IsAvailable() then
-		targetRange30 = TargetInRange("Mind Blast")
-	else
-		targetRange30 = TargetInRange("Smite")
-	end
+
 
     local inRange25 = 0
         for i = 1, 40 do
