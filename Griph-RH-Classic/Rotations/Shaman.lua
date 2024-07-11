@@ -169,7 +169,7 @@ targetRange30 = IsItemInRange(835, "target") --works
                 end
 
         if nameWayofEarth == 'Way of Earth' then 
-            rangecheck5 = TargetInRange("Earth Shock") -- range tracker for range 5
+            rangecheck5 = targetRange5-- range tracker for range 5
         else
             rangecheck5 = targetrange11()
         end
