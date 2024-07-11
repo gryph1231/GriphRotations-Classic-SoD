@@ -55,10 +55,10 @@ GriphRH.Spell[4] = {
     BladeDance = Spell(400012),
     WidgetVolley = Spell(436833), --gnomer kick tracking widget volley spell
 
-    chestrune = Spell(20580), --GGL bind shadowmeld -- BP macro quick draw
-    beltrune = Spell(20554), -- GGL bind berserking -- BP macro shadowstep, shuriken toss, 
-    legrune = Spell(921), -- GGL bind pick pocket -- BP macro between the eyes, blade dance, envenom
-    handrune = Spell(20594), --GGL bind stone form - BP macro mutilate, shadowstrike, saber slash, main gauche, shiv.
+    chestrune = Spell(20580), 
+    beltrune = Spell(20554), 
+    legrune = Spell(399963), 
+    handrune = Spell(399956),
 
     ThistleTea = Spell(20589),--GGL escape artist
 
@@ -76,8 +76,22 @@ thistletea = Item(7676),
     trinket2 = Item(25628, { 13, 14 }),
     autoattack = Item(135274, { 13, 14 }),
 };
+if not behindCheck1 then
+    behindCheck1 = CreateFrame("Frame")
+end
 
-local I = Item.Rogue;
+local BehindCheckTimer = 0
+local FrontCheckTimer = 0
+
+local frame = behindCheck1
+frame:RegisterEvent("UI_ERROR_MESSAGE")
+frame:SetScript("OnEvent", function(self,event,errorType,message)
+	if message == 'You must be behind your target' then
+		BehindCheckTimer = GetTime()
+	elseif message == 'You must be in front of your target' then
+		FrontCheckTimer = GetTime()
+	end	
+end)
 
 
 
@@ -126,20 +140,33 @@ end)
 
 
 local function APL()
-    inRange5 = RangeCount("Sinister Strike")
 
-    targetRange5 = TargetInRange("Sinister Strike")
-    targetRange30 = TargetInRange("Throw")
-    --range checks with nameplate
-    local inRange25 = 0
-    for i = 1, 40 do
-        if UnitExists('nameplate' .. i) then
-            inRange25 = inRange25 + 1
-        end
-    end
-    -- if Target:Exists() then
-    --     return S.beltrune:Cast()
-    -- end
+
+    inRange5 = RangeCount(5)
+    -- inRange8 = RangeCount(8)
+    inRange10 = RangeCount(10)
+    -- inRange15 = RangeCount(15)
+    inRange20 = RangeCount(20)
+    inRange25 = RangeCount(25)
+    inRange30 = RangeCount(30)
+    targetRange5 = IsItemInRange(8149, "target") --works
+    -- targetRange8 = IsItemInRange(135432, "target")
+    targetRange10 = IsItemInRange(17626, "target") --works
+    -- targetRange15 = IsItemInRange(6451, "target")
+    targetRange20 = IsItemInRange(10645, "target")--works
+    targetRange25 = IsItemInRange(13289, "target") --works
+    targetRange30 = IsItemInRange(835, "target") --works
+-- print('target range 5:',targetRange5)
+-- print('target range 8:',targetRange8)
+
+-- print('target range 10:',targetRange10)
+
+-- print('target range 15:',targetRange15)
+
+-- print('target range 20:',targetRange20)
+-- print('target range 25:',targetRange25)
+-- print('target range 30:',targetRange30)
+
 
 if AuraUtil.FindAuraByName("Slice and Dice","player") then
     SnDbuffremains = select(6,AuraUtil.FindAuraByName("Slice and Dice","player","PLAYER"))- GetTime()
@@ -176,7 +203,8 @@ if targetdying and Player:ComboPoints()>=3 or Player:ComboPoints()>=4 then
     finish = true
 else finish = false
 end
-
+-- print('aoettd:',aoeTTD())
+-- print('targetTTD:',targetTTD)
 local spellwidgetfort= UnitCastingInfo("target")
 local namehonoramongthieves = GetSpellInfo('Honor Among Thieves')
 
@@ -243,17 +271,20 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
     end
 
-    if GriphRH.QueuedSpell():ID() == S.Gouge:ID() and Player:Energy()> 35 and targetrange11() then
+    if GriphRH.QueuedSpell():ID() == S.Gouge:ID() and Player:Energy()> 35 and targetRange10 then
         return GriphRH.QueuedSpell():Cast()
     end
 
-    if GriphRH.QueuedSpell():ID() == S.KidneyShot:ID() and not Target:Debuff(S.CheapShot) and Player:ComboPoints()>=1 and Player:Energy()> 15 and targetrange11() then
+    if GriphRH.QueuedSpell():ID() == S.KidneyShot:ID() and not Target:Debuff(S.CheapShot) and Player:ComboPoints()>=1 and Player:Energy()> 15 and targetRange10 then
         return GriphRH.QueuedSpell():Cast()
     end
-    if GriphRH.QueuedSpell():ID() == S.Backstab:ID() and targetrange11() then
+    if GriphRH.QueuedSpell():ID() == S.Backstab:ID() and targetRange10 then
         return GriphRH.QueuedSpell():Cast()
     end
-    if GriphRH.QueuedSpell():ID() == S.Kick:ID() and Player:Energy()> 15 and targetrange11() then
+    if GriphRH.QueuedSpell():ID() == S.Kick:ID() and Player:Energy()> 15 and targetRange10 then
+        return GriphRH.QueuedSpell():Cast()
+    end
+    if GriphRH.QueuedSpell():ID() == S.Blind:ID() then
         return GriphRH.QueuedSpell():Cast()
     end
 
@@ -344,19 +375,19 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
     if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and not AuraUtil.FindAuraByName("Drink", "player") 
     and not AuraUtil.FindAuraByName("Food", "player") and (not AuraUtil.FindAuraByName("Vanish", "player") or AuraUtil.FindAuraByName("Cold Blood", "player")) and not AuraUtil.FindAuraByName("Food & Drink", "player")
     and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then -- In combat
-        if not IsCurrentSpell(6603) and targetrange11() then
+        if not IsCurrentSpell(6603) and targetRange10 then
             return I.autoattack:ID()
         end
 
         if stoprotation == false then 
 
 
-        if S.Kick:CooldownRemains()<2 and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetrange11() and GriphRH.InterruptsON() then
+        if S.Kick:CooldownRemains()<2 and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetRange10 and GriphRH.InterruptsON() then
             return S.Kick:Cast()
         end
 
 
-        if IsReady('Adrenaline Rush') and GriphRH.CDsON() and targetrange11() then
+        if IsReady('Adrenaline Rush') and GriphRH.CDsON() and targetRange10 then
             return S.AdrenalineRush:Cast()
         end
 
@@ -366,14 +397,14 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
         end 
 
 
-        if IsReady('Gouge') and Behind == false and Target:IsAPlayer() and targetrange11() and HL.CombatTime()<3 then
+        if IsReady('Gouge') and Behind == false and Target:IsAPlayer() and targetRange10 and HL.CombatTime()<3 then
             return S.Gouge:Cast()
         end
 
-        if IsReady('Kidney Shot') and Player:ComboPoints()>=4 and Target:IsAPlayer() and targetrange11() then
+        if IsReady('Kidney Shot') and Player:ComboPoints()>=4 and Target:IsAPlayer() and targetRange10 then
             return S.KidneyShot:Cast()
         end
-        if IsReady('Between the Eyes') and Player:ComboPoints()>=4 and Target:IsAPlayer() and targetrange11() then
+        if IsReady('Between the Eyes') and Player:ComboPoints()>=4 and Target:IsAPlayer() and targetRange10 then
             return S.legrune:Cast()
         end
  
@@ -393,38 +424,38 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.SliceandDice:Cast()
         end
         
-        if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and targetrange11() and finish then
+        if IsReady('Slice and Dice') and not AuraUtil.FindAuraByName("Cold Blood", "player") and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or SnDbuffremains<2 and inRange25>1) and targetRange10 and finish then
             return S.SliceandDice:Cast()
         end
 
-        if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and targetrange11() and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
+        if IsReady('Blade Dance') and (isTanking == true or not Target:IsCasting() or inRange25>1) and not DungeonBoss() and aoeTTD()>3 and (not AuraUtil.FindAuraByName("Blade Dance", "player") or BDbuffremains<3 and inRange25>1) and targetRange10 and (finish or Player:ComboPoints()>=2 and (HL.CombatTime()<5 and not AuraUtil.FindAuraByName("Blade Dance", "player"))) then
             return S.legrune:Cast()
         end
 
-        if IsReady('Vanish') and namemasterofsublety =='Master of Sublety' and deadlypoisonstack>=1 and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and targetrange11() and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
+        if IsReady('Vanish') and namemasterofsublety =='Master of Sublety' and deadlypoisonstack>=1 and GriphRH.CDsON() and IsReady('Envenom') and Player:ComboPoints()>=5 and targetRange10 and not AuraUtil.FindAuraByName("Master of Sublety", "player") then
             return S.Vanish :Cast()
         end
 
-        if IsReady('Cold Blood') and GriphRH.CDsON() and deadlypoisonstack>=1 and finish and targetrange11() then
+        if IsReady('Cold Blood') and GriphRH.CDsON() and deadlypoisonstack>=1 and finish and targetRange10 then
             return S.ColdBlood:Cast()
         end
       
       
-        if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and targetrange11() and finish then
+        if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and targetRange10 and finish then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves~= 'Honor Among Thieves' and targetrange11() and Player:ComboPoints()>=4 then
+        if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves~= 'Honor Among Thieves' and targetRange10 and Player:ComboPoints()>=4 then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves== 'Honor Among Thieves' and targetrange11() and (Player:ComboPoints()>=5 or Player:ComboPoints()>=4 and Player:Energy()>=70) then
+        if IsReady('Envenom') and deadlypoisonstack>=1 and namehonoramongthieves== 'Honor Among Thieves' and targetRange10 and (Player:ComboPoints()>=5 or Player:ComboPoints()>=4 and Player:Energy()>=70) then
             return S.legrune:Cast()
         end
-        if IsReady('Envenom') and targetrange11() and (Player:ComboPoints()>=3 and targetttd3 and deadlypoisonstack >=3) then
+        if IsReady('Envenom') and targetRange10 and (Player:ComboPoints()>=3 and targetttd3 and deadlypoisonstack >=3) then
             return S.legrune:Cast()
         end
 
 
-        if IsReady('Envenom') and targetrange11() and finish and deadlypoisonstack>=1 then
+        if IsReady('Envenom') and targetRange10 and finish and deadlypoisonstack>=1 then
             return S.legrune:Cast()
         end
 
@@ -432,15 +463,15 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.legrune:Cast()
         end
 
-        if IsReady('Riposte') and AuraUtil.FindAuraByName("Blade Dance", "player") and targetrange11() then
+        if IsReady('Riposte') and AuraUtil.FindAuraByName("Blade Dance", "player") and targetRange10 then
             return S.Riposte:Cast()
         end
 
-        if IsReady('Eviscerate') and targetrange11() and Player:ComboPoints()>=5 then
+        if IsReady('Eviscerate') and targetRange10 and Player:ComboPoints()>=5 then
             return S.Eviscerate:Cast()
         end
 
-        if IsReady('Shuriken Toss') and inRange25>4 and targetrange11() and not Player:Buff(S.BladeFlurry) and  Player:ComboPoints() < 5 then
+        if IsReady('Shuriken Toss') and inRange25>4 and targetRange10 and not Player:Buff(S.BladeFlurry) and  Player:ComboPoints() < 5 then
             return S.beltrune:Cast()
         end
  
@@ -449,27 +480,27 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
             return S.handrune:Cast()
         end
 
-        if IsReady('Mutilate') and targetrange11() and Player:ComboPoints() <5 and namemutilate == 'Mutilate' and (build == true or namehonoramongthieves ~= 'Honor Among Thieves') then
+        if IsReady('Mutilate') and targetRange10 and Player:ComboPoints() <5 and namemutilate == 'Mutilate' and (build == true or namehonoramongthieves ~= 'Honor Among Thieves') then
             return S.handrune:Cast()
         end
 
-        if  IsReady('Main Gauche') and targetrange11() and Player:ComboPoints() <=2 and namemainguache == 'Main Guache' then
+        if  IsReady('Main Gauche') and targetRange10 and Player:ComboPoints() <=2 and namemainguache == 'Main Guache' then
             return S.handrune:Cast()
         end
 
-        if IsReady('Shiv') and targetrange11() and Player:ComboPoints() <5 and nameshiv == 'Shiv' then
+        if IsReady('Shiv') and targetRange10 and Player:ComboPoints() <5 and nameshiv == 'Shiv' then
             return S.handrune:Cast()
         end
 
-        if  IsReady('Saber Slash') and targetrange11() and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' and (build == true or namehonoramongthieves ~= 'Honor Among Thieves') then
+        if  IsReady('Saber Slash') and targetRange10 and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' and (build == true or namehonoramongthieves ~= 'Honor Among Thieves') then
             return S.handrune:Cast()
         end
 
-        if IsReady('Backstab') and namemutilate ~= 'Mutilate' and targetrange11() and not Player:IsTanking(Target) and Behind ~= false then
+        if IsReady('Backstab') and namemutilate ~= 'Mutilate' and targetRange10 and not Player:IsTanking(Target) and Behind ~= false then
             return S.Backstab:Cast()
         end
 
-        if IsReady('Sinister Strike') and targetrange11() and Player:ComboPoints() < 5 and (namesaberslash ~= 'Saber Slash' and namemutilate ~= 'Mutilate') then
+        if IsReady('Sinister Strike') and targetRange10 and Player:ComboPoints() < 5 and (namesaberslash ~= 'Saber Slash' and namemutilate ~= 'Mutilate') then
             return S.SinisterStrike:Cast()
         end
     end
@@ -483,22 +514,22 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
        
         if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
           
-            if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and targetrange11() and finish then
+            if IsReady('Envenom') and deadlypoisonstack>=1 and AuraUtil.FindAuraByName("Cold Blood", "player") and targetRange10 and finish then
                 return S.legrune:Cast()
             end
-            if IsReady('Stealth') and targetrange11() and namecarnage == 'Carnage' then
+            if IsReady('Stealth') and targetRange10 and namecarnage == 'Carnage' then
                 return S.Stealth:Cast()
             end
 
-            if IsReady('Cheap Shot') and Target:IsAPlayer() and targetrange11() then
+            if IsReady('Cheap Shot') and Target:IsAPlayer() and targetRange10 then
                 return S.CheapShot:Cast()
             end
 
-            if IsReady('Garrote') and UnitCreatureType("target") ~= "Elemental" and targetrange11() and namecarnage == 'Carnage' and Behind ~= false then
+            if IsReady('Garrote') and UnitCreatureType("target") ~= "Elemental" and targetRange10 and namecarnage == 'Carnage' and Behind ~= false then
                 return S.Garrote:Cast()
             end
 
-            if IsReady('Ambush') and targetrange11() and namemutilate ~='mutilate' then
+            if IsReady('Ambush') and targetRange10 and namemutilate ~='mutilate' then
                 return S.Ambush:Cast()
             end
 
@@ -510,28 +541,28 @@ local nameshadowstrike = GetSpellInfo('Shadowstrike')
                 return S.handrune:Cast()
             end
 
-            if  IsReady('Mutilate') and targetrange11() and Player:ComboPoints() <4 and namemutilate == 'Mutilate' then
+            if  IsReady('Mutilate') and targetRange10 and Player:ComboPoints() <4 and namemutilate == 'Mutilate' then
                 return S.handrune:Cast()
             end
     
     
-            if  IsReady('Main Gauche') and targetrange11() and Player:ComboPoints() < 5 and namemainguache == 'Main Guache' then
+            if  IsReady('Main Gauche') and targetRange10 and Player:ComboPoints() < 5 and namemainguache == 'Main Guache' then
                 return S.handrune:Cast()
             end
     
-            if IsReady('Shiv') and targetrange11() and Player:ComboPoints() <5 and nameshiv == 'Shiv' then
+            if IsReady('Shiv') and targetRange10 and Player:ComboPoints() <5 and nameshiv == 'Shiv' then
                 return S.handrune:Cast()
             end
     
-            if  IsReady('Saber Slash') and targetrange11() and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' then
+            if  IsReady('Saber Slash') and targetRange10 and Player:ComboPoints() < 5 and namesaberslash == 'Saber Slash' then
                 return S.handrune:Cast()
             end
     
-            if IsReady('Sinister Strike') and targetrange11() and Player:ComboPoints() < 5 and (namesaberslash ~= 'Saber Slash' and namemutilate ~= 'Mutilate') then
+            if IsReady('Sinister Strike') and targetRange10 and Player:ComboPoints() < 5 and (namesaberslash ~= 'Saber Slash' and namemutilate ~= 'Mutilate') then
                 return S.SinisterStrike:Cast()
             end
 
-            if not IsCurrentSpell(6603) and targetrange11() and not AuraUtil.FindAuraByName("Stealth", "player")  then
+            if not IsCurrentSpell(6603) and targetRange10 and not AuraUtil.FindAuraByName("Stealth", "player")  then
                 return I.autoattack:ID()
             end
 

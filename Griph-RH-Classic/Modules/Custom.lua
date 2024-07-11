@@ -270,27 +270,61 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 end
 
+    
+function RangeCount(range,spell_range_check)
+	local range_counter = 0
+		
+		if range and not spell_range_check then
+			if range == 5 then
+				input = 8149
+			elseif range == 8 then
+				input = 34368
+			elseif range == 10 then
+				input = 17626
+			elseif range == 15 then
+				input = 33069
+			elseif range == 20 then
+				input = 10645
+			elseif range == 25 then
+				input = 10645
+			elseif range == 30 then
+				input = 835
+			else
+				local input = nil
+			end
 
+			for i=1,40 do
+				local unitID = "nameplate" .. i
+				if UnitExists("nameplate"..i) then           
+					local nameplate_guid = UnitGUID("nameplate"..i) 
+					local npc_id = select(6, strsplit("-",nameplate_guid))
+					if npc_id ~='120651' and npc_id ~='161895' then
+						if UnitCanAttack("player",unitID) and IsItemInRange(input, unitID) and UnitHealthMax(unitID) > 5
+						and UnitName(unitID) ~= "Incorporeal Being" then
+							range_counter = range_counter + 1
+						end                    
+					end
+				end
+			end
+		elseif spell_range_check and not range then
+			for i=1,40 do
+				local unitID = "nameplate" .. i
+				if UnitExists("nameplate"..i) then           
+					local nameplate_guid = UnitGUID("nameplate"..i) 
+					local npc_id = select(6, strsplit("-",nameplate_guid))
+					if npc_id ~='120651' and npc_id ~='161895' then
+						if UnitCanAttack("player",unitID) and IsSpellInRange(spell_range_check, unitID) == 1 and UnitHealthMax(unitID) > 5
+						and UnitName(unitID) ~= "Incorporeal Being" then
+							range_counter = range_counter + 1
+						end                    
+					end
+				end
+			end
+		else
+			range_counter = 0
+		end
 
-function RangeCount(spellName)
-    local range_counter = 0
-
-    if spellName then
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then
-                local nameplate_guid = UnitGUID(unitID)
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end
-                end
-            end
-        end
-    end
-
-    return range_counter
+	return range_counter
 end
 
 
