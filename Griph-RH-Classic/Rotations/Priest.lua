@@ -49,7 +49,8 @@ GriphRH.Spell[5] = {
 	TouchofWeakness = Spell(2652),
 	DevouringPlague = Spell(2944),
 	VampiricEmbrace = Spell(15286),
-	VampiricTouch= Spell(20580), --BP keybind: /cast [mod:SELFCAST,@player][mod:FOCUSCAST,@focus][] Cloak Rune Ability -- GGL keybind shadowmeld
+	VampiricTouch= Spell(402668), --BP keybind: /cast [mod:SELFCAST,@player][mod:FOCUSCAST,@focus][] Cloak Rune Ability -- GGL keybind shadowmeld
+	vampirictouch= Spell(20580), --BP keybind: /cast [mod:SELFCAST,@player][mod:FOCUSCAST,@focus][] Cloak Rune Ability -- GGL keybind shadowmeld
 	Dispersion = Spell(425294),
 	AbolishDisease = Spell(552),
 	MindSpike = Spell(431655),
@@ -97,7 +98,8 @@ local function APL()
 			Shoot = ActionSlot
 		end
 	end
-
+-- print("debuff:",AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") )
+-- print("time since last cast:",S.VampiricTouch:TimeSinceLastCast())
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -255,8 +257,8 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.handrune:Cast()
 	end	
 	
-	if IsReady('Vampiric Touch') and not Player:IsMoving() and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
-		return S.VampiricTouch:Cast()
+	if IsReady('Vampiric Touch') and S.VampiricTouch:TimeSinceLastCast()>1.55 and not Player:IsMoving() and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+		return S.vampirictouch:Cast()
 	end
 
 	if IsReady('Homunculi') and targetRange30 and GriphRH.CDsON() then

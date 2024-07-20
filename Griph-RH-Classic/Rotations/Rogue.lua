@@ -374,16 +374,34 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if ((GriphRH.queuedSpell[1]:CooldownRemains() > 2 or not Player:AffectingCombat()) and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Gouge:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Distract:ID() ~= GriphRH.queuedSpell[1]:ID() 
+if ((GriphRH.queuedSpell[1]:CooldownRemains() > 2 or not UnitAffectingCombat('player')) and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Gouge:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Distract:ID() ~= GriphRH.queuedSpell[1]:ID() 
 and S.KidneyShot:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Blind:ID() ~= GriphRH.queuedSpell[1]:ID())
 or (S.Gouge:ID() == GriphRH.queuedSpell[1]:ID() and (S.Gouge:CooldownRemains() > 2 or Front == False or not TargetinRange(5)))
 or (S.Distract:ID() == GriphRH.queuedSpell[1]:ID() and S.Distract:CooldownRemains() > 2)
-or (S.KidneyShot:ID() == GriphRH.queuedSpell[1]:ID() and (S.KidneyShot:CooldownRemains() > 2 or Player:ComboPoints() == 0 or (not TargetinRange(5) and not GetSpellCooldown('Between the Eyes'))))
+or (S.KidneyShot:ID() == GriphRH.queuedSpell[1]:ID() and (S.KidneyShot:CooldownRemains() > 2 or not TargetinRange(5) or AuraUtil.FindAuraByName("Cheap Shot","target","PLAYER|HARMFUL") ))
 or (S.Blind:ID() == GriphRH.queuedSpell[1]:ID() and (S.Blind:CooldownRemains() > 2 or not TargetinRange(10)))
 or (S.Kick:ID() == GriphRH.queuedSpell[1]:ID() and (not UnitCastingInfo('target') or not TargetinRange(5))) then
-	GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }
+	GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
+end
+if IsReady('Distract') and S.Distract:ID() == GriphRH.queuedSpell[1]:ID() then
+	return S.Distract:Cast()
 end
 
+if IsReady('Gouge') and S.Gouge:ID() == GriphRH.queuedSpell[1]:ID()  and targetRange10  then
+	return S.Gouge:Cast()
+end
+
+if IsReady('Kidney Shot') and S.KidneyShot:ID() == GriphRH.queuedSpell[1]:ID()  and targetRange10 then
+	return S.KidneyShot:Cast()
+end
+
+if IsReady('Blind') and S.Blind:ID() == GriphRH.queuedSpell[1]:ID()  and targetRange20 then
+	return S.Blind:Cast()
+end
+
+if IsReady('Kick') and S.Kick:ID() == GriphRH.queuedSpell[1]:ID()  and targetRange10 then
+	return S.Kick:Cast()
+end
 if S.Pull:ID() == GriphRH.queuedSpell[1]:ID() then
 	if UnitCanAttack('player','target') then
 		if UnitIsPlayer('target') then
