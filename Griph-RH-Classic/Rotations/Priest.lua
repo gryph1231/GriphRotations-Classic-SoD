@@ -73,8 +73,7 @@ S.MindSpike:RegisterInFlight()
 	
 
 local function APL()
--- print(castTimeprogression())
-	-- print(SpellEndTime("Flash Heal"))
+
 
 	local Shoot = 0
 
@@ -178,8 +177,10 @@ end
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
--- print(IsCurrentSpell("Vampiric Touch"))
--- print(GetTimeSinceCasting("Flash Heal"))
+
+
+-- print(SpellTimeSinceLastCast("player",402668))
+
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
@@ -243,7 +244,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.handrune:Cast()
 	end	
 	
-	if IsReady('Vampiric Touch') and castTimeprogression()>1.6 and not Player:IsMoving() and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and TargetinRange(30) and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+	if IsReady('Vampiric Touch') and SpellTimeSinceLastCast("player",402668)>0.2 and not Player:IsMoving() and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and TargetinRange(30) and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 		return S.vampirictouch:Cast()
 	end
 
