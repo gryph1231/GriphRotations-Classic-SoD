@@ -377,6 +377,23 @@ function RangeCount10()
     return range_counter
 end
 
+
+
+inRange5 = RangeCount(5)
+-- inRange8 = RangeCount(8)
+inRange10 = RangeCount(10)
+-- inRange15 = RangeCount(15)
+inRange20 = RangeCount(20)
+inRange25 = RangeCount(25)
+inRange30 = RangeCount(30)
+targetRange5 = IsItemInRange(8149, "target") --works
+-- targetRange8 = IsItemInRange(135432, "target")
+targetRange10 = IsItemInRange(17626, "target") --works
+-- targetRange15 = IsItemInRange(6451, "target")
+targetRange20 = IsItemInRange(10645, "target")--works
+targetRange25 = IsItemInRange(13289, "target") --works
+targetRange30 = IsItemInRange(835, "target") --works
+
 function TargetinRange(range,spell_range_check)
     if range and not spell_range_check then
         if range == 5 then
@@ -384,7 +401,7 @@ function TargetinRange(range,spell_range_check)
         elseif range == 8 then
             input = 34368
         elseif range == 10 then
-            input = 32321
+            input = 17626
         elseif range == 15 then
             input = 33069
         elseif range == 20 then
@@ -1182,3 +1199,63 @@ function EnergyTimeToNextTick()
     end
     return timeToNextTick
 end
+
+
+
+
+
+
+
+
+
+
+-- -- Function to handle UNIT_SPELLCAST_START event
+-- local function CurrentSpellStart(SpellName)
+-- 	local startTime = 0
+-- 	if IsCurrentSpell(SpellName) == true then
+-- 		startTime= GetTime()
+-- 	else
+-- 		startTime = 0
+-- 	end
+-- 	return startTime
+-- end
+
+
+
+local startTime = 0
+
+
+    -- Create a frame and register events
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("UNIT_SPELLCAST_START")
+frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+frame:RegisterEvent("UNIT_SPELLCAST_FAILED")
+frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+frame:SetScript("OnEvent", function(self, event, unit, spellID, spellName)
+    if event == "UNIT_SPELLCAST_START" then
+        startTime = GetTime()
+    -- elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+    --     startTime = 0
+    -- elseif event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+    --     startTime = 0
+    end
+end)
+
+
+local frame = CreateFrame("Frame")
+
+frame:SetScript("OnEvent", OnCombatLogEvent)
+
+function castTimeprogression()
+    local currentTime = GetTime()
+
+    local elapsedspellcasttime = currentTime - startTime
+
+
+
+-- if elapsedspellcasttime>8888 then
+--     return 0
+-- else
+    return elapsedspellcasttime
+end
+-- end

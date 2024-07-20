@@ -72,22 +72,10 @@ S.MindSpike:RegisterInFlight()
 	end
 	
 
-
 local function APL()
-	inRange5 = RangeCount(5)
-	-- inRange8 = RangeCount(8)
-	inRange10 = RangeCount(10)
-	-- inRange15 = RangeCount(15)
-	inRange20 = RangeCount(20)
-	inRange25 = RangeCount(25)
-	inRange30 = RangeCount(30)
-	targetRange5 = IsItemInRange(8149, "target") --works
-	-- targetRange8 = IsItemInRange(135432, "target")
-	targetRange10 = IsItemInRange(17626, "target") --works
-	-- targetRange15 = IsItemInRange(6451, "target")
-	targetRange20 = IsItemInRange(10645, "target")--works
-	targetRange25 = IsItemInRange(13289, "target") --works
-	targetRange30 = IsItemInRange(835, "target") --works
+-- print(castTimeprogression())
+	-- print(SpellEndTime("Flash Heal"))
+
 	local Shoot = 0
 
 	for ActionSlot = 1, 120 do
@@ -98,8 +86,7 @@ local function APL()
 			Shoot = ActionSlot
 		end
 	end
--- print("debuff:",AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") )
--- print("time since last cast:",S.VampiricTouch:TimeSinceLastCast())
+
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -191,20 +178,20 @@ end
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
-
--- print(UnitCastingInfo("player"))
+-- print(IsCurrentSpell("Vampiric Touch"))
+-- print(GetTimeSinceCasting("Flash Heal"))
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
-	if IsReady("Mind Sear") and not Player:IsMoving() and targetRange30 and inRange25>=5 then
+	if IsReady("Mind Sear") and not Player:IsMoving() and  TargetinRange(30) and inRange25>=5 then
 		return S.handrune:Cast()
 	end	
 
-	if IsReady('Shadow Word: Death') and targetRange30 and (AuraUtil.FindAuraByName("Inner Focus","player") and (Player:IsMoving() or not IsReady("Mind Blast")) and not Player:IsMoving() or UnitHealth('target')<1000 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	if IsReady('Shadow Word: Death') and  TargetinRange(30) and (AuraUtil.FindAuraByName("Inner Focus","player") and (Player:IsMoving() or not IsReady("Mind Blast")) and not Player:IsMoving() or UnitHealth('target')<1000 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordDeath:Cast()
 	end
 
-	if IsReady("Silence") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and targetRange30 and GriphRH.InterruptsON() then
+	if IsReady("Silence") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and  TargetinRange(30) and GriphRH.InterruptsON() then
 		return S.Silence:Cast()
 	end
 
@@ -234,83 +221,82 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	end
 
 
-	
 
-	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange30 and GriphRH.CDsON() then
+	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and  TargetinRange(30) and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
 	if IsReady("Dispersion") and instanceType~= 'pvp' and instanceType~= 'none' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
 		return S.Dispersion:Cast()
 	end	
-	if IsReady('Eye of the Void') and targetRange30 and GriphRH.CDsON() then
+	if IsReady('Eye of the Void') and  TargetinRange(30) and GriphRH.CDsON() then
 		return S.helmrune:Cast()
 	end
-	if IsReady('Void Plague') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and targetRange30 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
+	if IsReady('Void Plague') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and  TargetinRange(30) and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 		return S.feetrune:Cast()
 	end
 	
 
-	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() or inRange25>=3) and targetRange30 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and  TargetinRange(30) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
 	end
-	if IsReady("Mind Sear") and not Player:IsMoving() and targetRange30 and inRange25>=3 then
+	if IsReady("Mind Sear") and not Player:IsMoving() and  TargetinRange(30) and inRange25>=3 then
 		return S.handrune:Cast()
 	end	
 	
-	if IsReady('Vampiric Touch') and S.VampiricTouch:TimeSinceLastCast()>1.55 and not Player:IsMoving() and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+	if IsReady('Vampiric Touch') and castTimeprogression()>1.6 and not Player:IsMoving() and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and TargetinRange(30) and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 		return S.vampirictouch:Cast()
 	end
 
-	if IsReady('Homunculi') and targetRange30 and GriphRH.CDsON() then
+	if IsReady('Homunculi') and  TargetinRange(30) and GriphRH.CDsON() then
 		return S.legrune:Cast()
 	end
 
-	if IsReady('Penance') and not Player:IsMoving() and targetRange30  then
+	if IsReady('Penance') and not Player:IsMoving() and  TargetinRange(30)  then
 		return S.handrune:Cast()
 	end
 
-	if IsReady('Inner Focus') and GriphRH.CDsON() and (not Player:IsMoving() and IsReady("Mind Blast") or IsReady("Shadow Word: Death")) and targetRange30 and not Player:IsMoving() then
+	if IsReady('Inner Focus') and GriphRH.CDsON() and (not Player:IsMoving() and IsReady("Mind Blast") or IsReady("Shadow Word: Death")) and  TargetinRange(30) and not Player:IsMoving() then
 		return S.InnerFocus:Cast() 
 	end
 
-	if IsReady('Mind Blast') and targetRange30 and not Player:IsMoving() then
+	if IsReady('Mind Blast') and  TargetinRange(30) and not Player:IsMoving() then
 		return S.MindBlast:Cast() 
 	end
 	
-	if IsReady('Shadow Word: Death') and targetRange30  then
+	if IsReady('Shadow Word: Death') and  TargetinRange(30)  then
 		return S.ShadowWordDeath:Cast()
 	end
 
-	if IsReady('Devouring Plague') and (targetTTD>7 or Target:IsAPlayer()) and targetRange30 and GriphRH.CDsON() then
+	if IsReady('Devouring Plague') and (targetTTD>7 or Target:IsAPlayer()) and  TargetinRange(30) and GriphRH.CDsON() then
 		return S.DevouringPlague:Cast()
 	end
 
-	if IsReady('Vampiric Embrace') and instanceType~= 'none' and Player:HealthPercentage()<50 and not Target:IsAPlayer() and UnitHealth('target')>5000 and targetRange30 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
+	if IsReady('Vampiric Embrace') and instanceType~= 'none' and Player:HealthPercentage()<50 and not Target:IsAPlayer() and UnitHealth('target')>5000 and  TargetinRange(30) and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
 		return S.VampiricEmbrace:Cast()
 	end
 	
-	if IsReady('Void Zone') and targetRange30 and not Player:IsMoving() then
+	if IsReady('Void Zone') and  TargetinRange(30) and not Player:IsMoving() then
 		return S.wristrune:Cast() 
 	end
 
 	
-	if IsReady('Mind Sear') and targetRange30 and inRange25>1 and not Player:IsMoving() then
+	if IsReady('Mind Sear') and  TargetinRange(30) and inRange25>1 and not Player:IsMoving() then
 		return S.handrune:Cast()
 	end
 
-	if IsReady('Mind Spike') and targetRange30 and not Player:IsMoving() then
+	if IsReady('Mind Spike') and  TargetinRange(30) and not Player:IsMoving() then
 		return S.waistrune:Cast() 
 	end
-	if IsReady('Mind Sear') and targetRange30 and not Player:IsMoving() then
+	if IsReady('Mind Sear') and  TargetinRange(30) and not Player:IsMoving() then
 		return S.handrune:Cast()
 	end
 
 
-	if IsReady('Smite') and targetRange30 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
+	if IsReady('Smite') and  TargetinRange(30) and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
 		return S.Smite:Cast() 
 	end
 
-	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and targetRange30 and Player:ManaPercentage()<10 then
+	if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and  TargetinRange(30) and Player:ManaPercentage()<10 then
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
 	end
 
