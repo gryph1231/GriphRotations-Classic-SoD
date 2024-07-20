@@ -897,15 +897,11 @@ end
 
 
 
--- -- Create a frame for event handling
--- local eventFrame = CreateFrame("Frame")
-
--- -- Register events related to spell casting
--- eventFrame:RegisterEvent("UNIT_SPELLCAST_START")
--- eventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
--- eventFrame:RegisterEvent("UNIT_SPELLCAST_FAILED")
--- eventFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
--- eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+-- local eventframe = CreateFrame("Frame")
+-- eventframe:RegisterEvent("UNIT_SPELLCAST_START")
+-- eventframe:RegisterEvent("UNIT_SPELLCAST_STOP")
+-- eventframe:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+-- eventframe:SetScript("OnEvent", OnEvent)
 
 -- -- Variable to hold the name of the currently casting spell
 -- local currentlyCasting = false
@@ -1202,3 +1198,113 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Create a table to hold the spell cast tracking data and functions
+SpellCastTracker = {}
+local spellStartTime = {}
+
+-- Function to check if the spell can be cast considering the tolerance
+function SpellCastTracker.CanCastSpellWithTolerance(spellName, tolerance)
+    local currentTime = GetTime()
+    if spellStartTime[spellName] then
+        local timeSinceLastCast = currentTime - spellStartTime[spellName]
+        if timeSinceLastCast > tolerance then
+            return true
+        else
+            return false
+        end
+    else
+        return true -- Allow casting if the spell has never been cast
+    end
+end
+
+-- Event handler function
+local function OnEvent(self, event, unit, _, spellID)
+    if unit == "player" then
+        if event == "UNIT_SPELLCAST_START" then
+            local spellName = GetSpellInfo(spellID)
+            spellStartTime[spellName] = GetTime()
+        end
+    end
+end
+
+-- Create a frame to listen for relevant events
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("UNIT_SPELLCAST_START")
+frame:SetScript("OnEvent", OnEvent)
+
+-- Global function to check if a spell can be cast with tolerance
+function CanCastWithTolerance(spellName)
+    return SpellCastTracker.CanCastSpellWithTolerance(spellName, 2.5)
+end
+
+-- Example usage
+local function CastIfPossible(spellName)
+    if CanCastWithTolerance(spellName) then
+        CastSpellByName(spellName)
+    end
+end
+
+-- Debug function to print the current state
+local function DebugState()
+    for spellName, startTime in pairs(spellStartTime) do
+        print(spellName, startTime)
+    end
+end
+
+-- Register the debug command
+SLASH_DEBUGSTATE1 = "/debugstate"
+SlashCmdList["DEBUGSTATE"] = DebugState
