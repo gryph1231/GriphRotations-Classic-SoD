@@ -84,7 +84,13 @@ local function ttd(unit)
         return timeToDie
     end
 end
-
+function num(val)
+    if val then
+        return 1
+    else
+        return 0
+    end
+end
 local activeUnitPlates = {}
 local function AddNameplate(unitID)
     local nameplate = C_NamePlate.GetNamePlateForUnit(unitID)
@@ -371,14 +377,41 @@ function RangeCount10()
     return range_counter
 end
 
- function TargetInRange(spellName)
-    if spellName and IsSpellInRange(spellName, "target") == 1 then
-        return true
+function TargetinRange(range,spell_range_check)
+    if range and not spell_range_check then
+        if range == 5 then
+            input = 8149
+        elseif range == 8 then
+            input = 34368
+        elseif range == 10 then
+            input = 32321
+        elseif range == 15 then
+            input = 33069
+        elseif range == 20 then
+            input = 10645
+        elseif range == 25 then
+            input = 13289
+        elseif range == 30 then
+            input = 835
+        else
+            local input = nil
+        end
+
+        if IsItemInRange(input,"target") then
+            return true
+        else
+            return false
+        end
+    elseif spell_range_check and not range then
+        if IsSpellInRange(spell_range_check,"target") == 1 then
+            return true
+        else
+            return false
+        end    
     else
         return false
     end
 end
-
 
 
 

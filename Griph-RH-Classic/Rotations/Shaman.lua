@@ -53,6 +53,7 @@ GriphRH.Spell[7] = {
     -- MoltenBlast = Spell(425339),
     shamanisticrage = Spell(20572), --blood fury
 	ElementalMastery = Spell(16166),
+    ShamanisticRage = Spell(425336), --blood fury
 
     DiseaseCleansingTotem = Spell(8170),
     -- WaterShield = Spell(33736),
