@@ -1230,37 +1230,43 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- Create a table to hold the spell cast tracking data and functions
 SpellCastTracker = {}
 local spellStartTime = {}
+
+local previousTarget = nil
+
+-- Function to get the current target name and detect if it has changed
+local function CheckTargetChange()
+    -- Get the current target's name
+    local currentTarget = UnitName("target")
+    
+    -- Check if the target has changed
+    if currentTarget ~= previousTarget then
+        -- Print the name of the new target
+        -- if currentTarget then
+        --     -- print("Target changed to: " .. currentTarget)
+        -- else
+        --     print("No target")
+        -- end
+        
+        -- Update the previous target variable
+        previousTarget = currentTarget
+        
+        -- Reset all spell start times when the target changes
+        for spell, _ in pairs(spellStartTime) do
+            spellStartTime[spell] = nil -- Reset the start time for all spells when the target is changed
+            -- print("Target changed, reset spell: " .. spell) -- Debug print
+        end
+    end
+end
 
 -- Function to check if the spell can be cast considering the tolerance
 function SpellCastTracker.CanCastSpellWithTolerance(spellName, tolerance)
     local currentTime = GetTime()
     if spellStartTime[spellName] then
         local timeSinceLastCast = currentTime - spellStartTime[spellName]
+        -- print("Time since last cast of " .. spellName .. ": " .. timeSinceLastCast) -- Debug print
         if timeSinceLastCast > tolerance then
             return true
         else
@@ -1274,37 +1280,117 @@ end
 -- Event handler function
 local function OnEvent(self, event, unit, _, spellID)
     if unit == "player" then
+        local spellName = GetSpellInfo(spellID)
         if event == "UNIT_SPELLCAST_START" then
-            local spellName = GetSpellInfo(spellID)
             spellStartTime[spellName] = GetTime()
+            -- print("Spell started: " .. spellName .. " at " .. spellStartTime[spellName]) -- Debug print
+        elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+            spellStartTime[spellName] = nil -- Reset the start time when the spell cast is interrupted
+            -- print("Spell interrupted: " .. spellName) -- Debug print
         end
+    end
+    
+    if event == "PLAYER_TARGET_CHANGED" then
+        CheckTargetChange()
     end
 end
 
 -- Create a frame to listen for relevant events
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("UNIT_SPELLCAST_START")
+frame:RegisterEvent("PLAYER_TARGET_CHANGED")
+frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 frame:SetScript("OnEvent", OnEvent)
 
 -- Global function to check if a spell can be cast with tolerance
 function CanCastWithTolerance(spellName)
-    return SpellCastTracker.CanCastSpellWithTolerance(spellName, 2.5)
+    local castTime = select(4, GetSpellInfo(spellName)) * 0.001 -- Convert from milliseconds to seconds
+    return SpellCastTracker.CanCastSpellWithTolerance(spellName, castTime + 0.5)
 end
 
--- Example usage
-local function CastIfPossible(spellName)
-    if CanCastWithTolerance(spellName) then
-        CastSpellByName(spellName)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Table to hold GUIDs of mobs in combat with the player
+local mobsInCombat = {}
+
+-- Function to handle combat log events
+local function OnCombatLogEvent(self, event)
+    local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
+    local playerGUID = UnitGUID("player")
+
+    -- Check for combat-related events
+    if subEvent == "SWING_DAMAGE" or subEvent == "SWING_MISSED" or subEvent == "SPELL_DAMAGE" or subEvent == "SPELL_MISSED" or subEvent == "SPELL_PERIODIC_DAMAGE" or subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_AURA_REMOVED" then
+        -- If player is the source and the destination is not the player, track the destination GUID
+        if sourceGUID == playerGUID and destGUID ~= playerGUID then
+            if not mobsInCombat[destGUID] then
+                mobsInCombat[destGUID] = true
+            end
+        -- If player is the destination and the source is not the player, track the source GUID
+        elseif destGUID == playerGUID and sourceGUID ~= playerGUID then
+            if not mobsInCombat[sourceGUID] then
+                mobsInCombat[sourceGUID] = true
+            end
+        end
+    elseif subEvent == "UNIT_DIED" then
+        -- Remove the mob's GUID from the table when it dies
+        if mobsInCombat[destGUID] then
+            mobsInCombat[destGUID] = nil
+        end
     end
 end
 
--- Debug function to print the current state
-local function DebugState()
-    for spellName, startTime in pairs(spellStartTime) do
-        print(spellName, startTime)
-    end
+-- Function to handle leaving combat
+local function OnPlayerRegenEnabled(self, event)
+    -- Clear the table when the player leaves combat
+    mobsInCombat = {}
 end
 
--- Register the debug command
-SLASH_DEBUGSTATE1 = "/debugstate"
-SlashCmdList["DEBUGSTATE"] = DebugState
+-- Event handler function to update the number of mobs in combat
+local function OnUpdate(self, elapsed)
+    local numMobsInCombat = 0
+
+    for guid in pairs(mobsInCombat) do
+        numMobsInCombat = numMobsInCombat + 1
+    end
+
+end
+
+-- Create a frame to listen for relevant events
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Fired when the player leaves combat
+frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        OnCombatLogEvent(self, event, ...)
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        OnPlayerRegenEnabled(self, event)
+    end
+end)
+frame:SetScript("OnUpdate", OnUpdate)
+
+-- Global function to get the number of mobs in combat
+function GetMobsInCombat()
+    local numMobsInCombat = 0
+
+    for guid in pairs(mobsInCombat) do
+        numMobsInCombat = numMobsInCombat + 1
+    end
+
+    return numMobsInCombat
+end

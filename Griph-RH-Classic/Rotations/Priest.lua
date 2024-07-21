@@ -18,7 +18,7 @@ GriphRH.Spell[5] = {
 	PowerWordShield = Spell(17),
 	FlashHeal = Spell(10916),
 	Heal = Spell(6064),
-	GreaterHeal = Spell(10964),
+	GreaterHeal = Spell(10965),
 	Renew = Spell(139),
 	LesserHeal = Spell(2053),
 	Resurrection = Spell(2006),
@@ -180,15 +180,19 @@ if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell("Heal") and 
 	return GriphRH.QueuedSpell():Cast()
 end
 
+-- print(CanCastWithTolerance("Flash Heal"))
+
+-- print(GetMobsInCombat())
+
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
 
 if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
-	if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and inRange25>=5 then
-		return S.handrune:Cast()
-	end	
+	-- if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and inRange25>=5 then
+	-- 	return S.handrune:Cast()
+	-- end	
 
 	if IsReady('Shadow Word: Death') and  targetRange36 and (AuraUtil.FindAuraByName("Inner Focus","player") and (Player:IsMoving() or not IsReady("Mind Blast")) and not Player:IsMoving() or UnitHealth('target')<1000 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordDeath:Cast()
@@ -198,7 +202,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Silence:Cast()
 	end
 
-	if IsReady("Psychic Scream") and CheckInteractDistance("target",2) and RangeCount10()>=1 and (Player:HealthPercentage() < 35 or (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) ) and GriphRH.InterruptsON() then
+	if IsReady("Psychic Scream") and CheckInteractDistance("target",2) and RangeCount10()>=1 and  ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) or Player:HealthPercentage() < 35 and Target:IsAPlayer())  and GriphRH.InterruptsON() then
 		return S.PsychicScream:Cast()
 	end	
 	
@@ -222,6 +226,11 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Shadowform","player")  then
 		return S.CureDisease:Cast()
 	end
+
+	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and (inRange25>=3 or GetMobsInCombat()>=3) and nameSharedPain == "Shared Pain" and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+		return S.ShadowWordPain:Cast()
+	end
+
 if AuraUtil.FindAuraByName("Inner Focus","player") then
 	if not Player:IsMoving() and IsReady("Mind Blast") then 
 	return S.MindBlast:Cast()
@@ -248,7 +257,12 @@ end
 	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
 	end
-	if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and inRange25>=3 then
+
+	if IsReady('Vampiric Touch') and (inRange25>=3 or GetMobsInCombat()>=3) and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+		return S.vampirictouch:Cast()
+	end
+
+	if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and (inRange25>=3 or GetMobsInCombat()>=3)  then
 		return S.handrune:Cast()
 	end	
 	
@@ -290,7 +304,7 @@ end
 	end
 
 	
-	if IsReady('Mind Sear') and  targetRange36 and inRange25>1 and not Player:IsMoving() then
+	if IsReady('Mind Sear') and  targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2)  and not Player:IsMoving() then
 		return S.handrune:Cast()
 	end
 
