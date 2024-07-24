@@ -181,14 +181,30 @@ if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell("Heal") and 
 end
 
 -- print(CanCastWithTolerance("Flash Heal"))
-
 -- print(GetMobsInCombat())
-
+local aoeDots = (inRange25>=3 or GetMobsInCombat()>=3)
+-- NEED TO TRACK SHADOW resist from other priests (powerful spell already active)
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
 
-if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
+
+
+
+
+
+
+if AuraUtil.FindAuraByName("Divine Protection","target") 
+or AuraUtil.FindAuraByName("Ice Block","target") 
+or AuraUtil.FindAuraByName("Invulnerability","target") 
+ then
+    stoprotation = true
+else
+    stoprotation = false
+end
+
+
+if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
 	-- if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and inRange25>=5 then
 	-- 	return S.handrune:Cast()
@@ -202,7 +218,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.Silence:Cast()
 	end
 
-	if IsReady("Psychic Scream") and CheckInteractDistance("target",2) and RangeCount10()>=1 and  ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) or Player:HealthPercentage() < 35 and Target:IsAPlayer())  and GriphRH.InterruptsON() then
+	if IsReady("Psychic Scream") and RangeCount10()>=1 and  ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) or Player:HealthPercentage() < 35 and Target:IsAPlayer())  and GriphRH.InterruptsON() then
 		return S.PsychicScream:Cast()
 	end	
 	
@@ -227,7 +243,7 @@ if Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', 
 		return S.CureDisease:Cast()
 	end
 
-	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and (inRange25>=3 or GetMobsInCombat()>=3) and nameSharedPain == "Shared Pain" and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or Target:IsAPlayer() or Player:IsMoving() or targetTTD>4) and aoeDots  and nameSharedPain == "Shared Pain" and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
 	end
 
@@ -249,20 +265,20 @@ end
 	if IsReady('Eye of the Void') and  targetRange36 and GriphRH.CDsON() then
 		return S.helmrune:Cast()
 	end
-	if IsReady('Void Plague') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and  targetRange36 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
+	if IsReady('Void Plague') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() or Player:IsMoving()) and  targetRange36 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 		return S.feetrune:Cast()
 	end
 	
 
-	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer()) and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or Player:IsMoving() or targetTTD>4 or Target:IsAPlayer()) and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
 	end
 
-	if IsReady('Vampiric Touch') and (inRange25>=3 or GetMobsInCombat()>=3) and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+	if IsReady('Vampiric Touch') and aoeDots and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 		return S.vampirictouch:Cast()
 	end
 
-	if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and (inRange25>=3 or GetMobsInCombat()>=3)  then
+	if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and aoeDots  then
 		return S.handrune:Cast()
 	end	
 	
@@ -304,7 +320,7 @@ end
 	end
 
 	
-	if IsReady('Mind Sear') and  targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2)  and not Player:IsMoving() then
+	if IsReady('Mind Sear') and  targetRange36 and inRange25>=2   and not Player:IsMoving() then
 		return S.handrune:Cast()
 	end
 
@@ -336,7 +352,7 @@ end
 
 if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
 
-	if IsReady("Power Word: Fortitude") and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
+	if IsReady("Power Word: Fortitude") and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Prayer of Fortitude","player") and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
 	return S.PowerWordFortitude:Cast()
 	end	
 
@@ -344,7 +360,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Bloo
 	return S.InnerFire:Cast()
 	end	
 
-	if IsReady('Shadow Protection') and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Shadow Protection","player") then
+	if IsReady('Shadow Protection') and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Prayer of Shadow Protection","player") and not AuraUtil.FindAuraByName("Shadow Protection","player") then
 	return S.ShadowProtection:Cast()
 	end
 
