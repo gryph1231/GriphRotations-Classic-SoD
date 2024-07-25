@@ -206,9 +206,9 @@ end
 
 if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
-	-- if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and inRange25>=5 then
-	-- 	return S.handrune:Cast()
-	-- end	
+	if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() and aoeDots and  targetRange36 and inRange25>=5 then
+		return S.handrune:Cast()
+	end	
 
 	if IsReady('Shadow Word: Death') and  targetRange36 and (AuraUtil.FindAuraByName("Inner Focus","player") and (Player:IsMoving() or not IsReady("Mind Blast")) and not Player:IsMoving() or UnitHealth('target')<1000 and not Target:IsAPlayer() or UnitHealthMax('target')>100000 and (Target:TimeToDie()<10 or UnitHealth('target')<2000) or Target:IsAPlayer() and Target:HealthPercentage()<20) and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordDeath:Cast()
@@ -269,6 +269,9 @@ end
 		return S.feetrune:Cast()
 	end
 	
+	if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() and aoeDots and  targetRange36 and inRange25>=4 then
+		return S.handrune:Cast()
+	end	
 
 	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or Player:IsMoving() or targetTTD>4 or Target:IsAPlayer()) and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
@@ -320,7 +323,7 @@ end
 	end
 
 	
-	if IsReady('Mind Sear') and  targetRange36 and inRange25>=2   and not Player:IsMoving() then
+	if IsReady('Mind Sear') and  targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2)  and not Player:IsMoving() then
 		return S.handrune:Cast()
 	end
 

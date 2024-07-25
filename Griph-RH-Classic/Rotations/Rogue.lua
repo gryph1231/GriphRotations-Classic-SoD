@@ -273,6 +273,10 @@ local function Finish()
 		return S.SliceandDiceR1:Cast()
 	end
 
+	if IsReady('Rupture') and GetSpellCooldownoldown('Carnage') and cp_finish_condition and (not AuraUtil.FindAuraByName('Rupture','target','PLAYER|HARMFUL') or Target:DebuffRemains(S.Rupture) <= 3) and target_healthy then
+		return S.Rupture:Cast()
+	end
+
 	if IsReady('Envenom',1) and ((cp_finish_condition and (not AuraUtil.FindAuraByName("Envenom", "player") or Player:Energy() >= 65 or (Player:Energy() >= 50 and IsReady('Poisoned Knife',1)) or UnitIsPlayer('target'))) or (EnvenomDMG() >= UnitHealth('target') and not UnitIsPlayer('target')) or (GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 4) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 4)) or (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 8) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 8)) and cp_finish_condition))))) then
 		if IsReady('Cold Blood') and IsReady('Envenom',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and ((deadly_poison_stacks and deadly_poison_stacks >= 5) or (deadly_poison_stacksII and deadly_poison_stacksII >= 5) or (deadly_poison_stacksIII and deadly_poison_stacksIII >= 5) or (deadly_poison_stacksIV and deadly_poison_stacksIV >= 5) or (occult_poison_stacksI and occult_poison_stacksI >= 5)) and cp_finish_condition then
 			return S.ColdBlood:Cast()
