@@ -203,10 +203,9 @@ else
     stoprotation = false
 end
 
-
 if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
-	if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() and aoeDots and  targetRange36 and inRange25>=5 then
+	if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() and  targetRange36 and (GetMobsInCombat()>=5 or inRange25>=5) then
 		return S.handrune:Cast()
 	end	
 
