@@ -13,7 +13,7 @@ local Spell = HL.Spell;
 local Item = HL.Item;
 local Pet = Unit.Pet;
 
-RubimRH.Spell[4] = {
+GriphRH.Spell[4] = {
 	Default = Spell(30681),
 	Stealth = Spell(1784),
 	Eviscerate = Spell(2098),
@@ -48,7 +48,7 @@ RubimRH.Spell[4] = {
 	CloakRune = Spell(20594), --stoneform
 };
 
-local S = RubimRH.Spell[4]
+local S = GriphRH.Spell[4]
 
 if not Item.Rogue then
     Item.Rogue = {}
@@ -234,7 +234,7 @@ local function Build()
 	end
 
 	if IsReady('Ambush',1) and not cp_finish_condition then
-		if IsReady('Cold Blood') and RubimRH.CDsON() then
+		if IsReady('Cold Blood') and GriphRH.CDsON() then
 			return S.ColdBlood:Cast()
 		end
 	
@@ -265,7 +265,7 @@ local function Build()
 end
 
 local function Finish()
-	if IsReady('Crimson Tempest',1) and RubimRH.AoEON() and ((cp_finish_condition and CTRefreshableAOE(2) >= 3) or (Player:ComboPoints() >= 3 and CTRefreshableAOE(0) >= 4) or (target_unhealthy and CTRefreshableAOE(2) >= 3)) then
+	if IsReady('Crimson Tempest',1) and GriphRH.AoEON() and ((cp_finish_condition and CTRefreshableAOE(2) >= 3) or (Player:ComboPoints() >= 3 and CTRefreshableAOE(0) >= 4) or (target_unhealthy and CTRefreshableAOE(2) >= 3)) then
 		return S.CloakRune:Cast()
 	end
 
@@ -278,7 +278,7 @@ local function Finish()
 	end
 
 	if IsReady('Envenom',1) and ((cp_finish_condition and (not AuraUtil.FindAuraByName("Envenom", "player") or Player:Energy() >= 65 or (Player:Energy() >= 50 and IsReady('Poisoned Knife',1)) or UnitIsPlayer('target'))) or (EnvenomDMG() >= UnitHealth('target') and not UnitIsPlayer('target')) or (GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 4) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 4)) or (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 8) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 8)) and cp_finish_condition))))) then
-		if IsReady('Cold Blood') and IsReady('Envenom',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and RubimRH.CDsON() and ((deadly_poison_stacks and deadly_poison_stacks >= 5) or (deadly_poison_stacksII and deadly_poison_stacksII >= 5) or (deadly_poison_stacksIII and deadly_poison_stacksIII >= 5) or (deadly_poison_stacksIV and deadly_poison_stacksIV >= 5) or (occult_poison_stacksI and occult_poison_stacksI >= 5)) and cp_finish_condition then
+		if IsReady('Cold Blood') and IsReady('Envenom',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and ((deadly_poison_stacks and deadly_poison_stacks >= 5) or (deadly_poison_stacksII and deadly_poison_stacksII >= 5) or (deadly_poison_stacksIII and deadly_poison_stacksIII >= 5) or (deadly_poison_stacksIV and deadly_poison_stacksIV >= 5) or (occult_poison_stacksI and occult_poison_stacksI >= 5)) and cp_finish_condition then
 			return S.ColdBlood:Cast()
 		end
 	
@@ -290,7 +290,7 @@ local function Finish()
 	end
 
 	if IsReady('Between The Eyes',1) and (not GetSpellCooldown('Envenom') or (not AuraUtil.FindAuraByName('Deadly Poison','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison II','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison III','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison IV','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison I','target','PLAYER|HARMFUL'))) and (cp_finish_condition or (BTEDMG() >= UnitHealth('target') and not UnitIsPlayer('target'))) then
-		if IsReady('Cold Blood') and IsReady('Between the Eyes',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and RubimRH.CDsON() and cp_finish_condition then
+		if IsReady('Cold Blood') and IsReady('Between the Eyes',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and cp_finish_condition then
 			return S.ColdBlood:Cast()
 		end
 	
@@ -325,10 +325,10 @@ local function APL()
 --Functions/Top priorities------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\channel.tga", false
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or (AuraUtil.FindAuraByName("Stealth", "player") and S.Pull:ID() ~= RubimRH.queuedSpell[1]:ID()) or AuraUtil.FindAuraByName("Food", "player") 
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or (AuraUtil.FindAuraByName("Stealth", "player") and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID()) or AuraUtil.FindAuraByName("Food", "player") 
 or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName('Gouge','target') or AuraUtil.FindAuraByName('Blind','target') then
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 attack_power1,attack_power2,_ = UnitAttackPower('player')
@@ -404,18 +404,18 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if ((RubimRH.queuedSpell[1]:CooldownRemains() > 2 or not Player:AffectingCombat()) and S.Pull:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Gouge:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Distract:ID() ~= RubimRH.queuedSpell[1]:ID() 
-and S.KidneyShot:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Blind:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Feint:ID() ~= RubimRH.queuedSpell[1]:ID())
-or (S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (S.Gouge:CooldownRemains() > 2 or Front == False or not TargetinRange(5)))
-or (S.Distract:ID() == RubimRH.queuedSpell[1]:ID() and S.Distract:CooldownRemains() > 2)
-or (S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (S.KidneyShot:CooldownRemains() > 2 or Target:DebuffRemains(S.CheapShot) >= 2 or Player:ComboPoints() == 0 or (not TargetinRange(5) and not GetSpellCooldown('Between the Eyes'))))
-or (S.Blind:ID() == RubimRH.queuedSpell[1]:ID() and (S.Blind:CooldownRemains() > 2 or not TargetinRange(10)))
-or (S.Feint:ID() == RubimRH.queuedSpell[1]:ID() and (not IsReady("Feint",1) or not UnitCanAttack('player','target')))
-or (S.Kick:ID() == RubimRH.queuedSpell[1]:ID() and (not UnitCastingInfo('target') or not TargetinRange(5))) then
-	RubimRH.queuedSpell = { RubimRH.Spell[3].Default, 0 }
+if ((GriphRH.queuedSpell[1]:CooldownRemains() > 2 or not Player:AffectingCombat()) and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Gouge:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Distract:ID() ~= GriphRH.queuedSpell[1]:ID() 
+and S.KidneyShot:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Blind:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Feint:ID() ~= GriphRH.queuedSpell[1]:ID())
+or (S.Gouge:ID() == GriphRH.queuedSpell[1]:ID() and (S.Gouge:CooldownRemains() > 2 or Front == False or not TargetinRange(5)))
+or (S.Distract:ID() == GriphRH.queuedSpell[1]:ID() and S.Distract:CooldownRemains() > 2)
+or (S.KidneyShot:ID() == GriphRH.queuedSpell[1]:ID() and (S.KidneyShot:CooldownRemains() > 2 or Target:DebuffRemains(S.CheapShot) >= 2 or Player:ComboPoints() == 0 or (not TargetinRange(5) and not GetSpellCooldown('Between the Eyes'))))
+or (S.Blind:ID() == GriphRH.queuedSpell[1]:ID() and (S.Blind:CooldownRemains() > 2 or not TargetinRange(10)))
+or (S.Feint:ID() == GriphRH.queuedSpell[1]:ID() and (not IsReady("Feint",1) or not UnitCanAttack('player','target')))
+or (S.Kick:ID() == GriphRH.queuedSpell[1]:ID() and (not UnitCastingInfo('target') or not TargetinRange(5))) then
+	GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }
 end
 
-if S.Pull:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.Pull:ID() == GriphRH.queuedSpell[1]:ID() then
 	if UnitCanAttack('player','target') then
 		if UnitIsPlayer('target') then
 			if IsReady('Cheap Shot',1) and AuraUtil.FindAuraByName("Stealth", "player") then
@@ -447,26 +447,26 @@ if S.Pull:ID() == RubimRH.queuedSpell[1]:ID() then
 			end
 		
 			if Build() then
-			--and (Player:Energy() > 80 or (not RubimRH.InterruptsON() or (target_unhealthy and RangeCount(5) <= 1)))
+			--and (Player:Energy() > 80 or (not GriphRH.InterruptsON() or (target_unhealthy and RangeCount(5) <= 1)))
 				return Build()
 			end
 		else
-			RubimRH.queuedSpell = { RubimRH.Spell[3].Default, 0 }
+			GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }
 		end
 	else
-		RubimRH.queuedSpell = { RubimRH.Spell[3].Default, 0 }		
+		GriphRH.queuedSpell = { GriphRH.Spell[3].Default, 0 }		
 	end
 end
 
-if S.Distract:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.Distract:ID() == GriphRH.queuedSpell[1]:ID() then
 	return S.Distract:Cast()
 end
 
-if S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.Gouge:ID() == GriphRH.queuedSpell[1]:ID() then
 	return S.Gouge:Cast()
 end
 
-if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and Player:ComboPoints() >= 1 then
+if S.KidneyShot:ID() == GriphRH.queuedSpell[1]:ID() and Player:ComboPoints() >= 1 then
 	if GetSpellCooldown('Between the Eyes') then
 		return S.BetweenTheEyes:Cast()
 	end
@@ -476,29 +476,29 @@ if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and Player:ComboPoints() >= 
 	end
 end
 
-if S.Blind:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.Blind:ID() == GriphRH.queuedSpell[1]:ID() then
 	return S.Blind:Cast()
 end
 
-if S.Feint:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.Feint:ID() == GriphRH.queuedSpell[1]:ID() then
 	return S.Feint:Cast()
 end
 
-if S.Kick:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.Kick:ID() == GriphRH.queuedSpell[1]:ID() then
 	return S.Kick:Cast()
 end
 
-if S.BladeFlurry:ID() == RubimRH.queuedSpell[1]:ID() then
+if S.BladeFlurry:ID() == GriphRH.queuedSpell[1]:ID() then
 	return S.BladeFlurry:Cast()
 end
 
--- if RubimRH.QueuedSpell():CanCast() and S.Pull:ID() ~= RubimRH.queuedSpell[1]:ID() then
--- 	return RubimRH.QueuedSpell():Cast()
+-- if GriphRH.QueuedSpell():CanCast() and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID() then
+-- 	return GriphRH.QueuedSpell():Cast()
 -- end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Interrupt & Dispels-----------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if IsReady('Kick',1) and RubimRH.InterruptsON() and Target:CastPercentage() > math.random(10, 85) then
+if IsReady('Kick',1) and GriphRH.InterruptsON() and Target:CastPercentage() > math.random(10, 85) then
 	return S.Kick:Cast()
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -512,18 +512,18 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (not AuraUtil.FindAuraByName("Stealth", "player") or IsCurrentSpell(6603)) 
 and (((UnitAffectingCombat('target') and (TargetinRange(10) or IsCurrentSpell(6603) or UnitAffectingCombat('player'))) and not AuraUtil.FindAuraByName("Gouge","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Sap","target","PLAYER|HARMFUL")) 
-or IsCurrentSpell(6603)) and not AuraUtil.FindAuraByName('Redirect','player') and S.Pull:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Gouge:ID() ~= RubimRH.queuedSpell[1]:ID() 
-and S.Kick:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Distract:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Blind:ID() ~= RubimRH.queuedSpell[1]:ID() and S.BladeFlurry:ID() ~= RubimRH.queuedSpell[1]:ID()
-and S.Feint:ID() ~= RubimRH.queuedSpell[1]:ID() and stop_rotation == false then
+or IsCurrentSpell(6603)) and not AuraUtil.FindAuraByName('Redirect','player') and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Gouge:ID() ~= GriphRH.queuedSpell[1]:ID() 
+and S.Kick:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Distract:ID() ~= GriphRH.queuedSpell[1]:ID() and S.Blind:ID() ~= GriphRH.queuedSpell[1]:ID() and S.BladeFlurry:ID() ~= GriphRH.queuedSpell[1]:ID()
+and S.Feint:ID() ~= GriphRH.queuedSpell[1]:ID() and stop_rotation == false then
 	if not IsCurrentSpell(6603) and TargetinRange(5) then
 		return Item(135274, { 13, 14 }):ID()
 	end
 
-	if IsReady('Adrenaline Rush') and IsSpellInRange("Sinister Strike", "target") == 1 and RubimRH.CDsON() and Player:Energy() < 100 and (target_healthy or RangeCount(5) >= 2) then
+	if IsReady('Adrenaline Rush') and IsSpellInRange("Sinister Strike", "target") == 1 and GriphRH.CDsON() and Player:Energy() < 100 and (target_healthy or RangeCount(5) >= 2) then
 		return S.AdrenalineRush:Cast()
 	end
 
-	if IsSpellInRange("Sinister Strike", "target") == 1 and Player:Energy() < 25 and UnitIsPlayer('target') and RubimRH.CDsON() and thistleteaoffcooldown and stop_rotation == false 
+	if IsSpellInRange("Sinister Strike", "target") == 1 and Player:Energy() < 25 and UnitIsPlayer('target') and GriphRH.CDsON() and thistleteaoffcooldown and stop_rotation == false 
 	and AuraUtil.FindAuraByName('Cheap Shot','target','HARMFUL') and Target:DebuffRemains(S.CheapShot) < 0.75 and Player:Energy() < 25 then
 		return I.ThistleTea:Cast()
 	end
@@ -537,11 +537,11 @@ and S.Feint:ID() ~= RubimRH.queuedSpell[1]:ID() and stop_rotation == false then
 	end
 
 	if Build() then
-	--and (Player:Energy() > 80 or (not RubimRH.InterruptsON() or (target_unhealthy and RangeCount(5) <= 1)))
+	--and (Player:Energy() > 80 or (not GriphRH.InterruptsON() or (target_unhealthy and RangeCount(5) <= 1)))
 		return Build()
 	end
 end
-	return "Interface\\Addons\\Rubim-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
-RubimRH.Rotation.SetAPL(4, APL);
+GriphRH.Rotation.SetAPL(4, APL);
