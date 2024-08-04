@@ -273,7 +273,7 @@ local function Finish()
 		return S.SliceandDiceR1:Cast()
 	end
 
-	if IsReady('Rupture') and GetSpellCooldownoldown('Carnage') and cp_finish_condition and (not AuraUtil.FindAuraByName('Rupture','target','PLAYER|HARMFUL') or Target:DebuffRemains(S.Rupture) <= 3) and target_healthy then
+	if IsReady('Rupture') and GetSpellCooldown('Carnage') and cp_finish_condition and (not AuraUtil.FindAuraByName('Rupture','target','PLAYER|HARMFUL') or Target:DebuffRemains(S.Rupture) <= 3) and target_healthy then
 		return S.Rupture:Cast()
 	end
 
