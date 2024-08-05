@@ -15,6 +15,7 @@ local Item = HL.Item;
 
 GriphRH.Spell[5] = {
     Smite = Spell(585),
+	MindFlay = Spell(15407),
 	PowerWordShield = Spell(17),
 	FlashHeal = Spell(10916),
 	Heal = Spell(6064),
@@ -300,6 +301,10 @@ end
 
 	if IsReady('Mind Blast')  and  targetRange36 and not Player:IsMoving() then
 		return S.MindBlast:Cast() 
+	end
+
+	if IsReady('Mind Flay') and not Player:IsMoving() and AuraUtil.FindAuraByName("Melting Faces","player") and targetRange36 then
+		return S.MindFlay:Cast()
 	end
 
 	if IsReady('Shadow Word: Death') and  targetRange36  then
