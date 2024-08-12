@@ -24,15 +24,15 @@ Modules\CombatTracker.lua
 Modules\HealingEngine.lua
 Modules\Quest.lua
 Modules\MiniMap.lua
-Rotations\Shared.lua
-Rotations\Rogue.lua
-Rotations\Hunter.lua
-Rotations\Shaman.lua
-Rotations\Paladin.lua
-Rotations\Warrior.lua
-Rotations\Mage.lua
-Rotations\Druid.lua
-Rotations\Priest.lua
+Rotations-Classic\Shared.lua
+Rotations-Classic\Rogue.lua
+Rotations-Classic\Hunter.lua
+Rotations-Classic\Shaman.lua
+Rotations-Classic\Paladin.lua
+Rotations-Classic\Warrior.lua
+Rotations-Classic\Mage.lua
+Rotations-Classic\Druid.lua
+Rotations-Classic\Priest.lua
 
 
 Modules\PVP.lua
