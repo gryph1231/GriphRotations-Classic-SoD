@@ -352,5 +352,5 @@ end
 GriphRH.Listener:Add('Griph_Events', 'PLAYER_ENTERING_WORLD', ConsoleUpdate)
 GriphRH.Listener:Add('Griph_Events', 'UI_SCALE_CHANGED', ConsoleUpdate)
 GriphRH.Listener:Add('Griph_Events', 'DISPLAY_SIZE_CHANGED', ConsoleUpdate)
-VideoOptionsFrame:HookScript("OnHide", ConsoleUpdate)
-InterfaceOptionsFrame:HookScript("OnHide", UpdateCVAR)
+-- VideoOptionsFrame:HookScript("OnHide", ConsoleUpdate)
+-- InterfaceOptionsFrame:HookScript("OnHide", UpdateCVAR)
