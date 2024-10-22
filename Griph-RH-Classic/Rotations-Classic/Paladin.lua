@@ -17,10 +17,11 @@ GriphRH.Spell[2] = {
 	AutoAttack = Spell(6603),
 		Default = Spell(1),
 		DevotionAura = Spell(465),
+        HolyShock = Spell(20473),
 		HolyLight = Spell(639),
         Purify = Spell(1152),
         SealoftheCrusaderDebuff = Spell(20300),
-
+SealofMartyrdom = Spell(407798),
         SealoftheCrusader = Spell(20305),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
@@ -247,7 +248,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
                 end
         
                 if IsReady("Seal of Martyrdom") then
-                    return S.chestrune:Cast()
+                    return S.SealofMartyrdom:Cast()
                 end
                 
                 if IsReady("Seal of Righteousness") then
@@ -284,41 +285,80 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    if Player:AffectingCombat() then
-       
+if Player:HealthPercentage()<20 and IsReady("Lay on Hands") and not AuraUtil.FindAuraByName("Divine Protection", "player") then
+    return S.LayonHands:Cast()
+   end
+   if IsReady("Blessing of Wisdom") and not S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player")  and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+    return S.BlessingofWisdom:Cast()
+end
+
+if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
+    return S.DevotionAura:Cast()
+end
+
+if IsReady("Retribution Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
+    return S.RetributionAura:Cast()
+end
+
+if IsReady("Blessing of Might") and not UnitIsPlayer('target') and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+    return S.BlessingofMight:Cast()
+end
+
+
+if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and IsCurrentSpell(6603) then 
+
+    if not IsCurrentSpell(6603) and targetRange10 then
+        return I.autoattack:ID()
+        end
+--RET
+if sealbuffremains<1.5 then
+if IsReady("Judgment",1) then
+    return S.Judgement:Cast()
+end
+if IsReady("Seal of Martyrdom",1) then
+    return S.SealofMartyrdom:Cast()
+end
+
+
+end
+
+
+if IsReady("Hammer of Wrath",1) then
+    return S.HammerofWrath:Cast()
+end
+if IsReady("Exorcism",1) then
+    return S.Exorcism:Cast()
+end
+if IsReady("Crusader Strike",1) then
+    return S.CrusaderStrike:Cast()
+end
+if IsReady("Judgment",1) then
+    return S.Judgement:Cast()
+end 
+if IsReady("Divine Storm") and targetRange10 then
+    return S.DivineStorm:Cast()
+end 
+
+if IsReady("Holy Shock",1) then
+    return S.HolyShock:Cast()
+end 
+
+if IsReady("Consecration") and targetRange10 then
+    return S.Consecration:Cast()
+end 
+
         if IsReady("Righteous Fury") and not AuraUtil.FindAuraByName("Righteous Fury", "player") 
          and IsEquippedItemType("Shield") 
         then
             return S.RighteousFury:Cast()
         end
     
-        if Player:HealthPercentage()<20 and IsReady("Lay on Hands") and not AuraUtil.FindAuraByName("Divine Protection", "player") then
-        return S.LayonHands:Cast()
-       end
+ 
        
-        if IsReady("Blessing of Wisdom") and not S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player")  and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
-            return S.BlessingofWisdom:Cast()
-        end
-    
-        if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
-            return S.DevotionAura:Cast()
-        end
-    
-        if IsReady("Retribution Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
-            return S.RetributionAura:Cast()
-        end
-    
-        if IsReady("Blessing of Might") and not UnitIsPlayer('target') and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
-            return S.BlessingofMight:Cast()
-        end
+
     
 
-          
-            if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then 
-
-                if not IsCurrentSpell(6603) and targetRange10 then
-                    return I.autoattack:ID()
-                    end
+   
                 
                     
                     if IsReady("Avenger's Shield") and GriphRH.CDsON() and targetRange10  then
@@ -368,7 +408,7 @@ end
                         end
                 
                         if IsReady("Seal of Martyrdom") then
-                            return S.chestrune:Cast()
+                            return S.SealofMartyrdom:Cast()
                         end
                         
                         if IsReady("Seal of Righteousness") then
@@ -395,11 +435,11 @@ end
                     end
 
 
-return 135328
+                    return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 
 
 end
-end
+
 
 
 

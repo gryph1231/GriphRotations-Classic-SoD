@@ -235,13 +235,14 @@ if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraB
 	-- 	return S.Renew:Cast()
 	-- end	
 
-	if IsReady("Abolish Disease") and GetAppropriateCureSpell() == "Disease" and not AuraUtil.FindAuraByName("Shadowform","player") then
+	if IsReady("Abolish Disease") and GriphRH.InterruptsON() and GetAppropriateCureSpell() == "Disease" and not AuraUtil.FindAuraByName("Shadowform","player") then
 		return S.AbolishDisease:Cast()
 	end
 
-	if IsReady("Cure Disease") and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Shadowform","player")  then
+	if IsReady("Cure Disease") and GriphRH.InterruptsON() and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Shadowform","player")  then
 		return S.CureDisease:Cast()
 	end
+
 
 	if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or Target:IsAPlayer() or Player:IsMoving() or targetTTD>4) and aoeDots  and nameSharedPain == "Shared Pain" and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 		return S.ShadowWordPain:Cast()
@@ -259,7 +260,7 @@ end
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and  targetRange36 and GriphRH.CDsON() then
 		return S.Shadowfiend:Cast()
 	end
-	if IsReady("Dispersion") and instanceType~= 'pvp' and instanceType~= 'none' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<30) and GriphRH.CDsON() then
+	if IsReady("Dispersion") and not targetdying and targetRange36 and instanceType~= 'pvp' and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<50) and GriphRH.CDsON() then
 		return S.Dispersion:Cast()
 	end	
 	if IsReady('Eye of the Void') and  targetRange36 and GriphRH.CDsON() then

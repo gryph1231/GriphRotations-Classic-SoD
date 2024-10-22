@@ -54,8 +54,11 @@ GriphRH.Spell[3] = {
 	FeignDeath = Spell(5384),
 	FrostTrap = Spell(409520),
 	ExplosiveTrap = Spell(409532),
+	TrueshotAura = Spell(20906),
+	ImmolationTrap = Spell(13813),
 	Disengage = Spell(14272),
 	BloodFury = Spell(20572),
+	FreezingTrap = Spell(1499),
 };
 
 local S = GriphRH.Spell[3]
@@ -221,6 +224,13 @@ PetActive()
 PetHapiness()
 StingTime()
 
+
+if AuraUtil.FindAuraByName("Explosive Trap","player","PLAYER") then
+    explosivetrapbuffremains = select(6,AuraUtil.FindAuraByName("Explosive Trap","player","PLAYER"))- GetTime()
+else
+    explosivetrapbuffremains = 0
+end
+
 -- if currentBottomRightSpellID then 
 -- 	return Spell(tonumber(currentBottomRightSpellID)):Cast() 
 -- end
@@ -264,6 +274,7 @@ if S.BestialWrath:ID() == GriphRH.queuedSpell[1]:ID() then
 		return S.RapidFire:Cast()
 	end
 end
+
 
 if GriphRH.queuedSpell[1]:CooldownRemains() > 2 or not UnitAffectingCombat('player')
 	or (S.AspectoftheCheetah:ID() == GriphRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player"))
@@ -325,6 +336,14 @@ if not Player:AffectingCombat() then
 	if IsReady('Feed Pet') and (PetHapiness() == 'Content' or PetHapiness() == 'Unhappy') and PetActive() and not Pet:Buff(S.FeedPetBuff) then 
 		return S.FeedPet:Cast() 
 	end
+	if S.TrueshotAura:IsAvailable() then
+	if IsCurrentSpell(6603) and IsReady("Aimed Shot") then
+		return S.AimedShot:Cast()
+	end
+	if IsCurrentSpell(6603) and IsReady("Sepent Sting") then
+		return S.SerpentSting:Cast()
+	end
+	end
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation-----------------------------------------------------------------------------------------------------------------------------------------
@@ -334,13 +353,13 @@ if Player:AffectingCombat() and AuraUtil.FindAuraByName("Aspect of the Cheetah",
 end
 
 if IsReady('Heart of the Lion') and not Player:Buff(S.HeartoftheLion) then
-	return S.HeartoftheLionz:Cast()
+	return S.HeartoftheLion:Cast()
 end
 
 if IsReady('Aspect of the Viper') and ManaPct() < 25 and not AuraUtil.FindAuraByName("Aspect of the Viper", "player") 
 and ((not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")) 
 or (UnitAffectingCombat('player') and CheckInteractDistance("target",3))) then
-	return S.AspectoftheViperz:Cast()
+	return S.AspectoftheViper:Cast()
 end
 
 if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCurrentSpell(6603) or IsAutoRepeatAction(AutoShot)) and not Target:IsDeadOrGhost() then 
@@ -358,7 +377,7 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 	end
 
 	if IsReady('Carve') and CheckInteractDistance("target",3) and CleaveCount() >= 3 then
-		return S.Carvez:Cast()
+		return S.Carve:Cast()
 	end
 	
 	if IsReady('Raptor Strike') and CheckInteractDistance("target",3) then
@@ -366,7 +385,7 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 	end
 
 	if IsReady('Flanking Strike',1) and CheckInteractDistance("target",3) then
-		return S.FlankingStrikez:Cast()
+		return S.FlankingStrike:Cast()
 	end
 
 	if IsReady('Carve') and CheckInteractDistance("target",3) and IsCurrentSpell(6603) then
@@ -407,14 +426,29 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 	-- if IsReady('Concussive Shot',1) then
 		-- return S.ConcussiveShot:Cast()
 	-- end
+	if IsReady('Serpent Sting',1) and not AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") then
+		return S.SerpentSting:Cast()
+	end
 
-	if IsReady('Chimera Shot',1) or IsReady('Explosive Shot',1) then
-		return S.ChimeraShotz:Cast()
+	if IsReady('Immolation Trap') and IsSpellInRange("Aimed Shot") and not AuraUtil.FindAuraByName("Lock and Load","player") and S.ChimeraShot:CooldownRemains()<2 and explosivetrapbuffremains >= 10 then
+		return S.ImmolationTrap:Cast()
+	end
+
+	if IsReady('Chimera Shot',1) then
+		return S.ChimeraShot:Cast()
+	end
+	if IsReady('Aimed Shot',1) and not Player:IsMoving() then
+		return S.AimedShot:Cast()
 	end
 
 	if IsReady('Multi-Shot',1) and not Player:IsMoving() then
 		return S.Multishot:Cast()
 	end
+
+	if IsReady('Freezing Trap') and IsSpellInRange("Aimed Shot") and not AuraUtil.FindAuraByName("Lock and Load","player") and S.ChimeraShot:CooldownRemains()<2 and explosivetrapbuffremains >= 10 then
+		return S.FreezingTrap:Cast()
+	end
+
 
 	if IsReady('Serpent Sting',1) and UnitName('target') ~= "Incendiary Bomb" and not S.SerpentSting:InFlight() and GriphRH.CDsON() 
 	and (not AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") 
@@ -422,7 +456,7 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 		return S.SerpentSting:Cast()
 	end
 
-	if IsReady('Arcane Shot',1) and GriphRH.CDsON() then
+	if IsReady('Arcane Shot',1) and GriphRH.CDsON() and Player:IsMoving() then
 		return S.ArcaneShot:Cast()
 	end
 	

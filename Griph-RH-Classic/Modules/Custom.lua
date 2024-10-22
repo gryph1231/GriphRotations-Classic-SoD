@@ -38,140 +38,7 @@ local function round2(num, idp)
     return math.floor(num * mult + 0.5) / mult
 end
 
-local function ttd(unit)
-    unit = unit or "target";
-    if thpcurr == nil then
-        thpcurr = 0
-    end
-    if thpstart == nil then
-        thpstart = 0
-    end
-    if timestart == nil then
-        timestart = 0
-    end
-    if UnitExists(unit) and not UnitIsDeadOrGhost(unit) then
-        if currtar ~= UnitGUID(unit) then
-            priortar = currtar
-            currtar = UnitGUID(unit)
-        end
-        if thpstart == 0 and timestart == 0 then
-            thpstart = UnitHealth(unit)
-            timestart = GetTime()
-        else
-            thpcurr = UnitHealth(unit)
-            timecurr = GetTime()
-            if thpcurr >= thpstart then
-                thpstart = thpcurr
-                timeToDie = 999
-            else
-                if ((timecurr - timestart) == 0) or ((thpstart - thpcurr) == 0) then
-                    timeToDie = 999
-                else
-                    timeToDie = round2(thpcurr / ((thpstart - thpcurr) / (timecurr - timestart)), 2)
-                end
-            end
-        end
-    elseif not UnitExists(unit) or currtar ~= UnitGUID(unit) then
-        currtar = 0
-        priortar = 0
-        thpstart = 0
-        timestart = 0
-        timeToDie = 9999999999999999
-    end
-    if timeToDie == nil then
-        return 99999999
-    else
-        return timeToDie
-    end
-end
-function num(val)
-    if val then
-        return 1
-    else
-        return 0
-    end
-end
-local activeUnitPlates = {}
-local function AddNameplate(unitID)
-    local nameplate = C_NamePlate.GetNamePlateForUnit(unitID)
-    local unitframe = nameplate.UnitFrame
 
-    -- store nameplate and its unitID
-    activeUnitPlates[unitframe] = unitID
-end
-
-local function RemoveNameplate(unitID)
-    local nameplate = C_NamePlate.GetNamePlateForUnit(unitID)
-    local unitframe = nameplate.UnitFrame
-    -- recycle the nameplate
-    activeUnitPlates[unitframe] = nil
-end
-
-GriphRH.Listener:Add('Griph_Events', 'NAME_PLATE_UNIT_ADDED', function(...)
-    local unitID = ...
-    --AddNameplate(unitID)
-end)
-
-GriphRH.Listener:Add('Griph_Events', 'NAME_PLATE_UNIT_REMOVED', function(...)
-    local unitID = ...
-    --RemoveNameplate(unitID)
-end)
-
-function DiyingIn()
-    HL.GetEnemies(10, true); -- Blood Boil
-    totalmobs = 0
-    dyingmobs = 0
-    for _, CycleUnit in pairs(Cache.Enemies[10]) do
-        totalmobs = totalmobs + 1;
-        if CycleUnit:TimeToDie() <= 20 then
-            dyingmobs = dyingmobs + 1;
-        end
-    end
-    if dyingmobs == 0 then
-        return 0
-    else
-        return totalmobs / dyingmobs
-    end
-end
-
-function GetTotalMobs()
-    local totalmobs = 0
-    for reference, unit in pairs(activeUnitPlates) do
-        if CheckInteractDistance(unit, 3) then
-            totalmobs = totalmobs + 1
-        end
-    end
-    return totalmobs
-end
-
-function GetMobsDying()
-    local totalmobs = 0
-    local dyingmobs = 0
-    for reference, unit in pairs(activeUnitPlates) do
-        if CheckInteractDistance(unit, 3) then
-            totalmobs = totalmobs + 1
-            if ttd(unit) <= 6 then
-                dyingmobs = dyingmobs + 1
-            end
-        end
-    end
-
-    if totalmobs == 0 then
-        return 0
-    end
-
-    return (dyingmobs / totalmobs) * 100
-end
-
-function GetMobs(spellId)
-    local totalmobs = 0
-    for reference, unit in pairs(activeUnitPlates) do
-        if IsSpellInRange(GetSpellInfo(spellId), unit) then
-            totalmobs = totalmobs + 1
-        end
-    end
-    return totalmobs
-end
 
 local SpellsInterrupt = {
     194610, 198405, 194657, 199514, 199589, 216197, --Maw of Souls
@@ -334,65 +201,10 @@ function RangeCount(range,spell_range_check)
 end
 
 
-function RangeCount11()
-    local range_counter = 0
-
-  
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then
-                local nameplate_guid = UnitGUID(unitID)
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,2) and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end
-                end
-            end
-        end
-    
-
-    return range_counter
-end
-
-
-function RangeCount10()
-    local range_counter = 0
-
-  
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then
-                local nameplate_guid = UnitGUID(unitID)
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,3) and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end
-                end
-            end
-        end
-    
-
-    return range_counter
-end
 
 
 
-inRange5 = RangeCount(5)
--- inRange8 = RangeCount(8)
-inRange10 = RangeCount(10)
--- inRange15 = RangeCount(15)
-inRange20 = RangeCount(20)
-inRange25 = RangeCount(25)
-inRange30 = RangeCount(30)
-targetRange5 = IsItemInRange(8149, "target") --works
--- targetRange8 = IsItemInRange(135432, "target")
-targetRange10 = IsItemInRange(17626, "target") --works
--- targetRange15 = IsItemInRange(6451, "target")
-targetRange20 = IsItemInRange(10645, "target")--works
-targetRange25 = IsItemInRange(13289, "target") --works
-targetRange30 = IsItemInRange(835, "target") --works
+
 
 function TargetinRange(range,spell_range_check)
     if range and not spell_range_check then
@@ -1067,18 +879,6 @@ eventFrame:SetScript("OnEvent", OnEvent)
 
 
 
-function targetrange11()
-   
-local unitID = "target" 
-if UnitExists(unitID) then
-
-        if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,2) then
-            return true
-        else
-            return false
-        end
-    end
-end
   
 
 
@@ -1397,7 +1197,140 @@ end
 
 
 
+local function ttd(unit)
+    unit = unit or "target";
+    if thpcurr == nil then
+        thpcurr = 0
+    end
+    if thpstart == nil then
+        thpstart = 0
+    end
+    if timestart == nil then
+        timestart = 0
+    end
+    if UnitExists(unit) and not UnitIsDeadOrGhost(unit) then
+        if currtar ~= UnitGUID(unit) then
+            priortar = currtar
+            currtar = UnitGUID(unit)
+        end
+        if thpstart == 0 and timestart == 0 then
+            thpstart = UnitHealth(unit)
+            timestart = GetTime()
+        else
+            thpcurr = UnitHealth(unit)
+            timecurr = GetTime()
+            if thpcurr >= thpstart then
+                thpstart = thpcurr
+                timeToDie = 999
+            else
+                if ((timecurr - timestart) == 0) or ((thpstart - thpcurr) == 0) then
+                    timeToDie = 999
+                else
+                    timeToDie = round2(thpcurr / ((thpstart - thpcurr) / (timecurr - timestart)), 2)
+                end
+            end
+        end
+    elseif not UnitExists(unit) or currtar ~= UnitGUID(unit) then
+        currtar = 0
+        priortar = 0
+        thpstart = 0
+        timestart = 0
+        timeToDie = 9999999999999999
+    end
+    if timeToDie == nil then
+        return 99999999
+    else
+        return timeToDie
+    end
+end
+function num(val)
+    if val then
+        return 1
+    else
+        return 0
+    end
+end
+local activeUnitPlates = {}
+local function AddNameplate(unitID)
+    local nameplate = C_NamePlate.GetNamePlateForUnit(unitID)
+    local unitframe = nameplate.UnitFrame
 
+    -- store nameplate and its unitID
+    activeUnitPlates[unitframe] = unitID
+end
+
+local function RemoveNameplate(unitID)
+    local nameplate = C_NamePlate.GetNamePlateForUnit(unitID)
+    local unitframe = nameplate.UnitFrame
+    -- recycle the nameplate
+    activeUnitPlates[unitframe] = nil
+end
+
+GriphRH.Listener:Add('Griph_Events', 'NAME_PLATE_UNIT_ADDED', function(...)
+    local unitID = ...
+    --AddNameplate(unitID)
+end)
+
+GriphRH.Listener:Add('Griph_Events', 'NAME_PLATE_UNIT_REMOVED', function(...)
+    local unitID = ...
+    --RemoveNameplate(unitID)
+end)
+
+function DiyingIn()
+    HL.GetEnemies(10, true); -- Blood Boil
+    totalmobs = 0
+    dyingmobs = 0
+    for _, CycleUnit in pairs(Cache.Enemies[10]) do
+        totalmobs = totalmobs + 1;
+        if CycleUnit:TimeToDie() <= 20 then
+            dyingmobs = dyingmobs + 1;
+        end
+    end
+    if dyingmobs == 0 then
+        return 0
+    else
+        return totalmobs / dyingmobs
+    end
+end
+
+function GetTotalMobs()
+    local totalmobs = 0
+    for reference, unit in pairs(activeUnitPlates) do
+        if TargetinRange(20) then
+            totalmobs = totalmobs + 1
+        end
+    end
+    return totalmobs
+end
+
+function GetMobsDying()
+    local totalmobs = 0
+    local dyingmobs = 0
+    for reference, unit in pairs(activeUnitPlates) do
+        if TargetinRange(20) then
+            totalmobs = totalmobs + 1
+            if ttd(unit) <= 6 then
+                dyingmobs = dyingmobs + 1
+            end
+        end
+    end
+
+    if totalmobs == 0 then
+        return 0
+    end
+
+    return (dyingmobs / totalmobs) * 100
+end
+
+function GetMobs(spellId)
+    local totalmobs = 0
+    for reference, unit in pairs(activeUnitPlates) do
+        if IsSpellInRange(GetSpellInfo(spellId), unit) then
+            totalmobs = totalmobs + 1
+        end
+    end
+    return totalmobs
+end
 
 
 
