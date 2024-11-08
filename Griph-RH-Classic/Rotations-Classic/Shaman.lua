@@ -264,7 +264,7 @@ local function APL()
                 if S.WindfuryWeaponR1:IsAvailable() then
                     windfurymh = true
                 else
-                    rockbitermh = true
+                    windfuryoh = true
                 end
         
             end
@@ -432,10 +432,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     if IsReady(SpellRank('Flametongue Weapon')) and flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
         return S.FlametongueWeapon:Cast()
     end
-    if IsReady(SpellRank('Windfury Weapon')) and windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=525 and mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
+    if IsReady(SpellRank('Windfury Weapon')) and windfurymh == true and (mhenchantseconds<30  or (mainHandEnchantID~=1669 and mainHandEnchantID~=525 and mainHandEnchantID~=283 and mainHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
-    if IsReady(SpellRank('Windfury Weapon')) and windfuryoh == true and (ohenchantseconds<30  or (offHandEnchantID~=525 and offHandEnchantID~=283 and offHandEnchantID~=284)) then
+    if IsReady(SpellRank('Windfury Weapon')) and windfuryoh == true and (ohenchantseconds<30  or (offHandEnchantID~=1669 and offHandEnchantID~=525 and offHandEnchantID~=283 and offHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
     if IsReady(SpellRank('Rockbiter Weapon')) and rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=683 and offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
