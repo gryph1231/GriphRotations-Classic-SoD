@@ -27,6 +27,7 @@ FrostRA = Spell(27152),
 FireRA = Spell(27153),
 Consecration = Spell(26573),
 ArcaneTorrent = Spell(28730),
+CrusaderSrike = Spell(407676),
 RighteousFury = Spell(25780),
 SealofCommand = Spell(20375),
 SealofRighteousness = Spell(21084),
@@ -35,6 +36,7 @@ Judgement = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
 BlessingofProtection = Spell(1022),
+DivineStorm = Spell(407778),
 HammerofJustice = Spell(5588),
 Forbearance = Spell(25771),
 LayonHands = Spell(633),
@@ -56,6 +58,7 @@ BlessingofWisdom = Spell(19742),
 HammerofWrath = Spell(27180),
 Repentance = Spell(20066),
 BlessingofSacrifice = Spell(27148),
+CrusaderStrike = Spell(407676),
 impblessingofmight = Spell(20048),
 HolyWrath = Spell(27139),
 GreaterBlessingofWisdom = Spell(25894),
@@ -105,9 +108,6 @@ local function APL()
     -- local start, duration = GetSpellCooldown(61304) -- 61304 is a dummy spell used to represent the GCD
 
 
-        inRange10 = RangeCount("Judgement")
-        targetRange10 = TargetInRange("Judgement")
-
 
         local inRange25 = 0
         for i = 1, 40 do
@@ -134,21 +134,25 @@ local function APL()
 
 
 -- print(S.impblessingofmight:IsAvailable())
-if inRange10==0 and AuraUtil.FindAuraByName("Forbearance","player","PLAYER|HARMFUL") 
+if inRange25==0 and AuraUtil.FindAuraByName("Forbearance","player","PLAYER|HARMFUL") 
 and (GriphRH.QueuedSpell():ID() == S.BlessingofProtection:ID() and S.BlessingofProtection:CooldownRemains()>Player:GCD() 
 or GriphRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:CooldownRemains()>Player:GCD()) then
     GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
+elseif   GriphRH.QueuedSpell():ID() == S.DivineProtection:ID() and IsReady("Divine Protection") then
+    return GriphRH.QueuedSpell():Cast()
 end
 
-if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not targetRange10 or S.HammerofJustice:CooldownRemains()>3) then
+
+
+if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not IsReady("Hammer of Justice",1) or S.HammerofJustice:CooldownRemains()>3) then
     GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
-end
-
+elseif GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and IsReady("Hammer of Justice",1) then
+        return GriphRH.QueuedSpell():Cast()
+	end
+ 
 if GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and Player:MovingFor()>0.3 then
     GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
-end
-
- 	if GriphRH.QueuedSpell():IsReadyQueue() then
+elseif   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light") then
         return GriphRH.QueuedSpell():Cast()
 	end
 	
@@ -196,37 +200,37 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 
     if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then 
 
-        if not IsCurrentSpell(6603) and targetRange10 then
+        if not IsCurrentSpell(6603) and Target:Exists() then
             return I.autoattack:ID()
             end
         
             
-            if IsReady("Avenger's Shield") and GriphRH.CDsON() and targetRange10  then
+            if IsReady("Avenger's Shield",1) and GriphRH.CDsON()   then
                 return S.AvengersShield:Cast()
             end
     
             if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
-                return S.gloverune:Cast()
+                return S.CrusaderStrike:Cast()
             end
     
             if IsReady("Divine Storm") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15 then
-                return S.chestrune:Cast()
+                return S.DivineStorm:Cast()
             end
     
       
         
-            if IsReady("Judgement")
+            if IsReady("Judgement",1)
             and (GriphRH.CDsON() or UnitIsPlayer('target')) and
             (
                 nextauto+0.15>GCDRemaining()
             or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
             )
-            and targetRange10 then
+             then
                 return S.Judgement:Cast()
             end
 
 
-            if IsReady('Exorcism') and targetRange10 and UnitIsPlayer('target')
+            if IsReady('Exorcism',1)  and UnitIsPlayer('target')
             and Target:AffectingCombat() and GriphRH.CDsON() 
             and Target:Exists() 
             and Player:CanAttack(Target) 
@@ -258,7 +262,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
                 end
     
     
-                if IsReady('Exorcism') and targetRange10
+                if IsReady('Exorcism',1) 
             and Target:AffectingCombat() and GriphRH.CDsON() 
             and Target:Exists() 
             and Player:CanAttack(Target) 
@@ -307,7 +311,7 @@ end
 
 if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and IsCurrentSpell(6603) then 
 
-    if not IsCurrentSpell(6603) and targetRange10 then
+    if not IsCurrentSpell(6603) and Target:Exists() then
         return I.autoattack:ID()
         end
 --RET
@@ -315,7 +319,7 @@ if sealbuffremains<1.5 then
 if IsReady("Judgment",1) then
     return S.Judgement:Cast()
 end
-if IsReady("Seal of Martyrdom",1) then
+if IsReady("Seal of Martyrdom") then
     return S.SealofMartyrdom:Cast()
 end
 
@@ -335,7 +339,7 @@ end
 if IsReady("Judgment",1) then
     return S.Judgement:Cast()
 end 
-if IsReady("Divine Storm") and targetRange10 then
+if IsReady("Divine Storm") and IsActionInRange(61) then
     return S.DivineStorm:Cast()
 end 
 
@@ -343,7 +347,7 @@ if IsReady("Holy Shock",1) then
     return S.HolyShock:Cast()
 end 
 
-if IsReady("Consecration") and targetRange10 then
+if IsReady("Consecration") and IsActionInRange(61) then
     return S.Consecration:Cast()
 end 
 
@@ -361,32 +365,32 @@ end
    
                 
                     
-                    if IsReady("Avenger's Shield") and GriphRH.CDsON() and targetRange10  then
+                    if IsReady("Avenger's Shield",1) and GriphRH.CDsON()   then
                         return S.AvengersShield:Cast()
                     end
             
                     if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
-                        return S.gloverune:Cast()
+                        return S.CrusaderStrike:Cast()
                     end
             
                     if IsReady("Divine Storm") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15 then
-                        return S.chestrune:Cast()
+                        return S.DivineStorm:Cast()
                     end
             
               
                 
-                    if IsReady("Judgement")
+                    if IsReady("Judgement",1)
                     and (GriphRH.CDsON() or UnitIsPlayer('target')) and
                     (
                         nextauto+0.15>GCDRemaining()
                     or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
                     )
-                    and targetRange10 then
+                     then
                         return S.Judgement:Cast()
                     end
         
         
-                    if IsReady('Exorcism') and targetRange10 and UnitIsPlayer('target')
+                    if IsReady('Exorcism',1)  and UnitIsPlayer('target')
                     and Target:AffectingCombat() and GriphRH.CDsON() 
                     and Target:Exists() 
                     and Player:CanAttack(Target) 
@@ -418,7 +422,7 @@ end
                         end
             
             
-                        if IsReady('Exorcism') and targetRange10
+                        if IsReady('Exorcism',1) 
                     and Target:AffectingCombat() and GriphRH.CDsON() 
                     and Target:Exists() 
                     and Player:CanAttack(Target) 
