@@ -32,7 +32,7 @@ RighteousFury = Spell(25780),
 SealofCommand = Spell(20375),
 SealofRighteousness = Spell(21084),
 Exorcism = Spell(415068),
-Judgement = Spell(20271),
+Judgment = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
 BlessingofProtection = Spell(1022),
@@ -222,14 +222,14 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
     
       
         
-            if IsReady("Judgement",1)
+            if IsReady("Judgment",1)
             and (GriphRH.CDsON() or UnitIsPlayer('target')) and
             (
                 nextauto+0.15>GCDRemaining()
             or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
             )
              then
-                return S.Judgement:Cast()
+                return S.Judgment:Cast()
             end
 
 
@@ -320,7 +320,7 @@ if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() a
 --RET
 if sealbuffremains<1.5 then
 if IsReady("Judgment",1) then
-    return S.Judgement:Cast()
+    return S.Judgment:Cast()
 end
 if IsReady("Seal of Martyrdom") then
     return S.SealofMartyrdom:Cast()
@@ -340,7 +340,7 @@ if IsReady("Crusader Strike",1) then
     return S.CrusaderStrike:Cast()
 end
 if IsReady("Judgment",1) then
-    return S.Judgement:Cast()
+    return S.Judgment:Cast()
 end 
 if IsReady("Divine Storm") and IsActionInRange(61) then
     return S.DivineStorm:Cast()
@@ -382,14 +382,14 @@ end
             
               
                 
-                    if IsReady("Judgement",1)
+                    if IsReady("Judgment",1)
                     and (GriphRH.CDsON() or UnitIsPlayer('target')) and
                     (
                         nextauto+0.15>GCDRemaining()
                     or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
                     )
                      then
-                        return S.Judgement:Cast()
+                        return S.Judgment:Cast()
                     end
         
         
