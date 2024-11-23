@@ -133,11 +133,11 @@ local function APL()
         end
 
 
--- print(S.impblessingofmight:IsAvailable())
+-- -- print(S.impblessingofmight:IsAvailable())
 if inRange25==0 and AuraUtil.FindAuraByName("Forbearance","player","PLAYER|HARMFUL") 
 and (GriphRH.QueuedSpell():ID() == S.BlessingofProtection:ID() and S.BlessingofProtection:CooldownRemains()>Player:GCD() 
 or GriphRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:CooldownRemains()>Player:GCD()) then
-    GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
+    GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
 elseif   GriphRH.QueuedSpell():ID() == S.DivineProtection:ID() and IsReady("Divine Protection") then
     return GriphRH.QueuedSpell():Cast()
 end
@@ -145,17 +145,20 @@ end
 
 
 if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not IsReady("Hammer of Justice",1) or S.HammerofJustice:CooldownRemains()>3) then
-    GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
+    GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
 elseif GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and IsReady("Hammer of Justice",1) then
         return GriphRH.QueuedSpell():Cast()
 	end
  
 if GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and Player:MovingFor()>0.3 then
-    GriphRH.queuedSpell = { GriphRH.Spell[4].Default, 0 }
+    GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
 elseif   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light") then
         return GriphRH.QueuedSpell():Cast()
 	end
 	
+
+
+
 	if Player:IsCasting() or Player:IsChanneling() or AuraUtil.FindAuraByName("First Aid", "player") then
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 	elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player")  then
