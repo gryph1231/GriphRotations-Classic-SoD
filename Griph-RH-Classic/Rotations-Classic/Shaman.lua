@@ -82,6 +82,9 @@ GriphRH.Spell[7] = {
 
 local S = GriphRH.Spell[7]
 
+S.WindfuryWeapon.TextureSpellID = {8232}
+
+
 if not Item.Shaman then
     Item.Shaman = {}
 end
