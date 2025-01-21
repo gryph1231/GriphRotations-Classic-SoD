@@ -16,7 +16,99 @@ local function concat(arg1, arg2)
     end
 end
 
-local SaveBindings = SaveBindings or AttemptToSaveBindings
+local _G, coroutine, string, type, pairs, print, table = _G, coroutine, string, type, pairs, print, table
+local hooksecurefunc = _G.hooksecurefunc
+local strlower = _G.strlower
+local strfind = _G.strfind
+
+local C_CVar = _G.C_CVar
+local GetCVarBool = C_CVar and C_CVar.GetCVarBool or _G.GetCVarBool
+
+local C_EquipmentSet = _G.C_EquipmentSet
+local GetNumEquipmentSets = C_EquipmentSet and C_EquipmentSet.GetNumEquipmentSets or _G.GetNumEquipmentSets
+local GetEquipmentSetInfo = C_EquipmentSet and C_EquipmentSet.GetEquipmentSetInfo or _G.GetEquipmentSetInfo
+
+local C_Item = _G.C_Item
+local GetItemInfo = C_Item and C_Item.GetItemInfo or _G.GetItemInfo
+local GetItemSpell = C_Item and C_Item.GetItemSpell or _G.GetItemSpell
+local PickupItem = C_Item and C_Item.PickupItem or _G.PickupItem
+
+local C_SpellBook = _G.C_SpellBook
+local PickupSpellBookItem = C_SpellBook and C_SpellBook.PickupSpellBookItem or _G.PickupSpellBookItem
+local GetSpellBookItemName = C_SpellBook and C_SpellBook.GetSpellBookItemName or _G.GetSpellBookItemName
+local GetSpellBookItemTexture = C_SpellBook and C_SpellBook.GetSpellBookItemTexture or _G.GetSpellBookItemTexture
+local HasPetSpells = C_SpellBook and C_SpellBook.HasPetSpells or _G.HasPetSpells
+local GetSpellBookItemName = C_SpellBook and C_SpellBook.GetSpellBookItemName or _G.GetSpellBookItemName
+local GetSpellTabInfoOriginal = C_SpellBook and C_SpellBook.GetSpellBookSkillLineInfo or _G.GetSpellTabInfo
+local function GetSpellTabInfo(spell)
+	if C_SpellBook and C_SpellBook.GetSpellBookSkillLineInfo then 
+		local s = GetSpellTabInfoOriginal(spell)	
+		return s.name, s.iconID, s.itemIndexOffset, s.numSpellBookItems, s.isGuild, s.offSpecID
+	else 
+		return GetSpellTabInfoOriginal(spell)
+	end 
+end 
+local GetSpellBookItemInfoOriginal = C_SpellBook and C_SpellBook.GetSpellBookItemInfo or _G.GetSpellBookItemInfo
+local SpellBookItemType = {
+	[0] = "NONE",
+	[1] = "SPELL",
+	[2] = "FUTURESPELL", 
+	[3] = "PETACTION", 
+	[4] = "FLYOUT",
+}
+local function GetSpellBookItemInfo(spell)
+	if C_SpellBook and C_SpellBook.GetSpellBookItemInfo then 
+		local s = GetSpellBookItemInfoOriginal(spell)	
+		return SpellBookItemType[s.itemType or 0], s.spellID or s.actionID
+	else 
+		return GetSpellBookItemInfoOriginal(spell)
+	end 
+end 
+
+local C_Spell = _G.C_Spell
+local PickupSpell = C_Spell and C_Spell.PickupSpell or _G.PickupSpell
+local GetSpellInfoOriginal = C_Spell and C_Spell.GetSpellInfo or _G.GetSpellInfo
+local function GetSpellInfo(spell)
+	if C_Spell and C_Spell.GetSpellInfo then 
+		local s = GetSpellInfoOriginal(spell)
+		return s.name, s.rank, s.iconID, s.castTime, s.minRange, s.maxRange, s.spellID, s.originalIconID
+	else 
+		return GetSpellInfoOriginal(spell)
+	end 
+end 
+
+local C_Container = _G.C_Container
+local GetContainerItemID = C_Container and C_Container.GetContainerItemID or _G.GetContainerItemID
+
+local SaveBindings = _G.SaveBindings or AttemptToSaveBindings
+local LoadBindings = _G.LoadBindings
+local RunBinding = _G.RunBinding
+local SetBinding = _G.SetBinding
+local GetBinding = _G.GetBinding
+local GetBindingKey = _G.GetBindingKey
+local GetBindingText = _G.GetBindingText
+local GetNumBindings = _G.GetNumBindings
+local GetCurrentBindingSet = _G.GetCurrentBindingSet
+local GetMacroInfo = _G.GetMacroInfo
+local SetCursor = _G.SetCursor
+local GetCursorInfo = _G.GetCursorInfo
+local ClearCursor = _G.ClearCursor
+local ResetCursor = _G.ResetCursor
+local GetMerchantItemLink = _G.GetMerchantItemLink
+local GetCompanionInfo = _G.GetCompanionInfo
+local C_MountJournal = _G.C_MountJournal
+local C_PetJournal = _G.C_PetJournal
+local C_Timer = _G.C_Timer
+local PlaySound = _G.PlaySound
+local InCombatLockdown = _G.InCombatLockdown
+local PickupMacro = _G.PickupMacro
+local IsModifierKeyDown = _G.IsModifierKeyDown
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsAltKeyDown = _G.IsAltKeyDown
+local UnitName = _G.UnitName
+local GetSpecialization = _G.GetSpecialization
+local GetActionInfo = _G.GetActionInfo
 local NUM_MACRO_ICONS_SHOWN = 20;
 local NUM_ICONS_PER_ROW = 5;
 local NUM_ICON_ROWS = 4;
@@ -1789,12 +1881,12 @@ function BindPadCore.GameTooltipSetItemByID(self, itemID)
     BindPadCore.InsertBindingTooltip(concat("ITEM ", GetItemInfo(itemID)));
 end
 
--- function BindPadCore.GameTooltipSetBagItem(self, bag, slot)
---     local itemID = GetContainerItemID(bag, slot);
---     if itemID then
---         BindPadCore.InsertBindingTooltip(concat("ITEM ", GetItemInfo(itemID)));
---     end
--- end
+function BindPadCore.GameTooltipSetBagItem(self, bag, slot)
+    local itemID = GetContainerItemID(bag, slot);
+    if itemID then
+        BindPadCore.InsertBindingTooltip(concat("ITEM ", GetItemInfo(itemID)));
+    end
+end
 
 function BindPadCore.GameTooltipSetSpellByID(self, spellID)
     BindPadCore.InsertBindingTooltip(concat("SPELL ", GetSpellInfo(spellID)));
@@ -1809,7 +1901,7 @@ function BindPadCore.GameTooltipSetAction(self, slot)
 end
 
 hooksecurefunc(GameTooltip, "SetItemByID", function(...) return BindPadCore.GameTooltipSetItemByID(...) end);
--- hooksecurefunc(GameTooltip, "SetBagItem", function(...) return BindPadCore.GameTooltipSetBagItem(...) end);
+hooksecurefunc(GameTooltip, "SetBagItem", function(...) return BindPadCore.GameTooltipSetBagItem(...) end);
 hooksecurefunc(GameTooltip, "SetSpellByID", function(...) return BindPadCore.GameTooltipSetSpellByID(...) end);
 hooksecurefunc(GameTooltip, "SetSpellBookItem", function(...) return BindPadCore.GameTooltipSetSpellBookItem(...) end);
 hooksecurefunc(GameTooltip, "SetAction", function(...) return BindPadCore.GameTooltipSetAction(...) end);

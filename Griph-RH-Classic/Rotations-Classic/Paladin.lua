@@ -21,7 +21,7 @@ GriphRH.Spell[2] = {
 		HolyLight = Spell(639),
         Purify = Spell(1152),
         SealoftheCrusaderDebuff = Spell(20300),
-SealofMartyrdom = Spell(407798),
+SealofMartyrdom = Spell(10326),-- turn undead
         SealoftheCrusader = Spell(20305),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
@@ -55,7 +55,7 @@ SealofWisdom = Spell(20166),
 SealofWisdomDebuff = Spell(20355),
 SanctityAura = Spell(20218),
 BlessingofWisdom = Spell(19742),
-HammerofWrath = Spell(27180),
+HammerofWrath = Spell(24275),
 Repentance = Spell(20066),
 BlessingofSacrifice = Spell(27148),
 CrusaderStrike = Spell(407676),
@@ -106,7 +106,7 @@ local I = Item.Paladin.Protection;
 local function APL()
 
     -- local start, duration = GetSpellCooldown(61304) -- 61304 is a dummy spell used to represent the GCD
-
+print(IsActionInRange(3))
 
 
         local inRange25 = 0
@@ -187,8 +187,11 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
     if IsReady("Blessing of Wisdom") and not S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and Player:IsMoving() then
         return S.BlessingofWisdom:Cast()
     end
-
-    if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
+    if IsReady("Sanctity Aura") and not AuraUtil.FindAuraByName("Sanctity Aura", "player")  and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
+        return S.SanctityAura:Cast()
+    end
+    
+    if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
         return S.DevotionAura:Cast()
     end
 
@@ -212,11 +215,11 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
                 return S.AvengersShield:Cast()
             end
     
-            if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
+            if IsReady("Crusader Strike") and IsActionInRange(1) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
                 return S.CrusaderStrike:Cast()
             end
     
-            if IsReady("Divine Storm") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15 then
+            if IsReady("Divine Storm") and IsActionInRange(1) and sealbuffremains> GCDRemaining()+0.15 then
                 return S.DivineStorm:Cast()
             end
     
@@ -275,7 +278,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
     
                 
      
-                if IsReady("Consecration") and IsActionInRange(61) and not Player:IsMoving() then
+                if IsReady("Consecration") and IsActionInRange(1) and not Player:IsMoving() then
                     return S.Consecration:Cast()
                 end
     
@@ -298,12 +301,15 @@ if Player:HealthPercentage()<20 and IsReady("Lay on Hands") and not AuraUtil.Fin
    if IsReady("Blessing of Wisdom") and not S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player")  and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
     return S.BlessingofWisdom:Cast()
 end
+if IsReady("Sanctity Aura") and not AuraUtil.FindAuraByName("Sanctity Aura", "player")  and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
+    return S.SanctityAura:Cast()
+end
 
-if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
+if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
     return S.DevotionAura:Cast()
 end
 
-if IsReady("Retribution Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
+if IsReady("Retribution Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
     return S.RetributionAura:Cast()
 end
 
@@ -330,10 +336,10 @@ end
 end
 
 
-if IsReady("Hammer of Wrath",1) then
+if IsReady("Hammer of Wrath") and IsActionInRange(3) then
     return S.HammerofWrath:Cast()
 end
-if IsReady("Exorcism",1) then
+if IsReady("Exorcism") and IsActionInRange(3) then
     return S.Exorcism:Cast()
 end
 if IsReady("Crusader Strike",1) then
@@ -342,15 +348,15 @@ end
 if IsReady("Judgment",1) then
     return S.Judgment:Cast()
 end 
-if IsReady("Divine Storm") and IsActionInRange(61) then
+if IsReady("Divine Storm") and IsActionInRange(1) then
     return S.DivineStorm:Cast()
 end 
 
-if IsReady("Holy Shock",1) then
+if IsReady("Holy Shock") and IsActionInRange(3) then
     return S.HolyShock:Cast()
 end 
 
-if IsReady("Consecration") and IsActionInRange(61) then
+if IsReady("Consecration") and IsActionInRange(1) then
     return S.Consecration:Cast()
 end 
 
@@ -368,15 +374,15 @@ end
    
                 
                     
-                    if IsReady("Avenger's Shield",1) and GriphRH.CDsON()   then
+                    if IsReady("Avenger's Shield",1) and GriphRH.CDsON() and IsActionInRange(3)  then
                         return S.AvengersShield:Cast()
                     end
             
-                    if IsReady("Crusader Strike") and IsActionInRange(61) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
+                    if IsReady("Crusader Strike") and IsActionInRange(1) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
                         return S.CrusaderStrike:Cast()
                     end
             
-                    if IsReady("Divine Storm") and IsActionInRange(61) and sealbuffremains> GCDRemaining()+0.15 then
+                    if IsReady("Divine Storm") and IsActionInRange(1) and sealbuffremains> GCDRemaining()+0.15 then
                         return S.DivineStorm:Cast()
                     end
             
@@ -393,7 +399,7 @@ end
                     end
         
         
-                    if IsReady('Exorcism',1)  and UnitIsPlayer('target')
+                    if IsReady('Exorcism') and IsActionInRange(3)  and UnitIsPlayer('target')
                     and Target:AffectingCombat() and GriphRH.CDsON() 
                     and Target:Exists() 
                     and Player:CanAttack(Target) 
@@ -435,7 +441,7 @@ end
             
                         
              
-                        if IsReady("Consecration") and IsActionInRange(61) and not Player:IsMoving() then
+                        if IsReady("Consecration") and IsActionInRange(1) and not Player:IsMoving() then
                             return S.Consecration:Cast()
                         end
             

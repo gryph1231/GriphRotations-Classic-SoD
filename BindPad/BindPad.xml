@@ -619,7 +619,7 @@
             </CheckButton>
         </Frames>
         <Scripts>
-            <OnLoad>
+            <OnLoad>	
                 BindPadFrame_OnLoad(self)
             </OnLoad>
             <OnMouseDown>
@@ -652,17 +652,10 @@
                 </Offset>
             </Anchor>
         </Anchors>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-            <BackgroundInsets>
-                <AbsInset left="11" right="12" top="12" bottom="11" />
-            </BackgroundInsets>
-            <TileSize>
-                <AbsValue val="32" />
-            </TileSize>
-            <EdgeSize>
-                <AbsValue val="32" />
-            </EdgeSize>
-        </Backdrop>
+        <KeyValues>
+            <KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+            <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+        </KeyValues>
         <Layers>
             <Layer level="ARTWORK">
                 <Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -796,7 +789,11 @@
             </CheckButton>
         </Frames>
         <Scripts>
-            <OnLoad>
+            <OnLoad>	
+				if BackdropTemplateMixin then
+					Mixin(self, BackdropTemplateMixin)
+				end					
+				self:ApplyBackdrop()
                 self:RegisterForClicks("AnyUp")
             </OnLoad>
             <OnHide>
@@ -1195,8 +1192,8 @@
                     </OnClick>
                 </Scripts>
             </Button>
-        </Frames>
-        <Scripts>
+        </Frames>     
+		<Scripts>
             <OnShow>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
                 BindPadMacroPopupFrame_OnShow(self)
@@ -1381,7 +1378,7 @@
                     </OnClick>
                 </Scripts>
             </Button>
-            <Frame name="BindPadMacroFrameTextBackground">
+            <Frame name="BindPadMacroFrameTextBackground" inherits="BackdropTemplate">
                 <Size>
                     <AbsDimension x="322" y="251" />
                 </Size>
@@ -1392,20 +1389,19 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-                    <EdgeSize>
-                        <AbsValue val="16" />
-                    </EdgeSize>
-                    <TileSize>
-                        <AbsValue val="16" />
-                    </TileSize>
-                    <BackgroundInsets>
-                        <AbsInset left="5" right="5" top="5" bottom="5" />
-                    </BackgroundInsets>
-                </Backdrop>
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="BACKDROP_TEXT_PANEL_0_16" type="global"/>
+                    <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+                    <KeyValue key="backdropBorderColor" value="TOOLTIP_DEFAULT_COLOR" type="global"/>
+                </KeyValues>
                 <Scripts>
-                    <OnLoad>
-
+                    <OnLoad>	
+						if BackdropTemplateMixin then
+							Mixin(self, BackdropTemplateMixin)
+						end			
+						self:ApplyBackdrop()					
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, TOOLTIP_DEFAULT_COLOR.a)
+                        self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, TOOLTIP_DEFAULT_BACKGROUND_COLOR.a)
                     </OnLoad>
                 </Scripts>
             </Frame>
@@ -1492,7 +1488,7 @@
                 </Anchors>
             </Button>
         </Frames>
-        <Scripts>
+        <Scripts>		
             <OnShow>
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
                 BindPadMacroFrame_OnShow(self)
@@ -1517,17 +1513,10 @@
                 </Offset>
             </Anchor>
         </Anchors>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-            <BackgroundInsets>
-                <AbsInset left="11" right="12" top="12" bottom="11" />
-            </BackgroundInsets>
-            <TileSize>
-                <AbsValue val="32" />
-            </TileSize>
-            <EdgeSize>
-                <AbsValue val="32" />
-            </EdgeSize>
-        </Backdrop>
+        <KeyValues>
+            <KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+            <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+        </KeyValues>
         <Layers>
             <Layer level="ARTWORK">
                 <FontString name="$parentText" parentKey="text" inherits="GameFontHighlight">
@@ -1579,6 +1568,12 @@
             </Button>
         </Frames>
         <Scripts>
+			<OnLoad>
+				if BackdropTemplateMixin then
+					Mixin(self, BackdropTemplateMixin)
+				end			
+				self:ApplyBackdrop()
+			</OnLoad>		
             <OnKeyDown>
                 if key == "ESCAPE" then
                     self.cancelbutton:Click()
