@@ -119,7 +119,7 @@ local function APL()
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
--- print(TargetinRange(10))
+-- print(IsItemInRange(17626,"target"))
 
 -- print(not CheckInteractDistance("target", 3))
 -- print(S.ChainLightning:IsAvailable())
@@ -150,11 +150,7 @@ local function APL()
                 else ohenchantseconds = 0
                 end
 
-        if nameWayofEarth == 'Way of Earth' then 
-            rangecheck5 = TargetinRange(5) -- range tracker for range 5
-        else
-            rangecheck5 = TargetinRange(10)
-        end
+   
 
         local haveTotem1, totemName1, startTime1, duration1 = GetTotemInfo(1) --fire
             local remainingDura1 = (duration1 - (GetTime() - startTime1))
@@ -886,3 +882,4 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     end --end of local APL
 
 GriphRH.Rotation.SetAPL(7, APL);
+GriphRH.Rotation.SetPASSIVE(7, PASSIVE);
