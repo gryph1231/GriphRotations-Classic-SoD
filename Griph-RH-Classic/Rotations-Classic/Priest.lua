@@ -218,7 +218,7 @@ if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraB
 		return S.Silence:Cast()
 	end
 
-	if IsReady("Psychic Scream") and RangeCount10()>=1 and  ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) or Player:HealthPercentage() < 35 and Target:IsAPlayer())  and GriphRH.InterruptsON() then
+	if IsReady("Psychic Scream") and RangeCount(10)>=1 and  ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) or Player:HealthPercentage() < 35 and Target:IsAPlayer())  and GriphRH.InterruptsON() then
 		return S.PsychicScream:Cast()
 	end	
 	
