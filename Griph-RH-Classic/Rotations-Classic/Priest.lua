@@ -133,7 +133,7 @@ elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or A
 end
 -- print(CanCastWithTolerance("Vampiric Touch"))
 
-if GriphRH.QueuedSpell():ID() == S.PsychicScream:ID() and (S.PsychicScream:CooldownRemains()>2 or not IsUsableSpell("Psychic Scream") or RangeCount11()==0) then
+if GriphRH.QueuedSpell():ID() == S.PsychicScream:ID() and (S.PsychicScream:CooldownRemains()>2 or not IsUsableSpell("Psychic Scream") or RangeCount(10)==0) then
 	GriphRH.queuedSpell = { GriphRH.Spell[5].Default, 0 }
 end
 
