@@ -107,7 +107,7 @@ end)
 
 local function APL()
 	local nameberserk = GetSpellInfo('Berserk')
-	targetRange30 = TargetInRange("Wrath")
+	targetRange30 = TargetinRange(30)
 
 
 	if AuraUtil.FindAuraByName("Savage Roar","player") then
