@@ -14,9 +14,10 @@ local Item = HL.Item;
 local Pet = Unit.Pet;
 
 GriphRH.Spell[3] = {
+	AspectoftheFalcon = Spell(469145),
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),
-	ChimeraShotz = Spell(19801), --tranq shot
+
 	ViperSting = Spell(14279),
 	BestialWrath = Spell(19574),
 	RaptorStrike = Spell(14262),
@@ -41,7 +42,6 @@ GriphRH.Spell[3] = {
 	AspectoftheHawk = Spell(13165),
 	ArcaneShot = Spell(3044),
 	FlankingStrike = Spell(415320),
-	FlankingStrikez = Spell(16832), --pet claw
 	Counterattack = Spell(19306),
 	SerpentSting = Spell(13550),
 	RapidFire = Spell(3045),
@@ -235,11 +235,19 @@ end
 -- 	return Spell(tonumber(currentBottomRightSpellID)):Cast() 
 -- end
 
-if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+if AuraUtil.FindAuraByName("Flanking Strike","player","PLAYER") then
+	_, _, flankingstrikestacks = AuraUtil.FindAuraByName('Flanking Strike','player')
+else
+	flankingstrikestacks = 0
 end
+
+if AuraUtil.FindAuraByName("Flanking Strike","player","PLAYER") then
+	flankingstrikeremains = select(6,AuraUtil.FindAuraByName("Flanking Strike","player","PLAYER")) - GetTime()
+
+	 else
+		flankingstrikeremains = 0 
+	end
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities-----------------------------------------------------------------------------------------------------------------------------------------
@@ -372,97 +380,48 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 		return Item(135274, { 13, 14 }):ID()
 	end
 
-	if IsReady('Counterattack') and CheckInteractDistance("target",3) and UnitIsPlayer("target") then
-		return S.Counterattack:Cast()
-	end
 
-	if IsReady('Carve') and CheckInteractDistance("target",3) and CleaveCount() >= 3 then
-		return S.Carve:Cast()
-	end
-	
-	if IsReady('Raptor Strike') and CheckInteractDistance("target",3) then
-		return S.RaptorStrike:Cast()
-	end
+if GriphRH.CDsON() and IsReady("Rapid Fire") and flankingstrikestacks>=2 and CheckInteractDistance("target",3) then
+	return S.RapidFire:Cast()
+end 
 
-	if IsReady('Flanking Strike',1) and CheckInteractDistance("target",3) then
-		return S.FlankingStrike:Cast()
-	end
+if  IsReady("Flanking Strike") and flankingstrikestacks<1 and not AuraUtil.FindAuraByName("Raptor Fury", "player") and CheckInteractDistance("target",3) then
+	return S.FlankingStrike:Cast()
+end 
 
-	if IsReady('Carve') and CheckInteractDistance("target",3) and IsCurrentSpell(6603) then
-		return S.Carvez:Cast()
-	end
 
-	if CheckInteractDistance("target",3) then
-		if IsReady('Aspect of the Hawk') and ManaPct() > 20 and (S.RaptorStrike:CooldownRemains() > 1 and S.FlankingStrike:CooldownRemains() > 1 and (S.Carve:CooldownRemains() > 1 or CleaveCount() < 3))
-		and not AuraUtil.FindAuraByName("Aspect of the Hawk", "player")
-		and not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
-		and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")
-		and (not AuraUtil.FindAuraByName("Aspect of the Viper", "player") or ManaPct() == 100)
-		and not AuraUtil.FindAuraByName("Aspect of the Monkey", "player") then
-			if PetActive() or IsAutoRepeatAction(AutoShot) or not UnitIsPlayer('target') then
-				return S.AspectoftheHawk:Cast()
-			elseif not PetActive() and (IsCurrentSpell(6603) or UnitIsPlayer('target')) then
-				return S.AspectoftheMonkey:Cast()
-			end
-		end
-	elseif not CheckInteractDistance("target",3) then
-		if IsReady('Aspect of the Hawk') and ManaPct() > 20 
-		and ((S.Multishot:CooldownRemains() > 1 or Player:IsMoving() and not GriphRH.CDsON()) 
-		or ((S.Multishot:CooldownRemains() > 1 or Player:IsMoving()) and (S.SerpentSting:CooldownRemains() > 1 
-		or AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL")) and S.ArcaneShot:CooldownRemains() > 1 and GriphRH.CDsON()))
-		and not AuraUtil.FindAuraByName("Aspect of the Hawk", "player")
-		and not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player")
-		and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")
-		and (not AuraUtil.FindAuraByName("Aspect of the Viper", "player") or ManaPct() == 100)
-		and not AuraUtil.FindAuraByName("Aspect of the Monkey", "player") then
-			if PetActive() or IsAutoRepeatAction(AutoShot) or not UnitIsPlayer('target') then
-				return S.AspectoftheHawk:Cast()
-			elseif not PetActive() and (IsCurrentSpell(6603) or UnitIsPlayer('target')) then
-				return S.AspectoftheMonkey:Cast()
-			end
-		end
-	end
+if  IsReady("Flanking Strike") and flankingstrikestacks>=1 and flankingstrikeremains<2 and CheckInteractDistance("target",3) then
+	return S.FlankingStrike:Cast()
+end 
 
-	-- if IsReady('Concussive Shot',1) then
-		-- return S.ConcussiveShot:Cast()
-	-- end
-	if IsReady('Serpent Sting',1) and not AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") then
-		return S.SerpentSting:Cast()
-	end
+if  IsReady("Raptor Strike") and  CheckInteractDistance("target",3) then
+	return S.RaptorStrike:Cast()
+end 
 
-	if IsReady('Immolation Trap') and IsSpellInRange("Aimed Shot") and not AuraUtil.FindAuraByName("Lock and Load","player") and S.ChimeraShot:CooldownRemains()<2 and explosivetrapbuffremains >= 10 then
+if  IsReady("Mongoose Bite") and  CheckInteractDistance("target",3) then
+	return S.MongooseBite:Cast()
+end 
+if  IsReady("Flanking Strike") and  CheckInteractDistance("target",3) then
+	return S.FlankingStrike:Cast()
+end 
+
+
+if  IsReady("Aspect of the Viper") and  CheckInteractDistance("target",3) and ManaPct()<5 then
+	return S.AspectoftheViper:Cast()
+end 
+
+if  IsReady("Aspect of the Falcon") and  CheckInteractDistance("target",3) and ManaPct()>50 then
+	return S.AspectoftheFalcon:Cast()
+end 
+
+
+
+	if IsReady("Immolation Trap") and CheckInteractDistance("target",3) and S.RaptorStrike:CooldownRemains()>=1.5 and S.MongooseBite:CooldownRemains()>1.5 then
 		return S.ImmolationTrap:Cast()
-	end
+	end 
 
-	if IsReady('Chimera Shot',1) then
-		return S.ChimeraShot:Cast()
-	end
-	if IsReady('Aimed Shot',1) and not Player:IsMoving() then
-		return S.AimedShot:Cast()
-	end
-
-	if IsReady('Multi-Shot',1) and not Player:IsMoving() then
-		return S.Multishot:Cast()
-	end
-
-	if IsReady('Freezing Trap') and IsSpellInRange("Aimed Shot") and not AuraUtil.FindAuraByName("Lock and Load","player") and S.ChimeraShot:CooldownRemains()<2 and explosivetrapbuffremains >= 10 then
-		return S.FreezingTrap:Cast()
-	end
-
-
-	if IsReady('Serpent Sting',1) and UnitName('target') ~= "Incendiary Bomb" and not S.SerpentSting:InFlight() and GriphRH.CDsON() 
-	and (not AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") 
-	or (AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") and StingTime() <= Player:GCD())) and not AuraUtil.FindAuraByName("Viper Sting","target","PLAYER|HARMFUL") then
-		return S.SerpentSting:Cast()
-	end
-
-	if IsReady('Arcane Shot',1) and GriphRH.CDsON() and Player:IsMoving() then
-		return S.ArcaneShot:Cast()
-	end
 	
-	-- if IsReady('Wing Clip') and CheckInteractDistance("target",3) then
-		-- return S.WingClip:Cast()
-	-- end
+
 end
 
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
