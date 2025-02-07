@@ -203,10 +203,10 @@ if not Player:AffectingCombat() then
 			return S.TravelForm:Cast()
 		end
 
-		if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and moonkindps==true and not Player:Buff(S.CatForm) and  not AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+		if IsReady('Moonkin Form') and not AuraUtil.FindAuraByName("Moonkin Form", "player") and moonkindps==true and not AuraUtil.FindAuraByName("Cat Form", "player") and  not AuraUtil.FindAuraByName("Dash", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.MoonkinForm:Cast()
 		end
-		if IsReady('Cat Form') and not AuraUtil.FindAuraByName("Cat Form", "player") and feraldps==true and not Player:Buff(S.CatForm) and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
+		if IsReady('Cat Form') and not AuraUtil.FindAuraByName("Cat Form", "player") and feraldps==true and not AuraUtil.FindAuraByName("Cat Form", "player") and AuraUtil.FindAuraByName("Mark of the Wild", "player") and AuraUtil.FindAuraByName("Omen of Clarity", "player") and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()  then
 			return S.CatForm:Cast()
 		end
 
@@ -219,18 +219,18 @@ if not Player:AffectingCombat() then
 	
 end
 
-if IsReady('Omen of Clarity') and GriphRH.InterruptsON() and (not Player:Buff(S.CatForm) or IsReady('Cat Form')) and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
+if IsReady('Omen of Clarity') and GriphRH.InterruptsON() and (not AuraUtil.FindAuraByName("Cat Form", "player") or IsReady('Cat Form')) and not Player:Buff(S.OmenofClarity) and Player:Mana() > 263 + 120 then
 	return S.OmenofClarity:Cast()
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --feraldps-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if Player:CanAttack(Target) and feraldps==true and (Target:AffectingCombat() or IsCurrentSpell(6603)) and not Target:IsDeadOrGhost() then 
-	if IsReady('Cat Form') and not Player:Buff(S.CatForm)  then
+	if IsReady('Cat Form') and not AuraUtil.FindAuraByName("Cat Form", "player") then
 		return S.CatForm:Cast()
 	end
 
-	if not IsCurrentSpell(6603) and targetrange11() then
+	if not IsCurrentSpell(6603) and TargetinRange(10) then
 		return Item(135274, { 13, 14 }):ID()
 	end
 
@@ -300,7 +300,7 @@ if Player:CanAttack(Target) and feraldps==true and (Target:AffectingCombat() or 
 	-- 	or (Player:ComboPoints() == 5 and Player:BuffRemains(S.SavageRoar) < 24))) then
 	-- 		if IsReady('Savage Roar') then
 	-- 			return S.SavageRoar:Cast()
-	-- 		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 5 and GriphRH.CDsON() then
+	-- 		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and TargetinRange(10) and Player:Energy() < 5 and GriphRH.CDsON() then
 	-- 			return S.Powershift:Cast()
 	-- 		end
 	-- 	end
@@ -308,7 +308,7 @@ if Player:CanAttack(Target) and feraldps==true and (Target:AffectingCombat() or 
 	-- 	if Player:ComboPoints() >= 5 and aoeTTD() > 12 and not Target:Debuff(S.Rip) then
 	-- 		if IsReady('Rip',true) then
 	-- 			return S.Rip:Cast()
-	-- 		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and targetrange11() and Player:Energy() < 10 and GriphRH.CDsON() then
+	-- 		elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and TargetinRange(10) and Player:Energy() < 10 and GriphRH.CDsON() then
 	-- 			return S.Powershift:Cast()
 	-- 		end
 	-- 	end
@@ -325,7 +325,7 @@ if Player:CanAttack(Target) and feraldps==true and (Target:AffectingCombat() or 
 		
 	-- 	if IsReady('Claw',true) then
 	-- 		return S.Claw:Cast()
-	-- 	elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and targetrange11() and Player:Energy() < 20 and GriphRH.CDsON() then
+	-- 	elseif IsReady('Cat Form') and not Player:Buff(S.Clearcasting) and not finisher_condition and TargetinRange(10) and Player:Energy() < 20 and GriphRH.CDsON() then
 	-- 		return S.Powershift:Cast()
 	-- 	end
 		
@@ -343,7 +343,7 @@ if Player:CanAttack(Target) and moonkindps==true and (Target:AffectingCombat() o
 		return S.MoonkinForm:Cast()
 	end
 
-	if not IsCurrentSpell(6603) and targetrange11() then
+	if not IsCurrentSpell(6603) and TargetinRange(10) then
 		return Item(135274, { 13, 14 }):ID()
 	end
 

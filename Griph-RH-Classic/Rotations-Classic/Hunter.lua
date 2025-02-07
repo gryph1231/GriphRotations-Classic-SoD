@@ -18,6 +18,7 @@ GriphRH.Spell[3] = {
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),
 KillShot = Spell(409974),
+
 	ViperSting = Spell(14279),
 	BestialWrath = Spell(19574),
 	RaptorStrike = Spell(14262),
@@ -63,6 +64,7 @@ KillShot = Spell(409974),
 };
 
 local S = GriphRH.Spell[3]
+S.KillShot.TextureSpellID = { 409974 } --flanking strike / leg rune slot G.g. 
 
 if not Item.Hunter then
     Item.Hunter = {}
@@ -441,23 +443,27 @@ end
 	end 
 end
 
-if namechimerashot == "Chimera Shot" and IsSpellInRange('Auto Shot', 'target') == 1  then
+if namechimerashot == "Chimera Shot"  then
 
-if IsReady("Serpent Sting")  and serpentstingdebuffremains < 1.5 then
+	if IsReady("Kill Shot") and Target:HealthPercentage()<20 and  CheckInteractDistance("target",3)  then
+		return S.KillShot:Cast()
+	end
+
+if IsReady("Serpent Sting")  and serpentstingdebuffremains < 1.5 and IsSpellInRange('Auto Shot', 'target') == 1 and aoeTTD()>6 then
 	return S.SerpentSting:Cast() 
 end
 
 if IsReady("Rapid Fire") and HL.CombatTime()<5 then
-	if IsReady("Chimera Shot") then
+	if IsReady("Chimera Shot") and IsSpellInRange('Auto Shot', 'target') == 1 then
 		return S.ChimeraShot:Cast()
 	end
-	if IsReady("Kill Shot") then
+	if IsReady("Kill Shot") and  CheckInteractDistance("target",3)  then
 		return S.KillShot:Cast()
 	end
-	if IsReady("Immolation Trap") then
+	if IsReady("Immolation Trap") and IsSpellInRange('Auto Shot', 'target') == 1 then
 		return S.ImmolationTrap:Cast()
 	end
-	if IsReady("Multi-Shot") then
+	if IsReady("Multi-Shot")  and IsSpellInRange('Auto Shot', 'target') == 1 then
 		return S.Multishot:Cast()
 	end
 
@@ -468,37 +474,62 @@ if IsReady("Berserking") and JomGabbor >=5 then
 end
 
 
-if IsReady("Chimera Shot")  and serpentstingdebuffremains < 6 then
+if IsReady("Chimera Shot")  and serpentstingdebuffremains < 6 and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.ChimeraShot:Cast() 
 end
 
 
-if IsReady("Rapid Fire") and S.ChimeraShot:CooldownRemains()<6 and S.ChimeraShot:CooldownRemains()>4 then
+if IsReady("Rapid Fire") and S.ChimeraShot:CooldownRemains()<6 and S.ChimeraShot:CooldownRemains()>4 and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.RapidFire:Cast() 
 end
-if IsReady("Kill Shot") and AuraUtil.FindAuraByName("Rapid Fire", "player") then
+if IsReady("Kill Shot") and AuraUtil.FindAuraByName("Rapid Fire", "player")  and  CheckInteractDistance("target",3) then
 	return S.KillShot:Cast() 
 end
 
-if IsReady("Locked In") and S.ImmolationTrap:CooldownRemains()>5 and S.Multishot:CooldownRemains()>8 and IsReady("ChimeraShot") then
+if IsReady("Locked In") and S.ImmolationTrap:CooldownRemains()>5 and S.Multishot:CooldownRemains()>8 and IsReady("ChimeraShot") and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.LockedIn:Cast() 
 end
-if IsReady("Chimera Shot") then
+if IsReady("Chimera Shot") and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.ChimeraShot:Cast() 
 end
-if IsReady("Kill Shot") then
+if IsReady("Kill Shot") and  CheckInteractDistance("target",3) then
 	return S.KillShot:Cast() 
 end
-if IsReady("Immolation Trap") then
+if IsReady("Immolation Trap") and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.ImmolationTrap:Cast() 
 end
-if IsReady("Multi-Shot") then
+if IsReady("Multi-Shot") and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.Multishot:Cast()
 end
-if IsReady("Arcane Shot") then
+if IsReady("Arcane Shot") and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.ArcaneShot:Cast()
 end
 
+-- in melee
+
+if  IsReady("Flanking Strike") and flankingstrikestacks<1 and not AuraUtil.FindAuraByName("Raptor Fury", "player") and CheckInteractDistance("target",3) then
+	return S.FlankingStrike:Cast()
+end 
+
+
+if  IsReady("Flanking Strike") and flankingstrikestacks>=1 and flankingstrikeremains<2 and CheckInteractDistance("target",3) then
+	return S.FlankingStrike:Cast()
+end 
+
+if  IsReady("Raptor Strike") and  CheckInteractDistance("target",3) then
+	return S.RaptorStrike:Cast()
+end 
+
+if  IsReady("Mongoose Bite") and  CheckInteractDistance("target",3) then
+	return S.MongooseBite:Cast()
+end 
+if  IsReady("Flanking Strike") and  CheckInteractDistance("target",3) then
+	return S.FlankingStrike:Cast()
+end 
+
+if  IsReady("Wing Clip") and  CheckInteractDistance("target",3) then
+	return S.WingClip:Cast()
+end 
 
 
 end
