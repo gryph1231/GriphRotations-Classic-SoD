@@ -66,6 +66,8 @@ local I = Item.Warrior.Arms;
 
 
 local function APL()
+
+
     inRange5 = RangeCount(5)
     targetRange5 = TargetinRange(5)
     targetRange25 = TargetinRange(25)
@@ -90,7 +92,6 @@ local function APL()
     or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
         return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
     end
-    -- print(namegladiator)
 
     if AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL") then
         renddebuff = select(6,AuraUtil.FindAuraByName("Rend","target","PLAYER|HARMFUL")) - GetTime()
@@ -246,7 +247,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
     if stoprotation == false then 
 
-        if namegladiator ~= "Gladiator Stance" then
+        if namegladiator == "Gladiator Stance" then
 
         if IsReady("Shield Bash") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
             return S.ShieldBash:Cast()
@@ -291,6 +292,11 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
        if  IsReady("Battle Stance") and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Tactician","player")  and AuraUtil.FindAuraByName("Enrage (Fresh Meat)","player")  then
         return S.BattleStance:Cast()
     end  
+
+
+    if IsReady("Cleave") and RangeCount(10) > 1 and CheckInteractDistance("target", 3) and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target", 3) and Player:Rage()>=30 then
+        return S.Cleave:Cast()
+    end	
 
     if  IsReady("Heroic Strike") and CheckInteractDistance("target", 3) and not IsCurrentSpell(SpellRank('Heroic Strike')) and Player:Rage()>=30  then
         return S.HeroicStrike:Cast()
@@ -477,7 +483,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
         return S.BattleStance:Cast()
     end
 
-    if (GetShapeshiftFormID() == 17 or GetShapeshiftFormID() == 24)  and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and Target:Exists() and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and targetRange25 then
+    if (GetShapeshiftFormID() == 17 or GetShapeshiftFormID() == 24)  and IsReady('Charge') and not IsCurrentSpell(SpellRank('Charge')) and Target:Exists() and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and targetRange25 and not TargetinRange(5) then
         return S.Charge:Cast()
     end
 
