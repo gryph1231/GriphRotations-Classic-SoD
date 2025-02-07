@@ -247,7 +247,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
     if stoprotation == false then 
 
-        if namegladiator == "Gladiator Stance" then
+        -- if namegladiator == "Gladiator Stance" then
 
         if IsReady("Shield Bash") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
             return S.ShieldBash:Cast()
@@ -318,38 +318,38 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.QuickStrike:Cast()
     end  
 
-    -- if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
-    --     return S.BerserkerRage:Cast()
-    -- end
+    if IsReady("Berserker Rage") and S.Bloodrage:TimeSinceLastCast()>5 and instanceTypepvp ~= 'pvp' and not Target:IsAPlayer() and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Bloodrage","player") then
+        return S.BerserkerRage:Cast()
+    end
 
-    -- if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
-    --     return S.Bloodrage:Cast()
-    -- end
+    if IsReady("Bloodrage") and S.BerserkerRage:TimeSinceLastCast()>5 and CheckInteractDistance("target", 3) and not AuraUtil.FindAuraByName("Flagellation","player") and not AuraUtil.FindAuraByName("Berserker Rage","player") then
+        return S.Bloodrage:Cast()
+    end
 
-    -- if IsReady('Whirlwind') and RangeCount(10) > 1 and GriphRH.AoEON() and CheckInteractDistance("target", 3) then
-    --     return S.Whirlwind:Cast()
-    -- end
+    if IsReady('Whirlwind') and RangeCount(10) > 1 and GriphRH.AoEON() and CheckInteractDistance("target", 3) then
+        return S.Whirlwind:Cast()
+    end
 
-    -- if IsReady("Overpower") and CheckInteractDistance("target", 3) then
-    --     return S.Overpower:Cast()
-    -- end
+    if IsReady("Overpower") and CheckInteractDistance("target", 3) then
+        return S.Overpower:Cast()
+    end
     
-    -- if IsReady("Sunder Armor") and CheckInteractDistance("target", 3) and Target:TimeToDie()>30 and (sunderarmorstack<5 or sunderarmorremains<2) then
-    --     return S.SunderArmor:Cast()
-    -- end	
+    if IsReady("Sunder Armor") and CheckInteractDistance("target", 3) and aoeTTD()>30 and (sunderarmorstack<5 or sunderarmorremains<2) then
+        return S.SunderArmor:Cast()
+    end	
 
 
-    -- if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target", 3) then
-    --     return S.Execute:Cast()
-    -- end	
+    if IsReady("Execute") and Target:HealthPercentage()<=20 and CheckInteractDistance("target", 3) then
+        return S.Execute:Cast()
+    end	
 
-    -- if IsReady("Cleave") and RangeCount(10) > 1 and Target:HealthPercentage()<=20 and CheckInteractDistance("target", 3) and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target", 3) then
-    --     return S.Cleave:Cast()
-    -- end	
+    if IsReady("Cleave") and RangeCount(10) > 1 and Target:HealthPercentage()<=20 and CheckInteractDistance("target", 3) and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target", 3) then
+        return S.Cleave:Cast()
+    end	
 
-    -- if IsReady("Heroic Strike") and RangeCount(10) == 1 and Target:HealthPercentage()<=20 and CheckInteractDistance("target", 3) and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
-    --     return S.HeroicStrike:Cast()
-    -- end	
+    if IsReady("Heroic Strike") and RangeCount(10) == 1 and Target:HealthPercentage()<=20 and CheckInteractDistance("target", 3) and not IsCurrentSpell(SpellRank('Heroic Strike'))  then
+        return S.HeroicStrike:Cast()
+    end	
 
 
 
@@ -372,21 +372,21 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
 
     
-    -- if IsReady('Bloodthirst') and CheckInteractDistance("target", 3) then
-    --     return S.Bloodthirst:Cast()
-    -- end
+    if IsReady('Bloodthirst') and CheckInteractDistance("target", 3) then
+        return S.Bloodthirst:Cast()
+    end
     
-    -- if IsReady('Slam')  and CheckInteractDistance("target", 3) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
-    --     return S.Slam:Cast()
-    -- end
+    if IsReady('Slam')  and CheckInteractDistance("target", 3) and (AuraUtil.FindAuraByName("Blood Surge", "player") or nameprecisetiming == 'Precise Timing') then
+        return S.Slam:Cast()
+    end
     
-    -- if IsReady('Raging Blow')  and CheckInteractDistance("target", 3) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
-    --     return S.chestrune:Cast()
-    -- end
+    if IsReady('Raging Blow')  and CheckInteractDistance("target", 3) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
+        return S.chestrune:Cast()
+    end
     
-    -- if IsReady('Whirlwind')  and CheckInteractDistance("target", 3) and Player:Rage()>50 then
-    --     return S.Whirlwind:Cast()
-    -- end
+    if IsReady('Whirlwind')  and CheckInteractDistance("target", 3) and Player:Rage()>50 then
+        return S.Whirlwind:Cast()
+    end
 
     if IsReady("Battle Shout") and (not AuraUtil.FindAuraByName("Battle Shout","player") or battleshoutbuffremains<3) then
         return S.BattleShout:Cast()
@@ -397,9 +397,9 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
 
-    -- if IsReady('Quick Strike') and CbRstack>4 and CheckInteractDistance("target", 3) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
-    --     return S.handrune:Cast()
-    -- end
+    if IsReady('Quick Strike') and CbRstack>4 and CheckInteractDistance("target", 3) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
+        return S.handrune:Cast()
+    end
     
     if IsReady('Cleave')  and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target", 3) and Player:Rage() >= 80 and RangeCount(10) > 1 and GriphRH.AoEON() then
         return S.Cleave:Cast()
@@ -416,7 +416,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Hamstring:Cast()
     end
 
-end
+-- end
 
 
 -- leveling
@@ -438,7 +438,7 @@ if namegladiator ~= "Gladiator Stance" then
         return S.Execute:Cast()
     end  
 
-    if  IsReady("Rend") and CheckInteractDistance("target", 3) and renddebuff == 0 and Target:TimeToDie()>15 and HL.CombatTime()>3 then
+    if  IsReady("Rend") and CheckInteractDistance("target", 3) and renddebuff == 0 and aoeTTD()>15 and HL.CombatTime()>3 then
         return S.Rend:Cast()
     end  
 
