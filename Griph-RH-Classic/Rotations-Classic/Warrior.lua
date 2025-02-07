@@ -127,13 +127,14 @@ else
 end
 
 
-if CheckInteractDistance("target", 3) and ((Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true or S.SweepingStrikes:CooldownRemains()<2 and S.SweepingStrikes:IsAvailable() and RangeCount(10)>1 and GriphRH.CDsON() and GriphRH.AoEON() and not AuraUtil.FindAuraByName("Disarm","player","PLAYER|HARMFUL")) then
+if CheckInteractDistance("target", 3) and (Target:HealthPercentage()>20 or Player:Rage()<30) and checkOverpower() == true then
     berserkerstance = false
     battlestance = true
 else
     berserkerstance = false
     battlestance = true
 end
+
 local usewwST = (S.MortalStrike:IsAvailable() and S.MortalStrike:CooldownRemains() >= 1.5 or not S.MortalStrike:IsAvailable() or S.MortalStrike2:IsAvailable() and S.MortalStrike2:CooldownRemains() >= 1.5 or not S.MortalStrike2:IsAvailable()) 
 
 
@@ -245,6 +246,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 
     if stoprotation == false then 
 
+        if namegladiator ~= "Gladiator Stance" then
 
         if IsReady("Shield Bash") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
             return S.ShieldBash:Cast()
@@ -408,7 +410,48 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
         return S.Hamstring:Cast()
     end
 
+end
 
+
+-- leveling
+
+if namegladiator ~= "Gladiator Stance" then
+    if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and battlestance == true then
+        return S.BattleStance:Cast()
+    end
+    if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and berserkerstance == true  then
+        return S.BerserkerStance:Cast()
+    end
+
+    if  IsReady("Overpower") and CheckInteractDistance("target", 3) then
+        return S.Overpower:Cast()
+    end  
+
+
+    if  IsReady("Execute") and CheckInteractDistance("target", 3) then
+        return S.Execute:Cast()
+    end  
+
+    if  IsReady("Rend") and CheckInteractDistance("target", 3) and renddebuff == 0 and Target:TimeToDie()>10 and HL.CombatTime()>3 then
+        return S.Rend:Cast()
+    end  
+
+    if IsReady('Cleave')  and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target", 3) and Player:Rage() >= 35 and RangeCount(10) > 1 and GriphRH.AoEON() then
+        return S.Cleave:Cast()
+    end
+    
+    if IsReady('Heroic Strike') and not IsCurrentSpell(SpellRank('Heroic Strike')) and CheckInteractDistance("target", 3) and Player:Rage() >= 35 and (RangeCount(10) == 1 or not GriphRH.AoEON()) then
+        return S.HeroicStrike:Cast()
+    end
+
+    if  IsReady("Quick Strike") and CheckInteractDistance("target", 3) and Player:Rage() >= 35 then
+        return S.QuickStrike:Cast()
+    end  
+    if  IsReady("Slam") and CheckInteractDistance("target", 3)  then
+        return S.Slam:Cast()
+    end  
+
+end
 
 
 

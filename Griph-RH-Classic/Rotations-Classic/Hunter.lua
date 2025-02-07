@@ -17,7 +17,7 @@ GriphRH.Spell[3] = {
 	AspectoftheFalcon = Spell(469145),
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),
-
+KillShot = Spell(409974),
 	ViperSting = Spell(14279),
 	BestialWrath = Spell(19574),
 	RaptorStrike = Spell(14262),
@@ -28,6 +28,7 @@ GriphRH.Spell[3] = {
 	HeartoftheLion = Spell(409580),
 	HeartoftheLionz = Spell(20190), --aspect of the wild
 	AutoShotz = Spell(19263), --deterrence
+	LockedIn = Spell(468388),
 	AutoAttack = Spell(6603),
 	MendPet = Spell(3662),
 	MendPetz = Spell(20549), --war stomp
@@ -216,6 +217,11 @@ local function IsReady(spell,range_check,aoe_check)
 	end
 end
 
+
+
+
+
+
 local function APL()
 CleaveCount()
 IsReady()
@@ -223,13 +229,26 @@ ManaPct()
 PetActive()
 PetHapiness()
 StingTime()
+local namechimerashot = GetSpellInfo('Chimera Shot' )
 
+if AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") then
+	serpentstingdebuffremains = select(6,AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL")) - GetTime()
+	 else
+		serpentstingdebuffremains = 0 
+	end
 
 if AuraUtil.FindAuraByName("Explosive Trap","player","PLAYER") then
     explosivetrapbuffremains = select(6,AuraUtil.FindAuraByName("Explosive Trap","player","PLAYER"))- GetTime()
 else
     explosivetrapbuffremains = 0
 end
+
+if AuraUtil.FindAuraByName("Jom Gabbor","player") then
+    JomGabbor =select(3,AuraUtil.FindAuraByName("Jom Gabbor","player"))
+else
+    JomGabbor = 0
+end
+
 
 -- if currentBottomRightSpellID then 
 -- 	return Spell(tonumber(currentBottomRightSpellID)):Cast() 
@@ -379,6 +398,7 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 	if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
 		return Item(135274, { 13, 14 }):ID()
 	end
+if namechimerashot ~= "Chimera Shot" then 
 
 
 if GriphRH.CDsON() and IsReady("Rapid Fire") and flankingstrikestacks>=2 and CheckInteractDistance("target",3) then
@@ -419,6 +439,70 @@ end
 	if IsReady("Immolation Trap") and CheckInteractDistance("target",3) and S.RaptorStrike:CooldownRemains()>=1.5 and S.MongooseBite:CooldownRemains()>1.5 then
 		return S.ImmolationTrap:Cast()
 	end 
+end
+
+if namechimerashot == "Chimera Shot" and IsSpellInRange('Auto Shot', 'target') == 1  then
+
+if IsReady("Serpent Sting")  and serpentstingdebuffremains < 1.5 then
+	return S.SerpentSting:Cast() 
+end
+
+if IsReady("Rapid Fire") and HL.CombatTime()<5 then
+	if IsReady("Chimera Shot") then
+		return S.ChimeraShot:Cast()
+	end
+	if IsReady("Kill Shot") then
+		return S.KillShot:Cast()
+	end
+	if IsReady("Immolation Trap") then
+		return S.ImmolationTrap:Cast()
+	end
+	if IsReady("Multi-Shot") then
+		return S.Multishot:Cast()
+	end
+
+
+end
+if IsReady("Berserking") and JomGabbor >=5 then
+	return S.Berserking:Cast()
+end
+
+
+if IsReady("Chimera Shot")  and serpentstingdebuffremains < 6 then
+	return S.ChimeraShot:Cast() 
+end
+
+
+if IsReady("Rapid Fire") and S.ChimeraShot:CooldownRemains()<6 and S.ChimeraShot:CooldownRemains()>4 then
+	return S.RapidFire:Cast() 
+end
+if IsReady("Kill Shot") and AuraUtil.FindAuraByName("Rapid Fire", "player") then
+	return S.KillShot:Cast() 
+end
+
+if IsReady("Locked In") and S.ImmolationTrap:CooldownRemains()>5 and S.Multishot:CooldownRemains()>8 and IsReady("ChimeraShot") then
+	return S.LockedIn:Cast() 
+end
+if IsReady("Chimera Shot") then
+	return S.ChimeraShot:Cast() 
+end
+if IsReady("Kill Shot") then
+	return S.KillShot:Cast() 
+end
+if IsReady("Immolation Trap") then
+	return S.ImmolationTrap:Cast() 
+end
+if IsReady("Multi-Shot") then
+	return S.Multishot:Cast()
+end
+if IsReady("Arcane Shot") then
+	return S.ArcaneShot:Cast()
+end
+
+
+
+end
+
 
 	
 
