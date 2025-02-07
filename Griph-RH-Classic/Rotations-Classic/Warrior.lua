@@ -45,11 +45,7 @@ GriphRH.Spell[1] = {
 	ThunderClap = Spell(11581),
     Pummel =  Spell(6552),
     VictoryRush = Spell(402927),
-    chestrune = Spell(20589),--GGL escape artist - BP macro /cast chest rune ability -- used for raging blow
-    commandingshout = Spell(20549), --GGL war stomp - BP keybind is /cast commanding shout
-    handrune = Spell(20580),--GGL shadowmeld - BP keybind /cast hands rune ability -- used for quick strike, victory rush (not in profile yet)
-    feetrune = Spell(7744), --GGL will of the forsaken - BP keybind /cast feet rune ability -- used for intervene (not in profile yet)/rallying cry/engraged regeneration / gladiator stance(not in profile yet)
-    wristrune = Spell(20594), --GGL stone form -- BP /cast wrist rune ability
+
 };
 
 local S = GriphRH.Spell[1]
@@ -381,7 +377,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end
     
     if IsReady('Raging Blow')  and CheckInteractDistance("target", 3) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable())  then
-        return S.chestrune:Cast()
+        return S.RagingBlow:Cast()
     end
     
     if IsReady('Whirlwind')  and CheckInteractDistance("target", 3) and Player:Rage()>50 then
@@ -393,12 +389,12 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
     end	
 
     if IsReady("Commanding Shout") and (not AuraUtil.FindAuraByName("Commanding Shout","player") or commandingshoutbuffremains<3) and not AuraUtil.FindAuraByName("Blood Pact","player") then
-        return S.commandingshout:Cast()
+        return S.CommandingShout:Cast()
     end	
 
 
     if IsReady('Quick Strike') and CbRstack>4 and CheckInteractDistance("target", 3) and (S.Bloodthirst:IsAvailable() and S.Bloodthirst:CooldownRemains() >= 1.5 or not S.Bloodthirst:IsAvailable()) and (S.Whirlwind:IsAvailable() and S.Whirlwind:CooldownRemains() >= 1.5 or not S.Whirlwind:IsAvailable()) and Player:Rage() >= 50 then
-        return S.handrune:Cast()
+        return S.QuickStrike:Cast()
     end
     
     if IsReady('Cleave')  and not IsCurrentSpell(SpellRank('Cleave')) and CheckInteractDistance("target", 3) and Player:Rage() >= 80 and RangeCount(10) > 1 and GriphRH.AoEON() then
@@ -476,7 +472,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 	end
 
     if GetShapeshiftFormID() ~= 24 and IsReady("Gladiator Stance")  then
-        return S.feetrune:Cast()
+        return S.GladiatorStance:Cast()
     end
 
     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and RangeCount(10)==0  and glad == false then
