@@ -438,7 +438,7 @@ if namegladiator ~= "Gladiator Stance" then
         return S.Execute:Cast()
     end  
 
-    if  IsReady("Rend") and CheckInteractDistance("target", 3) and renddebuff == 0 and Target:TimeToDie()>10 and HL.CombatTime()>3 then
+    if  IsReady("Rend") and CheckInteractDistance("target", 3) and renddebuff == 0 and Target:TimeToDie()>15 and HL.CombatTime()>3 then
         return S.Rend:Cast()
     end  
 
