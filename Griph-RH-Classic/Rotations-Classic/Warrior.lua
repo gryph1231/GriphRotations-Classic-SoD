@@ -54,7 +54,7 @@ GriphRH.Spell[1] = {
     TasteforBlood = Spell(426969),
 	Bloodrage = Spell(2687),
 	BattleShout = Spell(6673),
-    MeatHook = Spell(403228),
+    Meathook = Spell(403228),
     Shockwave = Spell(440488),
     DeathWish = Spell(12328),
     CommandingShout = Spell(403215),
@@ -78,6 +78,9 @@ autoattack = Item(135274, { 13, 14 }),
 
 };
 local I = Item.Warrior.Arms;
+S.Meathook.TextureSpellID = { 20589 }-- escape artist
+S.ShieldWall.TextureSpellID = { 20580 }-- shadowmeld
+S.ThunderClap.TextureSpellID = { 20549 }-- warstomp
 
 
 
@@ -191,6 +194,7 @@ else
     hamstringTarget = true
 end
 if AuraUtil.FindAuraByName("Divine Protection","target") 
+or AuraUtil.FindAuraByName("Intimidating Shout","target","PLAYER|HARMFUL")
 or AuraUtil.FindAuraByName("Ice Block","target") 
 or AuraUtil.FindAuraByName("Blessing of Protection","player") 
 or AuraUtil.FindAuraByName("Blessing of Protection","target") 
@@ -336,7 +340,7 @@ if GriphRH.QueuedSpell():ID() == S.Retaliation:ID() and S.Retaliation:CooldownRe
     GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
 end
 
-if GriphRH.QueuedSpell():ID() == S.MeatHook:ID() and S.MeatHook:CooldownRemains()>2 then 
+if GriphRH.QueuedSpell():ID() == S.Meathook:ID() and S.Meathook:CooldownRemains()>2 then 
     GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
 end
 
@@ -355,7 +359,7 @@ end
 
 
 
-if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and IsReady("Intimidating Shout") then 
+if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and (IsReady("Intimidating Shout") or Player:Rage()>15) then 
     return GriphRH.QueuedSpell():Cast()
 end
 if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and IsReady("Intercept") then 
@@ -381,7 +385,7 @@ if GriphRH.QueuedSpell():ID() == S.Retaliation:ID() and IsReady("Retaliation") t
     return GriphRH.QueuedSpell():Cast()
 end
 
-if GriphRH.QueuedSpell():ID() == S.MeatHook:ID() and IsReady("Meat Hook") then 
+if GriphRH.QueuedSpell():ID() == S.Meathook:ID() and IsReady("Meathook") then 
     return GriphRH.QueuedSpell():Cast()
 end
 
@@ -422,6 +426,7 @@ if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and
 if IsReady("Enraged Regeneration") and Player:HealthPercentage()<70 then
     return S.EnragedRegeneration:Cast()
 end
+
 
     if not IsCurrentSpell(6603) and CheckInteractDistance("target", 3) then
         return I.autoattack:ID()
