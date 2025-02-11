@@ -143,23 +143,27 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 end
 
-    
+-- print("5:",IsItemInRange(8149,"target")) --voodoo charm
+-- print("10 original:",IsItemInRange(17626,"target")) --test
+-- print("15:",IsItemInRange(4559,"target")) --chus quest item
+-- print("20:",IsItemInRange(1191,"target")) --chus quest item
+-- print("25:",IsItemInRange(13289,"target")) --chus quest item
+-- print("30:",IsItemInRange(835,"target")) --chus quest item
+
 function RangeCount(range,spell_range_check)
 	local range_counter = 0
 		
 		if range and not spell_range_check then
 			if range == 5 then
 				input = 8149
-			elseif range == 8 then
-				input = 34368
 			elseif range == 10 then
 				input = 17626
 			elseif range == 15 then
-				input = 33069
+				input = 4559
 			elseif range == 20 then
-				input = 10645
+				input = 1191
 			elseif range == 25 then
-				input = 10645
+				input = 13289
 			elseif range == 30 then
 				input = 835
 			else
@@ -210,14 +214,12 @@ function TargetinRange(range,spell_range_check)
     if range and not spell_range_check then
         if range == 5 then
             input = 8149
-        elseif range == 8 then
-            input = 34368
         elseif range == 10 then
             input = 17626
         elseif range == 15 then
-            input = 33069
+            input = 4559
         elseif range == 20 then
-            input = 10645
+            input = 1191
         elseif range == 25 then
             input = 13289
         elseif range == 30 then
@@ -241,6 +243,35 @@ function TargetinRange(range,spell_range_check)
         return false
     end
 end
+
+
+
+
+ function IsPlayerFeared()
+    for i = 1, 10 do  -- Check all buffs and debuffs on the player
+        local name, _, _, _, _, _, _, _, _, spellId = UnitDebuff("player", i)
+        if not name then break end  -- Stop if there are no more debuffs
+        
+        -- List of common Fear spell IDs
+        local fearSpells = {
+            [5782] = true,  -- Fear (Warlock)
+            [8122] = true,  -- Psychic Scream (Priest)
+            [1513] = true,  -- Scare Beast (Hunter)
+            [6358] = true,  -- Seduction (Succubus)
+            [5246] = true,  -- Intimidating Shout (Warrior)
+            [10326] = true, -- Turn Evil (Paladin)
+            [113792] = true -- Psychic Terror (Psyfiend)
+        }
+
+        if fearSpells[spellId] then
+            return true
+        end
+    end
+    return false
+end
+
+
+
 
 
 

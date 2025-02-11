@@ -39,16 +39,17 @@ GriphRH.Spell[7] = {
     StoneclawTotem = Spell(6392),
     SearingTotem = Spell(6365),
     LavaLash = Spell(408507),
-    handrune = Spell(20554),--berserking
 	Drink = Spell(27089),
 	TotemofWrathBuff = Spell(30708),
 	TotemofWrath = Spell(30706),
 	Default = Spell(1),
 	FireNovaTotem = Spell(8499),
     MagmaTotem = Spell(10585),
+    FeralSpirit = Spell(10408), -- stoneskin totem
     WindfuryWeapon = Spell(8235),
     WindfuryWeaponTotem = Spell(8512),
     Stormstrike = Spell(17364),
+    MoltenBlast = Spell(425339),
     ChainHeal = Spell(1064),
     -- MoltenBlast = Spell(425339),
     shamanisticrage = Spell(20572), --blood fury
@@ -462,7 +463,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and TargetinRange(30)  then
             return S.shamanisticrage:Cast()
         end
+    
 
+        if IsReady('Feral Spirit') and GriphRH.CDsON() and CheckInteractDistance("target", 3) then
+            return S.FeralSpirit:Cast()
+        end
 
         if IsReady('Lesser Healing Wave') and Player:HealthPercentage()<55 and Player:BuffStack(S.MaelstromWeapon)>=5 then
             return S.LesserHealingWave:Cast()
@@ -488,7 +493,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
    
 
         if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and TargetinRange(30)  then
-            return S.handrune:Cast()
+            return S.LavaBurst:Cast()
         end
 
         if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and TargetinRange(30) then
@@ -500,11 +505,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return I.autoattack:ID()
         end
         if IsReady('Molten Blast') and TargetinRange(10) then
-            return S.handrune:Cast()
+            return S.MoltenBlast:Cast()
         end
    
         if IsReady('Lava Lash') and TargetinRange(10) then
-            return S.handrune:Cast()
+            return S.LavaLash:Cast()
         end
 
 
@@ -529,7 +534,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.earthshock1:Cast()
         end
         
-        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Lightning Shield') and not Target:IsAPlayer() and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
 
@@ -621,7 +626,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.earthshock1:Cast()
             end
                 
-            if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and nameovercharged == 'Overcharged' then
+            if IsReady('Lightning Shield') and not Target:IsAPlayer() and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and nameovercharged == 'Overcharged' then
                 return S.LightningShield:Cast()
             end
 
@@ -629,11 +634,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return I.autoattack:ID()
             end
             if IsReady('Molten Blast') and TargetinRange(10) then
-                return S.handrune:Cast()
+                return S.MoltenBlast:Cast()
             end
        
             if IsReady('Lava Lash') and TargetinRange(10) then
-                return S.handrune:Cast()
+                return S.LavaLash:Cast()
             end
             if not Target:IsAPlayer() and Player:ManaPercentage()>85 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount(10)>3 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
                 return S.MagmaTotem:Cast()
@@ -649,7 +654,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             end
     
             if IsReady('Lava Burst') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and TargetinRange(30)  then
-                return S.handrune:Cast()
+                return S.LavaBurst:Cast()
             end
     
             if IsReady('Chain Lightning') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and TargetinRange(30) then
@@ -675,7 +680,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.earthshock1:Cast()
         end
                     
-        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Lightning Shield') and not Target:IsAPlayer()  and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
 
@@ -689,7 +694,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
 
                 
-        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Lightning Shield') and not Target:IsAPlayer()  and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
 
@@ -756,7 +761,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
         if IsReady('Lava Burst') and TargetinRange(30) then
-            return S.handrune:Cast()
+            return S.LavaBurst:Cast()
         end
 
         if IsReady('Chain Lightning') and TargetinRange(30) then
@@ -769,7 +774,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Earth Shock(rank 1)') and Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL")) and IsReady('Earth Shock(rank 1)') and TargetinRange(25) then
             return S.earthshock1:Cast()
         end
-       if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+       if IsReady('Lightning Shield') and not Target:IsAPlayer() and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
         
@@ -849,12 +854,12 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             end
 
             if IsReady('Lava Lash') and TargetinRange(10)  then
-                return S.handrune:Cast()
+                return S.LavaLash:Cast()
             end
 
 
             if IsReady('Lava Burst') then
-                return S.handrune:Cast()
+                return S.LavaBurst:Cast()
             end
 
             if IsReady('Chain Lightning') then
@@ -866,7 +871,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             -- end
         end
 
-        if IsReady('Lightning Shield') and S.LightningShield:TimeSinceLastCast()>4 and not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Lightning Shield", "player") and Player:IsMoving() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Lightning Shield') and not Target:IsAPlayer() and S.LightningShield:TimeSinceLastCast()>4 and not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Lightning Shield", "player") and Player:IsMoving() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
         end
     
