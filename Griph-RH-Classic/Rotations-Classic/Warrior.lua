@@ -268,7 +268,7 @@ else
 end
 
 
-if (checkOverpower()==true or Player:BuffRemains(S.TasteforBlood) > 2) and S.Overpower:CooldownRemains()<1.5 then
+if (checkOverpowerTime()>1.5 or Player:BuffRemains(S.TasteforBlood) > 2) and S.Overpower:CooldownRemains()<2 then
     canoverpower = true
 else
     canoverpower = false
@@ -441,18 +441,6 @@ end
     end	
 
 
-    -- if GetShapeshiftFormID() ~= 24 and IsReady("Gladiator Stance") and namebattleforecast == "Battle Forecast" and battleforecastremains <=3 then
-    --     return S.GladiatorStance:Cast()
-    -- end
-
-
-    -- if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and namebattleforecast == "Battle Forecast" and battleforecastremains <=3 and namegladiator ~="Glaidator Stance" then
-    --     return S.BattleStance:Cast()
-    -- end
-    -- if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance") and nameechoesofberserkerstance == "Echoes of Berserker Stance" and echoesofberserkerstanceremains <=3  then
-    --     return S.BerserkerStance:Cast()
-    -- end
-
 
     if stoprotation == false then 
         if IsReady("Shield Bash") and spellwidgetfort~='Widget Fortress' and (Target:IsChanneling() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and CheckInteractDistance("target", 3) and GriphRH.InterruptsON() then
@@ -620,7 +608,7 @@ end
 end
 
 
---AOE rotation
+--fury rotation
 
 
 
@@ -628,7 +616,10 @@ if fury then
     
     if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") 
     and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>1.5
-     and S.BattleStance:TimeSinceLastCast()>1.5 and not canoverpower and not retaliation and (S.TacticalMastery:IsAvailable() and Player:Rage()<=25 or Player:Rage()<=5) then
+     and S.BattleStance:TimeSinceLastCast()>1.5 and not canoverpower and not retaliation 
+     and (S.TacticalMastery:IsAvailable() and Player:Rage()<=25 
+     or Player:Rage()<=10 and S.Bloodthirst:CooldownRemains()>2 
+     or S.Whirlwind:CooldownRemains()<2 and GriphRH.AoEON() and RangeCount(10)>1 ) then
        return S.BerserkerStance:Cast()
     end
 
@@ -669,17 +660,19 @@ if fury then
         return S.DeathWish:Cast()
     end	
 
-    if IsReady("Whirlwind")  and TargetinRange(5)  and RangeCount(10)>2 and GriphRH.AoEON() then
+    if IsReady("Whirlwind")  and TargetinRange(5)  and RangeCount(10)>1 and GriphRH.AoEON() then
         return S.Whirlwind:Cast()
+    end	
+
+
+    if IsReady("Overpower")  and CheckInteractDistance("target", 3) and checkOverpowerTime()<2 then
+        return S.Overpower:Cast()
     end	
 
     if IsReady("Execute")  and CheckInteractDistance("target", 3) and (Target:HealthPercentage()<=20 and (Player:Rage()>=40 or STttd<3) or AuraUtil.FindAuraByName("Sudden Death","player") )  then
         return S.Execute:Cast()
     end	
 
-    if IsReady("Whirlwind")  and TargetinRange(5)  and RangeCount(10)>1 and GriphRH.AoEON() then
-        return S.Whirlwind:Cast()
-    end	
    
     if IsReady("Slam") and CheckInteractDistance("target", 3) 
     and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge","player")  then
@@ -724,8 +717,10 @@ if fury then
 
 
     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and S.Bloodthirst:CooldownRemains()>2
-and CheckInteractDistance("target", 3) and (S.TacticalMastery:IsAvailable() and Player:Rage()<=25 or Player:Rage()<=5)
-and (canoverpower or retaliation)  and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5 and Player:Rage()<=25
+and CheckInteractDistance("target", 3) 
+and (S.TacticalMastery:IsAvailable() and Player:Rage()<=25 or Player:Rage()<=5)
+and (canoverpower or retaliation)  and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5 
+
 then
     return S.BattleStance:Cast()
 end

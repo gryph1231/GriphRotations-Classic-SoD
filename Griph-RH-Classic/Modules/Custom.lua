@@ -879,35 +879,45 @@ function CanTargetBePurged()
 end
 
 
--- This flag tracks the success or dodge state of Overpower
-local canoverpower = false
+-- This flag tracks the remaining time to use Overpower
+local overpowerTimeRemaining = 0
+local overpowerDuration = 5  -- Overpower must be used within 5 seconds of a dodge
 
-local function OnEvent(self, event, ...)
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
-
-        -- Check if Overpower was successfully cast
-        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player") or GetShapeshiftFormID() == 17 and not IsReady('Overpower') then
-            canoverpower = false
-        end
-
-        -- Check if the target dodged an attack
-        if eventType == "SPELL_MISSED" and missType == "DODGE" and sourceName == UnitName("player") then
-            canoverpower = true
+local function OnUpdate(self, elapsed)
+    if overpowerTimeRemaining > 0 then
+        overpowerTimeRemaining = overpowerTimeRemaining - elapsed
+        if overpowerTimeRemaining <= 0 then
+            overpowerTimeRemaining = 0
         end
     end
 end
 
--- Function to call to check the status of Overpower
-function checkOverpower()
-    return canoverpower
+local function OnEvent(self, event, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, missType, isOffHand = CombatLogGetCurrentEventInfo()
+
+        -- Check if Overpower was successfully cast
+        if eventType == "SPELL_CAST_SUCCESS" and sourceName == UnitName("player") and spellName == "Overpower" then
+            overpowerTimeRemaining = 0  -- Reset timer on successful use
+        end
+
+        -- Check if the target dodged an attack (including main-hand and off-hand melee swings)
+        if (eventType == "SWING_MISSED" or eventType == "SPELL_MISSED") and missType == "DODGE" and sourceName == UnitName("player") then
+            overpowerTimeRemaining = overpowerDuration  -- Start the timer
+        end
+    end
+end
+
+-- Function to check remaining time for Overpower
+function checkOverpowerTime()
+    return overpowerTimeRemaining
 end
 
 -- Setup the event frame and register for combat log events
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 eventFrame:SetScript("OnEvent", OnEvent)
-
+eventFrame:SetScript("OnUpdate", OnUpdate)  -- Update the timer every frame
 
 
   
