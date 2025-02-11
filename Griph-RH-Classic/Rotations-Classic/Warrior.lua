@@ -249,7 +249,7 @@ else
 end
 
 
-if (checkOverpower()==true or Player:Buff(S.TasteforBlood) ) and S.Overpower:CooldownRemains()<1.5 then
+if (checkOverpower()==true or Player:BuffRemains(S.TasteforBlood) > 2) and S.Overpower:CooldownRemains()<1.5 then
     canoverpower = true
 else
     canoverpower = false
@@ -378,21 +378,28 @@ if IsReady("Sweeping Strikes") and CheckInteractDistance("target", 3)  then
 end	
 
 if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") 
-and (S.Whirlwind:CooldownRemains()<2 and AuraUtil.FindAuraByName("Sweeping Strikes","player") 
+and ((S.Whirlwind:CooldownRemains()<2 and AuraUtil.FindAuraByName("Sweeping Strikes","player") 
 or S.SweepingStrikes:CooldownRemains()>2) and not canoverpower
-and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5 then
+and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>1.5
+ and S.BattleStance:TimeSinceLastCast()>1.5 or S.Whirlwind:CooldownRemains()<2 and S.SweepingStrikes:TimeSinceLastCast()<2) then
    return S.BerserkerStance:Cast()
 end
 
-if IsReady("Execute")  and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Sudden Death","player") then
-    return S.Execute:Cast()
+
+if IsReady("Mortal Strike")  and CheckInteractDistance("target", 3) then
+    return S.MortalStrike:Cast()
 end	
+
+
 
 if  IsReady('Whirlwind') and UnitCreatureType("target") ~= "Totem" and TargetinRange(5)
 and (Player:Rage()>=25 and S.SweepingStrikes:CooldownRemains()>2 or Player:Rage()>=30) then
     return S.Whirlwind:Cast()
 end
 
+if IsReady("Execute")  and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Sudden Death","player") and spendaoe then
+    return S.Execute:Cast()
+end	
 
 if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") 
 and CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains()>2 and S.SweepingStrikes:CooldownRemains()>2
@@ -432,8 +439,12 @@ if IsReady("Execute")  and CheckInteractDistance("target", 3) and spendaoe then
 end	
 
 if  IsReady("Cleave") and not IsCurrentSpell(SpellRank('Cleave'))
-and TargetinRange(5) and spendaoe then
+and TargetinRange(5) and (spendaoe or S.Whirlwind:CooldownRemains()>2 or not AuraUtil.FindAuraByName("Berserker Stance","player") and Player:Rage()>=25)   then
    return S.Cleave:Cast()
+end	
+    
+if IsReady("Quick Strike")  and CheckInteractDistance("target", 3) and Player:Rage()>=25 then
+    return S.QuickStrike:Cast()
 end	
 
 
@@ -450,12 +461,15 @@ if RangeCount(15)==1 or not GriphRH.AoEON() or RangeCount(15)==2 and STttd<2 and
     end
     
     
-    
+    if IsReady("Mortal Strike")  and CheckInteractDistance("target", 3) then
+        return S.MortalStrike:Cast()
+    end	
+        
     if IsReady("Execute")  and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Sudden Death","player") then
         return S.Execute:Cast()
     end	
     
-    
+
     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") 
     and CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains()>2
     and (canoverpower or retaliation) and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5
@@ -488,6 +502,7 @@ if RangeCount(15)==1 or not GriphRH.AoEON() or RangeCount(15)==2 and STttd<2 and
     and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge","player")  then
         return S.Slam:Cast()
     end  
+
     if  IsReady('Whirlwind')  and TargetinRange(5) then
         return S.Whirlwind:Cast()
     end
@@ -500,7 +515,9 @@ if RangeCount(15)==1 or not GriphRH.AoEON() or RangeCount(15)==2 and STttd<2 and
        return S.HeroicStrike:Cast()
     end	
     
-
+    if IsReady("Quick Strike")  and CheckInteractDistance("target", 3) and Player:Rage()>=25 then
+        return S.QuickStrike:Cast()
+    end	
 
 end
 
