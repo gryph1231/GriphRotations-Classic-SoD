@@ -256,7 +256,7 @@ else
 end
 
 if (Target:IsAPlayer() and UnitIsUnit("targettarget", "player") and  Player:HealthPercentage()<40
-     or GetTankedEnemiesInRange()>=2 and Player:HealthPercentage()<75) and CheckInteractDistance("target", 3) and S.Retaliation:CooldownRemains()<2
+     or GetTankedEnemiesInRange()>=2 and Player:HealthPercentage()<75 and S.Whirlwind:CooldownRemains()>1) and CheckInteractDistance("target", 3) and S.Retaliation:CooldownRemains()<2
      then
         retaliation = true
      else retaliation = false
@@ -353,13 +353,22 @@ end
             return S.berserkerrage:Cast()
           end
 
+
+
+
+
+
 --AOE rotation
+
+
+
 
 if RangeCount(15)>=2 and GriphRH.AoEON() then
 
 
+
 if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") and CheckInteractDistance("target", 3) 
-and S.SweepingStrikes:CooldownRemains()<2 and S.BerserkerStance:TimeSinceLastCast()>2 and S.BattleStance:TimeSinceLastCast()>2
+and S.SweepingStrikes:CooldownRemains()<2 and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5
 then
     return S.BattleStance:Cast()
 end
@@ -371,11 +380,13 @@ end
 if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") 
 and (S.Whirlwind:CooldownRemains()<2 and AuraUtil.FindAuraByName("Sweeping Strikes","player") 
 or S.SweepingStrikes:CooldownRemains()>2) and not canoverpower
-and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>2 and S.BattleStance:TimeSinceLastCast()>2 then
+and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5 then
    return S.BerserkerStance:Cast()
 end
 
-
+if IsReady("Execute")  and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Sudden Death","player") then
+    return S.Execute:Cast()
+end	
 
 if  IsReady('Whirlwind') and UnitCreatureType("target") ~= "Totem" and TargetinRange(5)
 and (Player:Rage()>=25 and S.SweepingStrikes:CooldownRemains()>2 or Player:Rage()>=30) then
@@ -385,7 +396,7 @@ end
 
 if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") 
 and CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains()>2 and S.SweepingStrikes:CooldownRemains()>2
-and (canoverpower or retaliation)  and S.BerserkerStance:TimeSinceLastCast()>2 and S.BattleStance:TimeSinceLastCast()>2
+and (canoverpower or retaliation)  and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5
 then
     return S.BattleStance:Cast()
 end
@@ -429,23 +440,25 @@ end
 end
 
 
-if RangeCount(15)==1 or not GriphRH.AoEON() then
+if RangeCount(15)==1 or not GriphRH.AoEON() or RangeCount(15)==2 and STttd<2 and HL.CombatTime()>2 then
     
 
     if GetShapeshiftFormID() ~= 19  and IsReady("Berserker Stance") 
     and not canoverpower
-    and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>2 and S.BattleStance:TimeSinceLastCast()>2 then
+    and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5 then
        return S.BerserkerStance:Cast()
     end
     
     
     
-
+    if IsReady("Execute")  and CheckInteractDistance("target", 3) and AuraUtil.FindAuraByName("Sudden Death","player") then
+        return S.Execute:Cast()
+    end	
     
     
     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance") 
     and CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains()>2
-    and (canoverpower or retaliation) and S.BerserkerStance:TimeSinceLastCast()>2 and S.BattleStance:TimeSinceLastCast()>2
+    and (canoverpower or retaliation) and S.BerserkerStance:TimeSinceLastCast()>1.5 and S.BattleStance:TimeSinceLastCast()>1.5
     then
         return S.BattleStance:Cast()
     end
