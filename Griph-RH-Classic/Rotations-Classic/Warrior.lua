@@ -19,8 +19,7 @@ GriphRH.Spell[1] = {
     ShieldBash = Spell(72),
     Enrage = Spell(425415),
     RagingBlow = Spell(402911),
---    ChallengingShout = Spell(1161),
-
+    ChallengingShout = Spell(1161),
     Charge = Spell(100),
     Rampage = Spell(426940),
     Overpower = Spell(7887),
@@ -120,7 +119,6 @@ local function APL()
             inRange25 = inRange25 + 1
         end
     end
-
 
     local namegladiator = GetSpellInfo('Gladiator Stance')
     local namebattleforecast = GetSpellInfo('Battle Forecast')

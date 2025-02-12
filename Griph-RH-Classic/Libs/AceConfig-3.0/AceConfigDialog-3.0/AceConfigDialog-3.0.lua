@@ -1,13 +1,10 @@
 --- AceConfigDialog-3.0 generates AceGUI-3.0 based windows based on option tables.
 -- @class file
 -- @name AceConfigDialog-3.0
--- @release $Id: AceConfigDialog-3.0.lua 1163 2017-08-14 14:04:39Z nevcairiel $
+-- @release $Id: AceConfigDialog-3.0.lua 1139 2016-07-03 07:43:51Z nevcairiel $
 
 local LibStub = LibStub
-local gui = LibStub("AceGUI-3.0")
-local reg = LibStub("AceConfigRegistry-3.0")
-
-local MAJOR, MINOR = "AceConfigDialog-3.0", 64
+local MAJOR, MINOR = "AceConfigDialog-3.0", 61
 local AceConfigDialog, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceConfigDialog then return end
@@ -19,6 +16,9 @@ AceConfigDialog.frame = AceConfigDialog.frame or CreateFrame("Frame")
 AceConfigDialog.frame.apps = AceConfigDialog.frame.apps or {}
 AceConfigDialog.frame.closing = AceConfigDialog.frame.closing or {}
 AceConfigDialog.frame.closeAllOverride = AceConfigDialog.frame.closeAllOverride or {}
+
+local gui = LibStub("AceGUI-3.0")
+local reg = LibStub("AceConfigRegistry-3.0")
 
 -- Lua APIs
 local tconcat, tinsert, tsort, tremove, tsort = table.concat, table.insert, table.sort, table.remove, table.sort
@@ -611,31 +611,6 @@ local function confirmPopup(appName, rootframe, basepath, info, message, func, .
 	end
 end
 
-local function validationErrorPopup(message)
-	if not StaticPopupDialogs["ACECONFIGDIALOG30_VALIDATION_ERROR_DIALOG"] then
-		StaticPopupDialogs["ACECONFIGDIALOG30_VALIDATION_ERROR_DIALOG"] = {}
-	end
-	local t = StaticPopupDialogs["ACECONFIGDIALOG30_VALIDATION_ERROR_DIALOG"]
-	t.text = message
-	t.button1 = OKAY
-	t.preferredIndex = STATICPOPUP_NUMDIALOGS
-	local dialog, oldstrata
-	t.OnAccept = function()
-		if dialog and oldstrata then
-			dialog:SetFrameStrata(oldstrata)
-		end
-	end
-	t.timeout = 0
-	t.whileDead = 1
-	t.hideOnEscape = 1
-
-	dialog = StaticPopup_Show("ACECONFIGDIALOG30_VALIDATION_ERROR_DIALOG")
-	if dialog then
-		oldstrata = dialog:GetFrameStrata()
-		dialog:SetFrameStrata("TOOLTIP")
-	end
-end
-
 local function ActivateControl(widget, event, ...)
 	--This function will call the set / execute handler for the widget
 	--widget:GetUserDataTable() contains the needed info
@@ -721,26 +696,32 @@ local function ActivateControl(widget, event, ...)
 	end
 	
 	local rootframe = user.rootframe
-	if not validated or type(validated) == "string" then
-		if not validated then
-			if usage then
-				validated = name..": "..usage
-			else
-				if pattern then
-					validated = name..": Expected "..pattern
-				else
-					validated = name..": Invalid Value"
-				end
-			end
-		end
-
-		-- show validate message
+	if type(validated) == "string" then
+		--validate function returned a message to display
 		if rootframe.SetStatusText then
 			rootframe:SetStatusText(validated)
 		else
-			validationErrorPopup(validated)
+			-- TODO: do something else.
 		end
-		PlaySound(PlaySoundKitID and "igPlayerInviteDecline" or 882) -- SOUNDKIT.IG_PLAYER_INVITE_DECLINE || XXX _DECLINE is actually missing from the table
+		PlaySound("igPlayerInviteDecline")
+		del(info)
+		return true
+	elseif not validated then
+		--validate returned false	
+		if rootframe.SetStatusText then
+			if usage then
+				rootframe:SetStatusText(name..": "..usage)
+			else
+				if pattern then
+					rootframe:SetStatusText(name..": Expected "..pattern)
+				else
+					rootframe:SetStatusText(name..": Invalid Value")
+				end
+			end
+		else
+			-- TODO: do something else
+		end
+		PlaySound("igPlayerInviteDecline")
 		del(info)
 		return true
 	else
@@ -1966,7 +1947,7 @@ function AceConfigDialog:AddToBlizOptions(appName, name, parent, ...)
 		end
 		group:SetCallback("OnShow", FeedToBlizPanel)
 		group:SetCallback("OnHide", ClearBlizPanel)
-		InterfaceOptions_AddCategory(group.frame)
+		-- InterfaceOptions_AddCategory(group.frame)
 		return group.frame
 	else
 		error(("%s has already been added to the Blizzard Options Window with the given path"):format(appName), 2)
