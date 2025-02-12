@@ -327,7 +327,7 @@ if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(1943
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or (AuraUtil.FindAuraByName("Stealth", "player") and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID()) or AuraUtil.FindAuraByName("Food", "player") 
 or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName('Gouge','target') or AuraUtil.FindAuraByName('Blind','target') then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 attack_power1,attack_power2,_ = UnitAttackPower('player')
@@ -540,7 +540,7 @@ and S.Feint:ID() ~= GriphRH.queuedSpell[1]:ID() and stop_rotation == false then
 		return Build()
 	end
 end
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 end
 
 GriphRH.Rotation.SetAPL(4, APL);
