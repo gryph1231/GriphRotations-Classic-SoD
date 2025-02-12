@@ -162,7 +162,6 @@ local function APL()
 
 
 
-
     if AuraUtil.FindAuraByName("Blessing of Freedom", "target")
         or AuraUtil.FindAuraByName("Free Action", "target")
         or AuraUtil.FindAuraByName("Decoy Totem", "target")
