@@ -288,12 +288,15 @@ local function APL()
     if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and S.IntimidatingShout:CooldownRemains() > 2 then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
-    if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and (S.Intercept:CooldownRemains() > 2 or TargetinRange(10)) then
+    if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and (S.Intercept:CooldownRemains() > 2 or not IsSpellInRange("Intercept","target") or Target:IsDeadOrGhost() or not Player:CanAttack(Target) or  IsCurrentSpell(SpellRank('Charge')) ) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
-    if GriphRH.QueuedSpell():ID() == S.Charge:ID() and (S.Charge:CooldownRemains() > 2 or TargetinRange(10)) then
+    if GriphRH.QueuedSpell():ID() == S.Charge:ID() and (IsCurrentSpell(SpellRank('Charge')) or Target:IsDeadOrGhost() or not Player:CanAttack(Target)) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
+
+
+
     if GriphRH.QueuedSpell():ID() == S.Taunt:ID() and S.Taunt:CooldownRemains() > 2 then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
@@ -311,7 +314,7 @@ local function APL()
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
-    if GriphRH.QueuedSpell():ID() == S.Meathook:ID() and S.Meathook:CooldownRemains() > 2 then
+    if GriphRH.QueuedSpell():ID() == S.Meathook:ID() and (S.Meathook:CooldownRemains() > 2 or UnitLevel("player") + 1 < UnitLevel("target") or TargetinRange(10)) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
@@ -327,7 +330,9 @@ local function APL()
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
-
+    if GriphRH.QueuedSpell():ID() ~=nil and not Target:Exists() then
+        GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
+    end
 
 
     if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and (IsReady("Intimidating Shout") or Player:Rage() > 15) then
