@@ -956,12 +956,14 @@ local function OnEvent(self, event, ...)
         end
     end
 
-    if spellName == "Whirlwind" and missType == "DODGE" then
+    if subEvent == "SPELL_MISSED"  and missType == "DODGE" and sourceName == UnitName("player") then
         overpowerTimeRemaining = overpowerDuration
-        return
     end
-
 end
+
+
+
+
 
 -- Function to check the remaining Overpower timer (can be used elsewhere).
 function checkOverpowerTime()

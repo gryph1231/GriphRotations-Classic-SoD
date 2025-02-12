@@ -236,7 +236,7 @@ local function APL()
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID =
     GetWeaponEnchantInfo()
 
-
+print(checkOverpowerTime())
 
     if (checkOverpowerTime()>1.5 or Player:BuffRemains(S.TasteforBlood) > 1.5) and S.Overpower:CooldownRemains() < 2 then
         canoverpower = true
