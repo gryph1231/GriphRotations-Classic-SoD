@@ -216,7 +216,6 @@ local function APL()
     else
         sunderarmorstack = 0
     end
-    -- print(RangeCount(8))
 
     if AuraUtil.FindAuraByName("Sunder Armor", "target", "PLAYER|HARMFUL") then
         sunderarmorremains = select(6, AuraUtil.FindAuraByName("Sunder Armor", "target", "PLAYER|HARMFUL")) - GetTime()
@@ -236,7 +235,6 @@ local function APL()
     end
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID =
     GetWeaponEnchantInfo()
-
 
 
 
@@ -289,10 +287,10 @@ local function APL()
     if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and S.IntimidatingShout:CooldownRemains() > 2 then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
-    if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and S.Intercept:CooldownRemains() > 2 then
+    if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and (S.Intercept:CooldownRemains() > 2 or TargetinRange(10)) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
-    if GriphRH.QueuedSpell():ID() == S.Charge:ID() and S.Charge:CooldownRemains() > 2 then
+    if GriphRH.QueuedSpell():ID() == S.Charge:ID() and (S.Charge:CooldownRemains() > 2 or TargetinRange(10)) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
     if GriphRH.QueuedSpell():ID() == S.Taunt:ID() and S.Taunt:CooldownRemains() > 2 then
@@ -897,7 +895,8 @@ local function APL()
             return S.CommandingShout:Cast()
         end
 
-        if GetShapeshiftFormID() ~= 17 and Player:IsMoving() and IsReady("Battle Stance") and RangeCount(10) == 0 and Player:Rage() < 25 and (S.Charge:CooldownRemains() < 2 or S.Intercept:CooldownRemains() > 2) then
+        if GetShapeshiftFormID() ~= 17 and Player:IsMoving() and IsReady("Battle Stance") and RangeCount(20) == 0 
+       and (S.Charge:CooldownRemains() < 2 or S.Intercept:CooldownRemains() > 2) then
             return S.BattleStance:Cast()
         end
         if IsCurrentSpell(6603) and IsReady("Charge") and Player:IsMoving() and not TargetinRange(5) and TargetinRange(25) and IsSpellInRange("Charge", "target") then
