@@ -62,6 +62,10 @@ GriphRH.Spell[1] = {
     ConcussionBlow = Spell(12809),
     Hamstring = Spell(1715),
     ThunderClap = Spell(11581),
+    Bloodthirst3 = Spell(23893),
+    Bloodthirst2 = Spell(23892),
+    Bloodthirst4 = Spell(23894),
+    
     Pummel = Spell(6552),
     TacticalMastery = Spell(12679),
     VictoryRush = Spell(402927),
@@ -152,8 +156,8 @@ local function APL()
 
 
 
-    local fury = S.Bloodthirst:IsAvailable()
-    local arms = S.MortalStrike:IsAvailable()
+    local fury = S.Bloodthirst:IsAvailable() or S.Bloodthirst2:IsAvailable() or S.Bloodthirst3:IsAvailable() or S.Bloodthirst4:IsAvailable()
+    local arms = S.MortalStrike:IsAvailable() or  S.MortalStrike2:IsAvailable() 
     local prot = IsEquippedItemType("Shield")
 
 
