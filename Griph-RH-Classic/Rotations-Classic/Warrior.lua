@@ -236,9 +236,10 @@ local function APL()
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID =
     GetWeaponEnchantInfo()
 
-print(checkOverpowerTime())
+-- print("dodge spells:", checkOverpowerTimespells())
+-- print("dodge spells and autos:", checkOverpowerTime())
 
-    if (checkOverpowerTime()>1.5 or Player:BuffRemains(S.TasteforBlood) > 1.5) and S.Overpower:CooldownRemains() < 2 then
+    if (checkOverpowerTimeautos()>1.5 or checkOverpowerTimespells()>1.5 or Player:BuffRemains(S.TasteforBlood) > 1.5) and S.Overpower:CooldownRemains() < 2 then
         canoverpower = true
     else
         canoverpower = false
@@ -628,7 +629,7 @@ print(checkOverpowerTime())
                 end
 
 
-                if IsReady("Overpower") and CheckInteractDistance("target", 3) and checkOverpowerTime() <2.5 then
+                if IsReady("Overpower") and CheckInteractDistance("target", 3) and (checkOverpowerTimeautos()<2 or checkOverpowerTimespells() <2) then
                     return S.Overpower:Cast()
                 end
 

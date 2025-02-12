@@ -883,6 +883,41 @@ end
 
 
 
+local overpowerTimeRemainingautos = 0
+local overpowerDurationautos = 5  -- Overpower must be used within 5 seconds of a dodge
+
+
+local function OnUpdate(self, elapsedautos)
+    if overpowerTimeRemainingautos > 0 then
+        overpowerTimeRemainingautos = overpowerTimeRemainingautos - elapsedautos
+        if overpowerTimeRemainingautos <= 0 then
+            overpowerTimeRemainingautos = 0
+        end
+    end
+end
+
+local function OnEvent(self, event, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
+
+        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player")  then
+            overpowerTimeRemainingautos = 0
+        end
+ 
+        if (eventType == "SPELL_MISSED" or eventType == "SWING_MISSED") and missType == "DODGE" and sourceName == UnitName("player") then
+            overpowerTimeRemainingautos = overpowerDurationautos
+        end
+    end
+end
+
+function checkOverpowerTimespells()
+    return overpowerTimeRemainingautos
+end
+
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+eventFrame:SetScript("OnEvent", OnEvent)
+eventFrame:SetScript("OnUpdate", OnUpdate)
 
 
 
@@ -892,7 +927,6 @@ end
 local overpowerTimeRemaining = 0
 local overpowerDuration = 5  -- Overpower must be used within 5 seconds of a dodge
 
--- OnUpdate runs every frame to decrement the timer.
 local function OnUpdate(self, elapsed)
     if overpowerTimeRemaining > 0 then
         overpowerTimeRemaining = overpowerTimeRemaining - elapsed
@@ -907,66 +941,60 @@ local function OnEvent(self, event, ...)
         return
     end
 
-    -- Extract the combat log event parameters.
+    -- Extract common combat log parameters.
     local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags,
           destGUID, destName, destFlags, destRaidFlags,
-          p12, p13, p14, p15, p16 = CombatLogGetCurrentEventInfo()
+          p12, p13, p14, p15 = CombatLogGetCurrentEventInfo()
 
-    -- Only process events from the player.
+    -- Process only events from the player.
     if not sourceName or sourceName ~= UnitName("player") then
         return
     end
 
-    -- Reset the timer when Overpower is successfully cast.
+    -- Reset timer if Overpower is cast successfully.
     if subEvent == "SPELL_CAST_SUCCESS" then
         local spellId = p12
         local spellName = p13
         if spellName == "Overpower" then
+            -- Reset the timer on successful cast.
             overpowerTimeRemaining = 0
             return
         end
     end
 
-    -- Process auto-attack misses (SWING_MISSED).
+    -- Process auto-attack misses.
     if subEvent == "SWING_MISSED" then
-        -- p12 is missType, p13 is isOffHand.
+        -- For SWING_MISSED: p12 = missType, p13 = isOffHand.
         local missType = p12
         local isOffHand = p13
+
         if missType == "DODGE" then
-            if isOffHand then
-            else
+            -- Reset timer to 5 seconds whenever a dodge is detected.
+            overpowerTimeRemaining = overpowerDuration
+            return
+        end
+    end
+
+
+        -- Process auto-attack misses.
+        if subEvent == "SPELL_MISSED" then
+            -- For SWING_MISSED: p12 = missType, p13 = isOffHand.
+            local missType = p12
+            local isOffHand = p13
+            -- Debug output to verify what’s coming in.
+            if missType == "DODGE" then
+                -- Reset timer to 5 seconds whenever a dodge is detected.
+                overpowerTimeRemaining = overpowerDuration
+                return
             end
-            -- Reset timer to full 5 seconds whenever a dodge occurs.
-            overpowerTimeRemaining = overpowerDuration
-            return
         end
-    end
 
-    -- Process melee ability misses (SPELL_MISSED).
-    if subEvent == "SPELL_MISSED" then
-        -- For SPELL_MISSED: p12 = spellId, p13 = spellName, p14 = missType, p15 = isOffHand (if applicable)
-        local spellId = p12
-        local spellName = p13
-        local missType = p14
-        local isOffHand = p15
-        if missType == "DODGE" then
-            -- Reset the timer again to 5 seconds.
-            overpowerTimeRemaining = overpowerDuration
-            return
-        end
-    end
 
-    if subEvent == "SPELL_MISSED"  and missType == "DODGE" and sourceName == UnitName("player") then
-        overpowerTimeRemaining = overpowerDuration
-    end
+    -- (Remove any extra redundant checks to avoid confusion.)
 end
 
-
-
-
-
--- Function to check the remaining Overpower timer (can be used elsewhere).
-function checkOverpowerTime()
+-- Function to check the remaining Overpower timer.
+function checkOverpowerTimeautos()
     return overpowerTimeRemaining
 end
 
@@ -975,6 +1003,38 @@ local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 eventFrame:SetScript("OnEvent", OnEvent)
 eventFrame:SetScript("OnUpdate", OnUpdate)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

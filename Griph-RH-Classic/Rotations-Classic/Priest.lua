@@ -183,7 +183,7 @@ end
 
 -- print(CanCastWithTolerance("Flash Heal"))
 -- print(GetMobsInCombat())
-local aoeDots = (inRange25>=3 or GetMobsInCombat()>=3)
+local aoeDots = (inRange25>=3 or GetMobsInCombat()>=3) and GriphRH.AoEON()
 -- NEED TO TRACK SHADOW resist from other priests (powerful spell already active)
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
@@ -308,7 +308,7 @@ end
 		return S.MindFlay:Cast()
 	end
 
-	if IsReady('Shadow Word: Death') and  targetRange36  then
+	if IsReady('Shadow Word: Death') and  targetRange36 and Player:IsMoving() then
 		return S.ShadowWordDeath:Cast()
 	end
 	if IsReady('Vampiric Touch') and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
@@ -328,7 +328,7 @@ end
 	end
 
 	
-	if IsReady('Mind Sear') and  targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2)  and not Player:IsMoving() then
+	if IsReady('Mind Sear') and  targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2)  and not Player:IsMoving() and GriphRH.AoEON() then
 		return S.handrune:Cast()
 	end
 
