@@ -21,11 +21,12 @@ GriphRH.Spell[4] = {
 	ExposeArmor = Spell(26866),
 	Garrote = Spell(48676),
 	CheapShot = Spell(1833),
-	Rupture = Spell(48672),
+	Rupture = Spell(11275),
 	SliceandDiceR1 = Spell(5171),
-	SliceandDiceR2 = Spell(6774),
+	SliceandDice = Spell(6774),
 	Backstab = Spell(53),
 	Evasion = Spell(26669),
+	CrimsonTempest = Spell(412096),
 	DeadlyPoisonDebuff = Spell(434312),
 	KidneyShot = Spell(408),
 	Feint = Spell(11303),
@@ -265,19 +266,19 @@ local function Build()
 end
 
 local function Finish()
-	if IsReady('Crimson Tempest',1) and GriphRH.AoEON() and ((cp_finish_condition and CTRefreshableAOE(2) >= 3) or (Player:ComboPoints() >= 3 and CTRefreshableAOE(0) >= 4) or (target_unhealthy and CTRefreshableAOE(2) >= 3)) then
+	if IsReady('Crimson Tempest') and GriphRH.AoEON() and ((cp_finish_condition and CTRefreshableAOE(2) >= 3) or (Player:ComboPoints() >= 3 and CTRefreshableAOE(0) >= 4) or (target_unhealthy and CTRefreshableAOE(2) >= 3)) then
 		return S.CloakRune:Cast()
 	end
 
-	if IsReady('Slice and Dice') and CTRefreshableAOE(2) < 3 and (not UnitIsPlayer('target') or IsSpellInRange("Sinister Strike", "target") == 0 or ((S.KidneyShot:CooldownRemains() > 2 and not GetSpellCooldown('Between the Eyes')) or (S.BetweenTheEyes:CooldownRemains() > 2 and GetSpellCooldown('Between the Eyes')))) and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or (not GetSpellCooldown('Cut to the Chase') and (((Player:BuffRemains(S.SliceandDiceR1) < 4 or Player:BuffRemains(S.SliceandDiceR2) < 4) and Player:ComboPoints() >= 2 and (Player:ComboPoints() >= 5 or (target_unhealthy and RangeCount(5) > 1)))))) then
-		return S.SliceandDiceR1:Cast()
+	if IsReady('Slice and Dice') and CTRefreshableAOE(2) < 3 and (not UnitIsPlayer('target') or IsSpellInRange("Sinister Strike", "target") == 0 or ((S.KidneyShot:CooldownRemains() > 2 and not GetSpellCooldown('Between the Eyes')) or (S.BetweenTheEyes:CooldownRemains() > 2 and GetSpellCooldown('Between the Eyes')))) and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or (not GetSpellCooldown('Cut to the Chase') and ((Player:BuffRemains(S.SliceandDice) < 4 and Player:ComboPoints() >= 2 and (Player:ComboPoints() >= 5 or (target_unhealthy and RangeCount(5) > 1)))))) then
+		return S.SliceandDice:Cast()
 	end
 
-	if IsReady('Rupture') and GetSpellCooldown('Carnage') and cp_finish_condition and (not AuraUtil.FindAuraByName('Rupture','target','PLAYER|HARMFUL') or Target:DebuffRemains(S.Rupture) <= 3) and target_healthy then
+	if IsReady('Rupture',1) and GriphRH.CDsON() and GetSpellCooldown('Carnage') and cp_finish_condition and ((not AuraUtil.FindAuraByName('Rupture','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Crimson Tempest','target','PLAYER|HARMFUL')) or (AuraUtil.FindAuraByName('Rupture','target','PLAYER|HARMFUL') and Target:DebuffRemains(S.Rupture) <= 3)) and target_healthy then
 		return S.Rupture:Cast()
 	end
 
-	if IsReady('Envenom',1) and ((cp_finish_condition and (not AuraUtil.FindAuraByName("Envenom", "player") or Player:Energy() >= 65 or (Player:Energy() >= 50 and IsReady('Poisoned Knife',1)) or UnitIsPlayer('target'))) or (EnvenomDMG() >= UnitHealth('target') and not UnitIsPlayer('target')) or (GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 4) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 4)) or (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 8) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 8)) and cp_finish_condition))))) then
+	if IsReady('Envenom',1) and ((cp_finish_condition and (not AuraUtil.FindAuraByName("Envenom", "player") or Player:Energy() >= 65 or (Player:Energy() >= 50 and IsReady('Poisoned Knife',1)) or UnitIsPlayer('target'))) or (EnvenomDMG() >= UnitHealth('target') and not UnitIsPlayer('target')) or (GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and ((Player:Buff(S.SliceandDice) and Player:BuffRemains(S.SliceandDice) < 4) or (((Player:Buff(S.SliceandDice) and Player:BuffRemains(S.SliceandDice) < 8)) and cp_finish_condition))))) then
 		if IsReady('Cold Blood') and IsReady('Envenom',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and ((deadly_poison_stacks and deadly_poison_stacks >= 5) or (deadly_poison_stacksII and deadly_poison_stacksII >= 5) or (deadly_poison_stacksIII and deadly_poison_stacksIII >= 5) or (deadly_poison_stacksIV and deadly_poison_stacksIV >= 5) or (occult_poison_stacksI and occult_poison_stacksI >= 5)) and cp_finish_condition then
 			return S.ColdBlood:Cast()
 		end
@@ -285,7 +286,7 @@ local function Finish()
 		return S.Envenom:Cast()
 	end
 
-	if IsReady('Eviscerate',1) and not GetSpellCooldown('Envenom') and GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 4) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 4)) or (((Player:Buff(S.SliceandDiceR1) and Player:BuffRemains(S.SliceandDiceR1) < 8) or (Player:Buff(S.SliceandDiceR2) and Player:BuffRemains(S.SliceandDiceR2) < 8)) and (cp_finish_condition or target_unhealthy)))) then
+	if IsReady('Eviscerate',1) and not GetSpellCooldown('Envenom') and GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and ((Player:Buff(S.SliceandDice) and Player:BuffRemains(S.SliceandDice) < 4) or (Player:Buff(S.SliceandDice) and Player:BuffRemains(S.SliceandDice) < 8 and (cp_finish_condition or target_unhealthy)))) then
 		return S.Eviscerate:Cast()
 	end
 
@@ -319,8 +320,6 @@ local function PvP()
 end
 
 local function APL()
-	--print(UnitIsPlayer('target'))
-	--print(EnvenomDMG(),EviscerateDMG(),UnitHealth('target'))
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions/Top priorities------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -328,7 +327,7 @@ if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(1943
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or (AuraUtil.FindAuraByName("Stealth", "player") and S.Pull:ID() ~= GriphRH.queuedSpell[1]:ID()) or AuraUtil.FindAuraByName("Food", "player") 
 or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName('Gouge','target') or AuraUtil.FindAuraByName('Blind','target') then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
 end
 
 attack_power1,attack_power2,_ = UnitAttackPower('player')
@@ -541,7 +540,7 @@ and S.Feint:ID() ~= GriphRH.queuedSpell[1]:ID() and stop_rotation == false then
 		return Build()
 	end
 end
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+	return "Interface\\Addons\\Griph-RH-Classic\\Media\\mount2.tga", false
 end
 
 GriphRH.Rotation.SetAPL(4, APL);
