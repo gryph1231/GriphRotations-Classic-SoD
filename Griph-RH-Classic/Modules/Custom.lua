@@ -883,15 +883,15 @@ end
 
 
 
-local overpowerTimeRemainingautos = 0
-local overpowerDurationautos = 5  -- Overpower must be used within 5 seconds of a dodge
+local overpowerTimeRemainingspells = 0
+local overpowerDurationspells = 5  -- Overpower must be used within 5 seconds of a dodge
 
 
-local function OnUpdate(self, elapsedautos)
-    if overpowerTimeRemainingautos > 0 then
-        overpowerTimeRemainingautos = overpowerTimeRemainingautos - elapsedautos
-        if overpowerTimeRemainingautos <= 0 then
-            overpowerTimeRemainingautos = 0
+local function OnUpdate(self, elapsedspells)
+    if overpowerTimeRemainingspells > 0 then
+        overpowerTimeRemainingspells = overpowerTimeRemainingspells - elapsedspells
+        if overpowerTimeRemainingspells <= 0 then
+            overpowerTimeRemainingspells = 0
         end
     end
 end
@@ -900,18 +900,18 @@ local function OnEvent(self, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
 
-        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player")  then
-            overpowerTimeRemainingautos = 0
+        if eventType == "SPELL_CAST_SUCCESS" and spellName == 'Overpower' and sourceName == UnitName("player") or Target:IsDeadOrGhost() then
+            overpowerTimeRemainingspells = 0
         end
  
         if (eventType == "SPELL_MISSED" or eventType == "SWING_MISSED") and missType == "DODGE" and sourceName == UnitName("player") then
-            overpowerTimeRemainingautos = overpowerDurationautos
+            overpowerTimeRemainingspells = overpowerDurationspells
         end
     end
 end
 
 function checkOverpowerTimespells()
-    return overpowerTimeRemainingautos
+    return overpowerTimeRemainingspells
 end
 
 local eventFrame = CreateFrame("Frame")
@@ -952,7 +952,7 @@ local function OnEvent(self, event, ...)
     end
 
     -- Reset timer if Overpower is cast successfully.
-    if subEvent == "SPELL_CAST_SUCCESS" then
+    if subEvent == "SPELL_CAST_SUCCESS"  or Target:IsDeadOrGhost() then
         local spellId = p12
         local spellName = p13
         if spellName == "Overpower" then

@@ -106,7 +106,7 @@ local I = Item.Paladin.Protection;
 local function APL()
 
     -- local start, duration = GetSpellCooldown(61304) -- 61304 is a dummy spell used to represent the GCD
-print(IsActionInRange(3))
+-- print(IsActionInRange(3))
 
 
         local inRange25 = 0

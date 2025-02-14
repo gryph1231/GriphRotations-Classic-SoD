@@ -35,8 +35,10 @@ GriphRH.Spell[1] = {
     MockingBlow = Spell(7402),
     IntimidatingShout = Spell(5246),
     Taunt = Spell(355),
+    ShieldSlam = Spell(23922),
     WilloftheForsaken = Spell(7744),
     SweepingStrikes = Spell(12292),
+    ShieldBlock = Spell(2565),
     Slam = Spell(1464),
     EnragedRegeneration = Spell(402913),
     Default = Spell(1),
@@ -46,8 +48,9 @@ GriphRH.Spell[1] = {
     Cleave = Spell(845),
     BerserkerRage = Spell(18499),
     berserkerrage = Spell(20554), --berserking
-    DemoralizingShout = Spell(11554),
+    DemoralizingShout = Spell(11555),
     ShieldWall = Spell(871),
+    PiercingHowl = Spell(12323),
     LastStand = Spell(12975),
     Whirlwind = Spell(1680),
     BattleStance = Spell(2457),
@@ -58,6 +61,7 @@ GriphRH.Spell[1] = {
     Shockwave = Spell(440488),
     DeathWish = Spell(12328),
     CommandingShout = Spell(403215),
+    Recklessness = Spell(1719),
     MortalStrike = Spell(12294),
     ConcussionBlow = Spell(12809),
     Hamstring = Spell(1715),
@@ -69,7 +73,6 @@ GriphRH.Spell[1] = {
     Pummel = Spell(6552),
     TacticalMastery = Spell(12679),
     VictoryRush = Spell(402927),
-
 };
 
 local S = GriphRH.Spell[1]
@@ -85,6 +88,7 @@ local I = Item.Warrior.Arms;
 S.Meathook.TextureSpellID = { 20589 }    -- escape artist
 S.ShieldWall.TextureSpellID = { 20580 }  -- shadowmeld
 S.ThunderClap.TextureSpellID = { 20549 } -- warstomp
+S.Recklessness.TextureSpellID = { 20594 }    --  stoneform
 
 
 
@@ -123,6 +127,10 @@ local function APL()
             inRange25 = inRange25 + 1
         end
     end
+
+    -- if Target:Exists() then
+    --     return S.Charge:Cast()
+    -- end
 
     local namegladiator = GetSpellInfo('Gladiator Stance')
     local namebattleforecast = GetSpellInfo('Battle Forecast')
@@ -197,14 +205,14 @@ local function APL()
 
     local spellwidgetfort = UnitCastingInfo("target")
     -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
-    if AuraUtil.FindAuraByName("Commanding Shout", "player", "PLAYER") then
+    if AuraUtil.FindAuraByName("Commanding Shout", "player") then
         commandingshoutbuffremains = select(6, AuraUtil.FindAuraByName("Commanding Shout", "player", "PLAYER")) -
         GetTime()
     else
         commandingshoutbuffremains = 0
     end
-    if AuraUtil.FindAuraByName("Battle Shout", "player", "PLAYER") then
-        battleshoutbuffremains = select(6, AuraUtil.FindAuraByName("Battle Shout", "player", "PLAYER")) - GetTime()
+    if AuraUtil.FindAuraByName("Battle Shout", "player") then
+        battleshoutbuffremains = select(6, AuraUtil.FindAuraByName("Battle Shout", "player")) - GetTime()
     else
         battleshoutbuffremains = 0
     end
@@ -245,13 +253,14 @@ local function APL()
         canoverpower = false
     end
 
-    if (Target:IsAPlayer() and (UnitClass("target") == 4 or UnitClass("target") == 3 or UnitClass("target") == 1 or UnitClass("target") == 2 or UnitClass("target") == 7 or UnitClass("target") == 11) and Player:HealthPercentage() < 75
-            or GetTankedEnemiesInRange() >=2 and Player:HealthPercentage() < 75) and CheckInteractDistance("target", 3) and S.Retaliation:CooldownRemains() < 2
-    then
-        retaliation = true
-    else
-        retaliation = false
-    end
+
+    -- if (Target:IsAPlayer() and (UnitClass("target") == 4 or UnitClass("target") == 3 or UnitClass("target") == 1 or UnitClass("target") == 2 or UnitClass("target") == 7 or UnitClass("target") == 11) and Player:HealthPercentage() < 75
+    --         or GetTankedEnemiesInRange() >=2 and Player:HealthPercentage() < 75) and CheckInteractDistance("target", 3) and S.Retaliation:CooldownRemains() < 2
+    -- then
+    --     retaliation = true
+    -- else
+    --     retaliation = false
+    -- end
     if RangeCount(10) > 1 and GriphRH.AoEON() and S.SweepingStrikes:IsAvailable() and S.SweepingStrikes:CooldownRemains() < 2 and Player:Rage() < 30 then
         dontspend = false
     else
@@ -259,7 +268,7 @@ local function APL()
     end
 
     if CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains() > 2
-        and (canoverpower or retaliation == true)
+        and (canoverpower )
         and Player:Rage() <= 25 then
         berserkerstance = false
         battlestance = true
@@ -281,7 +290,6 @@ local function APL()
         spend = false
     end
 
-
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     ---------------------------------SPELL QUEUES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -295,7 +303,9 @@ local function APL()
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
-
+    if GriphRH.QueuedSpell():ID() == S.PiercingHowl:ID() and (S.PiercingHowl:TimeSinceLastCast()<1 or AuraUtil.FindAuraByName("Piercing Howl",  "target", "PLAYER|HARMFUL")) then
+        GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
+    end
 
     if GriphRH.QueuedSpell():ID() == S.Taunt:ID() and S.Taunt:CooldownRemains() > 2 then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
@@ -322,7 +332,7 @@ local function APL()
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
-    if GriphRH.QueuedSpell():ID() == S.Hamstring:ID() and S.Hamstring:CooldownRemains() > 2 then
+    if GriphRH.QueuedSpell():ID() == S.Hamstring:ID() and (S.Hamstring:TimeSinceLastCast()<1 or AuraUtil.FindAuraByName("Hamstring", "target", "PLAYER | HARMFUL")) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
@@ -330,12 +340,26 @@ local function APL()
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
-    if GriphRH.QueuedSpell():ID() ~=nil and not Target:Exists() then
+
+
+    if GriphRH.QueuedSpell():ID() == S.Recklessness:ID() and S.Recklessness:CooldownRemains() > 2 then
+        GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
+    end
+
+    if GriphRH.QueuedSpell():ID() == nil or not Player:AffectingCombat() then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
 
 
-    if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and (IsReady("Intimidating Shout") or Player:Rage() > 15) then
+
+    if GriphRH.QueuedSpell():ID() == S.Recklessness:ID()  then
+        return GriphRH.QueuedSpell():Cast()
+    end
+    
+    if GriphRH.QueuedSpell():ID() == S.PiercingHowl:ID() and (IsReady("Piercing Howl") or Player:Rage() > 5) and S.PiercingHowl:IsAvailable() then
+        return GriphRH.QueuedSpell():Cast()
+    end
+    if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and RangeCount(10)>=1 and CheckInteractDistance("target", 3)  then
         return GriphRH.QueuedSpell():Cast()
     end
     if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and IsReady("Intercept") then
@@ -357,7 +381,7 @@ local function APL()
         return GriphRH.QueuedSpell():Cast()
     end
 
-    if GriphRH.QueuedSpell():ID() == S.Retaliation:ID() and IsReady("Retaliation") then
+    if GriphRH.QueuedSpell():ID() == S.Retaliation:ID()  then
         return GriphRH.QueuedSpell():Cast()
     end
 
@@ -376,7 +400,6 @@ local function APL()
     if GriphRH.QueuedSpell():ID() == S.Shockwave:ID() and IsReady("Shockwave") then
         return GriphRH.QueuedSpell():Cast()
     end
-
 
 
 
@@ -403,9 +426,9 @@ local function APL()
             return S.RallyingCry:Cast()
         end
 
-        if retaliation == true and IsReady("Retaliation") then
-            return S.Retaliation:Cast()
-        end
+        -- if retaliation == true and IsReady("Retaliation") and not prot then
+        --     return S.Retaliation:Cast()
+        -- end
 
 
 
@@ -430,12 +453,11 @@ local function APL()
 
 
             if prot then
-                if GetShapeshiftFormID() ~= 17 and IsReady("Gladiator Stance")
-                    and CheckInteractDistance("target", 3) and S.GladiatorStance:TimeSinceLastCast() > 1.5 and S.BattleStance:TimeSinceLastCast() > 1.5 and Player:Rage() <= 25
-                then
+                if GetShapeshiftFormID() ~= 24 and IsReady("Gladiator Stance")
+                    and CheckInteractDistance("target", 3) then
                     return S.GladiatorStance:Cast()
                 end
-
+   
 
                 if IsReady("Last Stand") and CheckInteractDistance("target", 3) and Player:HealthPercentage() < 50 and not AuraUtil.FindAuraByName("Shield Wall", "player") then
                     return S.LastStand:Cast()
@@ -452,19 +474,19 @@ local function APL()
                     return S.berserkerrage:Cast()
                 end
 
-                if CheckInteractDistance("target", 3) and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then
-                    if IsReady("Taunt") and CheckInteractDistance("target", 3) then
-                        return S.Taunt:Cast()
-                    end
-                    if IsReady("Mocking Blow") and CheckInteractDistance("target", 3) and S.Taunt:CooldownRemains() > 2 then
-                        return S.MockingBlow:Cast()
-                    end
-                end
+                -- if CheckInteractDistance("target", 3) and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then
+                --     if IsReady("Taunt") and CheckInteractDistance("target", 3) then
+                --         return S.Taunt:Cast()
+                --     end
+                --     if IsReady("Mocking Blow") and CheckInteractDistance("target", 3) and S.Taunt:CooldownRemains() > 2 then
+                --         return S.MockingBlow:Cast()
+                --     end
+                -- end
 
 
-                if IsReady("Challenging Shout") and CheckInteractDistance("target", 3) and HL.CombatTime() > 4 and RangeCount(20) > GetTankedEnemiesInRange() and not UnitInRaid("player") and not Target:IsAPlayer() then
-                    return S.ChallengingShout:Cast()
-                end
+                -- if IsReady("Challenging Shout") and CheckInteractDistance("target", 3) and HL.CombatTime() > 4 and RangeCount(20) > GetTankedEnemiesInRange() and not UnitInRaid("player") and not Target:IsAPlayer() then
+                --     return S.ChallengingShout:Cast()
+                -- end
 
 
 
@@ -485,19 +507,30 @@ local function APL()
                 end
 
 
-
-
-
-                if IsReady("Execute") and CheckInteractDistance("target", 3) and (Target:HealthPercentage() <= 20 and (Player:Rage() >= 40 or STttd < 3) or AuraUtil.FindAuraByName("Sudden Death", "player")) then
-                    return S.Execute:Cast()
+                if IsReady("Thunder Clap") and RangeCount(10)>1 and GriphRH.AoEON() and CheckInteractDistance("target", 3) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                    return S.ThunderClap:Cast()
                 end
-
                 if IsReady("Shield Slam") and CheckInteractDistance("target", 3) then
                     return S.ShieldSlam:Cast()
                 end
 
+       
 
+        
+                if IsReady("Shield Block") and not AuraUtil.FindAuraByName("Shield Block", "player") and CheckInteractDistance("target", 3) and Player:HealthPercentage()<85 then
+                    return S.ShieldBlock:Cast()
+                end
 
+                if IsReady("Revenge") and RangeCount(10)>1 and GriphRH.AoEON() and CheckInteractDistance("target", 3) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                    return S.Revenge:Cast()
+                end
+                if IsReady("Execute") and CheckInteractDistance("target", 3) and (Target:HealthPercentage() <= 20 and (Player:Rage() >= 40 or STttd < 3) or AuraUtil.FindAuraByName("Sudden Death", "player")) then
+                    return S.Execute:Cast()
+                end
+                
+                if IsReady("Revenge") and (RangeCount(10)==1 or not GriphRH.AoEON()) and CheckInteractDistance("target", 3) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                    return S.Revenge:Cast()
+                end
 
                 if IsReady("Slam") and CheckInteractDistance("target", 3)
                     and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player") then
@@ -522,14 +555,14 @@ local function APL()
 
 
 
-                if IsReady("Demoralizing Shout") and CheckInteractDistance("target", 3) and RangeCount(10) >= 1 and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
-                    return S.DemoralizingShout:Cast()
-                end
+          
 
-                if IsReady("Thunder Clap") and CheckInteractDistance("target", 3) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                if IsReady("Thunder Clap") and Player:Rage()>=16 and CheckInteractDistance("target", 3) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
                     return S.ThunderClap:Cast()
                 end
-
+                if IsReady("Demoralizing Shout") and S.DemoralizingShout:TimeSinceLastCast()>2 and not AuraUtil.FindAuraByName("Demoralizing Shout", "target", "PLAYER|HARMFUL") and CheckInteractDistance("target", 3) and RangeCount(10) >= 1 and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                    return S.DemoralizingShout:Cast()
+                end
                 if IsReady("Sunder Armor") and CheckInteractDistance("target", 3) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage") and Player:Rage() >= 20) then
                     return S.SunderArmor:Cast()
                 end
@@ -553,7 +586,7 @@ local function APL()
                     return S.HeroicStrike:Cast()
                 end
 
-                if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10 then
+                if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10  then
                     return S.BattleShout:Cast()
                 end
 
@@ -572,7 +605,7 @@ local function APL()
                 
                 if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance")
                     and CheckInteractDistance("target", 3) and S.BerserkerStance:TimeSinceLastCast() > 1.5
-                    and S.BattleStance:TimeSinceLastCast() > 1.5 and not canoverpower and not retaliation and 
+                    and S.BattleStance:TimeSinceLastCast() > 1.5 and not canoverpower and 
                     (
                     S.TacticalMastery:IsAvailable() and Player:Rage() <= 25 or 
                      Player:Rage() <= 15 or --check to rage<=5
@@ -584,7 +617,7 @@ local function APL()
 
                 if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance")
                     and CheckInteractDistance("target", 3)
-                    and (retaliation or canoverpower 
+                    and ( canoverpower 
                     and (S.TacticalMastery:IsAvailable() and Player:Rage() <= 25 or Player:Rage() <= 15  --check to rage<=5 this is for testing only
                     or S.Whirlwind:CooldownRemains()>2 and RangeCount(10)>1 or not GriphRH.AoEON() or RangeCount(10) ==1))
                     and S.BerserkerStance:TimeSinceLastCast() > 1.5 and S.BattleStance:TimeSinceLastCast() > 1.5
@@ -633,11 +666,11 @@ local function APL()
                     return S.Whirlwind:Cast()
                 end
 
-
                 if IsReady("Overpower") and CheckInteractDistance("target", 3) and (checkOverpowerTimeautos()<2 or checkOverpowerTimespells() <2) then
                     return S.Overpower:Cast()
                 end
 
+       
                 if IsReady("Execute") and CheckInteractDistance("target", 3) and (Target:HealthPercentage() <= 20 and (Player:Rage() >= 40 or STttd < 3) or AuraUtil.FindAuraByName("Sudden Death", "player")) then
                     return S.Execute:Cast()
                 end
@@ -676,7 +709,7 @@ local function APL()
                 end
 
 
-                if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10 then
+                if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10  then
                     return S.BattleShout:Cast()
                 end
 
@@ -751,7 +784,7 @@ local function APL()
 
                     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance")
                         and CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains() > 2 and S.SweepingStrikes:CooldownRemains() > 2
-                        and (canoverpower or retaliation) and S.BerserkerStance:TimeSinceLastCast() > 1.5 and S.BattleStance:TimeSinceLastCast() > 1.5
+                        and (canoverpower ) and S.BerserkerStance:TimeSinceLastCast() > 1.5 and S.BattleStance:TimeSinceLastCast() > 1.5
                     then
                         return S.BattleStance:Cast()
                     end
@@ -822,7 +855,7 @@ local function APL()
 
                     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance")
                         and CheckInteractDistance("target", 3) and S.Whirlwind:CooldownRemains() > 2
-                        and (canoverpower or retaliation) and S.BerserkerStance:TimeSinceLastCast() > 1.5 and S.BattleStance:TimeSinceLastCast() > 1.5
+                        and (canoverpower ) and S.BerserkerStance:TimeSinceLastCast() > 1.5 and S.BattleStance:TimeSinceLastCast() > 1.5
                     then
                         return S.BattleStance:Cast()
                     end
@@ -870,7 +903,7 @@ local function APL()
                     end
                 end
 
-                if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10 then
+                if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10  then
                     return S.BattleShout:Cast()
                 end
 
@@ -892,6 +925,7 @@ local function APL()
             return I.autoattack:ID()
         end
 
+  
 
         if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10 then
             return S.BattleShout:Cast()
@@ -902,15 +936,20 @@ local function APL()
         end
 
         if GetShapeshiftFormID() ~= 17 and Player:IsMoving() and IsReady("Battle Stance") and RangeCount(20) == 0 
-       and (S.Charge:CooldownRemains() < 2 or S.Intercept:CooldownRemains() > 2) then
+        and namegladiatorstance ~= "Gladiator Stance" and (fury or arms)
+       and (S.Charge:CooldownRemains() < 2 ) then
             return S.BattleStance:Cast()
         end
-        if IsCurrentSpell(6603) and IsReady("Charge") and Player:IsMoving() and not TargetinRange(5) and TargetinRange(25) and IsSpellInRange("Charge", "target") then
+
+        if IsReady("Gladiator Stance") and Player:IsMoving() and namegladiator == "Gladiator Stance" and GetShapeshiftFormID() ~= 24 and prot then
+            return S.GladiatorStance:Cast()
+        end
+
+        if  IsCurrentSpell(6603) and  IsReady("Charge") and Player:IsMoving() and IsSpellInRange("Charge","target")==1  then
             return S.Charge:Cast()
         end
-        if IsCurrentSpell(6603) and IsReady("Intercept") and Player:IsMoving() and not TargetinRange(5) and TargetinRange(25) and IsSpellInRange("Intercept", "target") then
-            return S.Intercept:Cast()
-        end
+
+
     end
 
 
