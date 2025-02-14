@@ -403,7 +403,6 @@ local function APL()
 
 
 
-
     if Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Drink", "player") and not AuraUtil.FindAuraByName("Food", "player") then
         if IsPlayerFeared() and IsReady("Will of the Forsaken") then
             return S.WilloftheForsaken:Cast()
@@ -495,7 +494,6 @@ local function APL()
                         or UnitCreatureType("target") == "Demon"
                         or UnitCreatureType("target") == "Giant"
                         or UnitCreatureType("target") == "Critter"
-                        or UnitCreatureType("target") == "Not specified"
                         or UnitCreatureType("target") == "Non-combat Pet"
                     )
 
@@ -636,7 +634,6 @@ local function APL()
                         or UnitCreatureType("target") == "Demon"
                         or UnitCreatureType("target") == "Giant"
                         or UnitCreatureType("target") == "Critter"
-                        or UnitCreatureType("target") == "Not specified"
                         or UnitCreatureType("target") == "Non-combat Pet"
                     )
 
@@ -805,7 +802,6 @@ local function APL()
                             or UnitCreatureType("target") == "Demon"
                             or UnitCreatureType("target") == "Giant"
                             or UnitCreatureType("target") == "Critter"
-                            or UnitCreatureType("target") == "Not specified"
                             or UnitCreatureType("target") == "Non-combat Pet"
                         )
 
@@ -876,7 +872,6 @@ local function APL()
                             or UnitCreatureType("target") == "Demon"
                             or UnitCreatureType("target") == "Giant"
                             or UnitCreatureType("target") == "Critter"
-                            or UnitCreatureType("target") == "Not specified"
                             or UnitCreatureType("target") == "Non-combat Pet"
                         )
 
