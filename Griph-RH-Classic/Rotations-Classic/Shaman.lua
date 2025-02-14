@@ -422,7 +422,7 @@ local function APL()
 
 
 
-if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()<.25 and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
+if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()<.25  and not AuraUtil.FindAuraByName('Ghost Wolf', "player") and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
     if IsReady(SpellRank('Rockbiter Weapon')) and rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=683 and mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
