@@ -19,7 +19,7 @@ GriphRH.Spell[7] = {
     earthshock = Spell(8042),
     earthshock1 = Spell(10595), -- nature resist totem
     TotemicProjection = Spell(437009),    
-    TotemicProjection = Spell(6495), --sentry totem
+    -- TotemicProjection = Spell(6495), --sentry totem
 	AutoAttack = Spell(6603),
     HealingStreamTotem = Spell(6377),
     ManaSpringTotem = Spell(10495),
@@ -138,6 +138,7 @@ local function APL()
         local nameshamanisticrage = GetSpellInfo('Shamanistic Rage' )
         local namelavalash = GetSpellInfo('Lava Lash' )
         local nameWayofEarth = GetSpellInfo('Way of Earth' )
+        local nameBurn = GetSpellInfo("Burn")
         local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
         local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
         
@@ -283,6 +284,15 @@ local function APL()
                 end
 
         end
+
+
+
+        
+    if AuraUtil.FindAuraByName("Flame Shock", "target", "PLAYER|HARMFUL") then
+        flameshockdebuff = select(6, AuraUtil.FindAuraByName("Flame Shock", "target", "PLAYER|HARMFUL")) - GetTime()
+    else
+        flameshockdebuff = 0
+    end
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -458,7 +468,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     if enhdps == true  then
 
 
-    
+
 
         if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and TargetinRange(30)  then
             return S.shamanisticrage:Cast()
@@ -519,7 +529,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.LavaLash:Cast()
         end
 
+        if IsReady("Flame Shock") and nameBurn == "Burn" and RangeCount(10) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuff<1 then
+            return S.FlameShock:Cast()
+        end
 
+    
 
 
         if IsReady('Lightning Bolt') and (Player:BuffStack(S.MaelstromWeapon)>=5 or AuraUtil.FindAuraByName("Power Surge", "player")) and TargetinRange(30) then
@@ -584,9 +598,14 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
         
 
-        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and (totemName4 == 'Grace of Air Totem' and not AuraUtil.FindAuraByName("Grace of Air", "player") or totemName4 == 'Windfury Totem III' or totemName4 == 'Windfury Totem' or totemName4 == 'Windfury Totem II') and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
-        and ((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I') and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
-        (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+
+        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and 
+        (((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' 
+        or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I' )  and not AuraUtil.FindAuraByName("Strength of Earth", "player")) 
+
+     or
+        ((totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV')
+         and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
         return S.TotemicProjection:Cast()
         end
 
@@ -747,14 +766,17 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.LightningShield:Cast()
         end
 
-        if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
+        if IsReady("Poison Cleansing Totem") and GriphRH.InterruptsON() and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
             return S.PoisonCleansingTotem:Cast()
         end
 
-        if IsReady("Disease Cleansing Totem") and S.DiseaseCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Disease" and totemName3 ~= 'Disease Cleansing Totem' then
+        if IsReady("Disease Cleansing Totem") and GriphRH.InterruptsON() and S.DiseaseCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Disease" and totemName3 ~= 'Disease Cleansing Totem' then
             return S.DiseaseCleansingTotem:Cast()
         end
 
+        -- if   (AuraUtil.FindAuraByName("Wild Strikes","player") or mainHandEnchantID == 563 or mainHandEnchantID == 1783) then
+        --     return S.Hamstring:Cast()
+        -- end
 
     
     
@@ -775,9 +797,13 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.StrengthofEarthTotem:Cast()
         end
 
-        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and (totemName4 == 'Windfury Totem III' or totemName4 == 'Windfury Totem' or totemName4 == 'Windfury Totem II') and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
-        and ((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I') and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
-        (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and 
+        (((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' 
+        or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I' )  and not AuraUtil.FindAuraByName("Strength of Earth", "player")) 
+
+     or
+        ((totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV')
+         and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
         return S.TotemicProjection:Cast()
         end
 
@@ -874,9 +900,14 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.StrengthofEarthTotem:Cast()
         end
 
-        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and (totemName4 == 'Windfury Totem III' or totemName4 == 'Windfury Totem' or totemName4 == 'Windfury Totem II') and (not AuraUtil.FindAuraByName("Ghost Wolf", "player")  
-        and ((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I') and not AuraUtil.FindAuraByName("Strength of Earth", "player") or
-        (totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV') and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
+
+        if IsReady(SpellRank('Totemic Projection')) and  mhenchantseconds>30 and ohenchantseconds>30 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and 
+        (((totemName2 == 'Strength of Earth Totem IV' or totemName2 == 'Strength of Earth Totem III' 
+        or totemName2 == 'Strength of Earth Totem II' or totemName2 == 'Strength of Earth Totem I' )  and not AuraUtil.FindAuraByName("Strength of Earth", "player")) 
+
+     or
+        ((totemName3 == 'Mana Spring Totem' or totemName3 == 'Mana Spring Totem II' or totemName3 == 'Mana Spring Totem III' or totemName3 == 'Mana Spring Totem IV')
+         and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
         return S.TotemicProjection:Cast()
         end
         if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount(10)==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
