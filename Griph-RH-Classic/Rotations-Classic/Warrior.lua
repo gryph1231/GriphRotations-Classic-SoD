@@ -455,7 +455,7 @@ local function APL()
 
 
             if prot then
-                if GetShapeshiftFormID() ~= 24 and IsReady("Defensive Stance")
+                if GetShapeshiftFormID() ~= 18 and IsReady("Defensive Stance")
                     and TargetinRange(5) then
                     return S.DefensiveStance:Cast()
                 end
