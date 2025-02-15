@@ -252,7 +252,7 @@ local function APL()
     else
         canoverpower = false
     end
-
+-- print(IsReady("Sunder Armor"))
 
     -- if (Target:IsAPlayer() and (UnitClass("target") == 4 or UnitClass("target") == 3 or UnitClass("target") == 1 or UnitClass("target") == 2 or UnitClass("target") == 7 or UnitClass("target") == 11) and Player:HealthPercentage() < 75
     --         or GetTankedEnemiesInRange() >=2 and Player:HealthPercentage() < 75) and TargetinRange(5) and S.Retaliation:CooldownRemains() < 2
@@ -546,16 +546,19 @@ local function APL()
 
 
 
-
           
 
-                if IsReady("Thunder Clap") and Player:Rage()>=16 and TargetinRange(5) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                if IsReady("Thunder Clap") and Player:Rage()>=30 and TargetinRange(5) and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
                     return S.ThunderClap:Cast()
                 end
-                if IsReady("Demoralizing Shout") and S.DemoralizingShout:TimeSinceLastCast()>2 and not AuraUtil.FindAuraByName("Demoralizing Shout", "target", "PLAYER|HARMFUL") and TargetinRange(5) and RangeCount(10) >= 1 and (Player:Rage() >= 60 or (AuraUtil.FindAuraByName("Enrage", "player") or nameconsumedbyrage ~= "Consumed By Rage")) then
+                if IsReady("Demoralizing Shout") and S.DemoralizingShout:TimeSinceLastCast()>2 
+                and not AuraUtil.FindAuraByName("Demoralizing Shout", "target", "PLAYER|HARMFUL") 
+                and TargetinRange(5) and RangeCount(10) >= 1 
+                and Player:Rage() >= 30 then
                     return S.DemoralizingShout:Cast()
                 end
-                if IsReady("Sunder Armor") and TargetinRange(5) and Player:Rage() >= 20 then
+
+                if IsReady("Sunder Armor") and TargetinRange(5) and Player:Rage() >= 20 and (sunderarmorstack<5 or sunderarmorremains<3) then
                     return S.SunderArmor:Cast()
                 end
 
