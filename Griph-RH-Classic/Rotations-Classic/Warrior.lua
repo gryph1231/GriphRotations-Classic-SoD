@@ -90,6 +90,7 @@ S.Meathook.TextureSpellID = { 20589 }    -- escape artist
 S.ShieldWall.TextureSpellID = { 20580 }  -- shadowmeld
 S.ThunderClap.TextureSpellID = { 20549 } -- warstomp
 S.Recklessness.TextureSpellID = { 20594 }    --  stoneform
+S.Shockwave.TextureSpellID = { 20572 }    --  bloodfury
 
 
 
