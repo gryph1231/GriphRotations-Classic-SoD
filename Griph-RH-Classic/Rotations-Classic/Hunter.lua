@@ -24,6 +24,7 @@ MongooseBite = Spell(14271),
 	RaptorStrike = Spell(14262),
 	AutoShot = Spell(75),
 	AimedShot = Spell(19434),
+	WyvernStrike = Spell(458479),
 	Multishot = Spell(14288),
 	ExplosiveShot = Spell(409552),
 	HeartoftheLion = Spell(409580),
@@ -403,6 +404,7 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 if namechimerashot ~= "Chimera Shot" then 
 
 
+
 if GriphRH.CDsON() and IsReady("Rapid Fire") and flankingstrikestacks>=2 and CheckInteractDistance("target",3) then
 	return S.RapidFire:Cast()
 end 
@@ -420,9 +422,16 @@ if  IsReady("Raptor Strike") and  CheckInteractDistance("target",3) then
 	return S.RaptorStrike:Cast()
 end 
 
+if  IsReady("Wyvern Strike") and  CheckInteractDistance("target",3) then
+	return S.WyvernStrike:Cast()
+end 
+
+
 if  IsReady("Mongoose Bite") and  CheckInteractDistance("target",3) then
 	return S.MongooseBite:Cast()
 end 
+
+
 if  IsReady("Flanking Strike") and  CheckInteractDistance("target",3) then
 	return S.FlankingStrike:Cast()
 end 

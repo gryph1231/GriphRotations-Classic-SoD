@@ -417,6 +417,30 @@ end
 
 
 
+
+
+
+function tierequipped()
+    local items = {
+        "Footwraps of the Oracle",
+        "Vestments of the Oracle",
+        "Tiara of the Oracle",
+        "Trousers of the Oracle",
+        "Mantle of the Oracle",
+
+    }
+
+    local count = 0
+
+    for _, itemName in ipairs(items) do
+        if C_Item.IsEquippedItem(itemName) then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
 local lastMoveTime = GetTime()  -- Initialize with the current time
 
 -- Function to get the time since last moved
