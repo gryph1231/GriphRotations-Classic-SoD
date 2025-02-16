@@ -42,6 +42,8 @@ GriphRH.Spell[1] = {
     ShieldBlock = Spell(2565),
     Slam = Spell(1464),
     EnragedRegeneration = Spell(402913),
+    MortalStrike3 = Spell(21552),
+    MortalStrike4 = Spell(21553),
     Default = Spell(1),
     DefensiveStance = Spell(71),
     HeroicStrike = Spell(78),
@@ -167,7 +169,7 @@ local function APL()
 
 
     local fury = S.Bloodthirst:IsAvailable() or S.Bloodthirst2:IsAvailable() or S.Bloodthirst3:IsAvailable() or S.Bloodthirst4:IsAvailable()
-    local arms = S.MortalStrike:IsAvailable() or  S.MortalStrike2:IsAvailable() 
+    local arms = S.MortalStrike:IsAvailable() or  S.MortalStrike2:IsAvailable() or  S.MortalStrike3:IsAvailable()  or  S.MortalStrike4:IsAvailable() 
     local prot = IsEquippedItemType("Shield")
 
 
@@ -289,7 +291,7 @@ local function APL()
     else
         spend = false
     end
-
+-- print(arms)
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     ---------------------------------SPELL QUEUES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -768,25 +770,21 @@ local function APL()
                     if IsReady("Berserker Rage") and TargetinRange(5) and not AuraUtil.FindAuraByName("Bloodrage", "player") and (Player:HealthPercentage() < 90 or GetTankedEnemiesInRange() >= 1) then
                         return S.berserkerrage:Cast()
                     end
-
-                    if IsReady("Bloodthirst") and TargetinRange(5) then
-                        return S.Bloodthirst:Cast()
+                    if IsReady("Execute") and TargetinRange(5) and AuraUtil.FindAuraByName("Sudden Death", "player") then
+                        return S.Execute:Cast()
                     end
 
+                    if IsReady('Whirlwind') and UnitCreatureType("target") ~= "Totem" and TargetinRange(5)
+                    and (Player:Rage() >= 25 and S.SweepingStrikes:CooldownRemains() > 2 or Player:Rage() >= 25) then
+                    return S.Whirlwind:Cast()
+                end
+                    
                     if IsReady("Mortal Strike") and TargetinRange(5) then
                         return S.MortalStrike:Cast()
                     end
 
 
-
-                    if IsReady('Whirlwind') and UnitCreatureType("target") ~= "Totem" and TargetinRange(5)
-                        and (Player:Rage() >= 30 and S.SweepingStrikes:CooldownRemains() > 2 or Player:Rage() >= 30) then
-                        return S.Whirlwind:Cast()
-                    end
-
-                    if IsReady("Execute") and TargetinRange(5) and AuraUtil.FindAuraByName("Sudden Death", "player") and spendaoe then
-                        return S.Execute:Cast()
-                    end
+                
 
                     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance")
                         and TargetinRange(5) and S.Whirlwind:CooldownRemains() > 2 and S.SweepingStrikes:CooldownRemains() > 2
@@ -809,8 +807,7 @@ local function APL()
                         return S.Rend:Cast()
                     end
 
-
-                    if IsReady('Overpower') and TargetinRange(5) and spendaoe then
+                    if IsReady("Overpower") and TargetinRange(5) and (checkOverpowerTimeautos()<2 or checkOverpowerTimespells() <2)  and spendaoe then
                         return S.Overpower:Cast()
                     end
 
@@ -823,6 +820,10 @@ local function APL()
                         return S.Execute:Cast()
                     end
 
+                    if IsReady("Overpower") and TargetinRange(5)  and spendaoe then
+                        return S.Overpower:Cast()
+                    end
+
                     if IsReady("Cleave") and not IsCurrentSpell(SpellRank('Cleave'))
                         and TargetinRange(5) and (spendaoe or S.Whirlwind:CooldownRemains() > 2 or not AuraUtil.FindAuraByName("Berserker Stance", "player") and Player:Rage() >= 25) then
                         return S.Cleave:Cast()
@@ -831,6 +832,12 @@ local function APL()
                     if IsReady("Quick Strike") and TargetinRange(5) and Player:Rage() >= 25 then
                         return S.QuickStrike:Cast()
                     end
+
+                    
+                    if IsReady("Raging Blow") and TargetinRange(5) then
+                        return S.RagingBlow:Cast()
+                    end
+
                 end
 
 
@@ -847,14 +854,19 @@ local function APL()
                     if IsReady("Berserker Rage") and TargetinRange(5) and not AuraUtil.FindAuraByName("Bloodrage", "player") and (Player:HealthPercentage() < 90 or GetTankedEnemiesInRange() >= 1) then
                         return S.berserkerrage:Cast()
                     end
-
+                    if IsReady("Execute") and TargetinRange(5) and AuraUtil.FindAuraByName("Sudden Death", "player") then
+                        return S.Execute:Cast()
+                    end
+                    
+            
+                    if IsReady("Overpower") and TargetinRange(5) and (checkOverpowerTimeautos()<2 or checkOverpowerTimespells() <2)  then
+                        return S.Overpower:Cast()
+                    end
                     if IsReady("Mortal Strike") and TargetinRange(5) then
                         return S.MortalStrike:Cast()
                     end
 
-                    if IsReady("Execute") and TargetinRange(5) and AuraUtil.FindAuraByName("Sudden Death", "player") then
-                        return S.Execute:Cast()
-                    end
+       
 
 
                     if GetShapeshiftFormID() ~= 17 and IsReady("Battle Stance")
@@ -879,10 +891,10 @@ local function APL()
                     end
 
 
-                    if IsReady('Overpower') and TargetinRange(5) then
+          
+                    if IsReady("Overpower") and TargetinRange(5)  then
                         return S.Overpower:Cast()
                     end
-
                     if IsReady("Slam") and TargetinRange(5)
                         and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player") then
                         return S.Slam:Cast()
@@ -903,6 +915,11 @@ local function APL()
                     if IsReady("Quick Strike") and TargetinRange(5) and Player:Rage() >= 30 then
                         return S.QuickStrike:Cast()
                     end
+            
+                    if IsReady("Raging Blow") and TargetinRange(5) then
+                        return S.RagingBlow:Cast()
+                    end
+
                 end
 
                 if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10  then

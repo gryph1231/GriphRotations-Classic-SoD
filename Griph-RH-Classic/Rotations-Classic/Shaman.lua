@@ -116,6 +116,8 @@ end
 
 
 local function APL()
+  targetRangeLBCL =  IsSpellInRange("Lightning Bolt")
+  targetRangeShock = IsSpellInRange("Earth Shock")
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -124,6 +126,23 @@ local function APL()
 
 -- print(not CheckInteractDistance("target", 3))
 -- print(S.ChainLightning:IsAvailable())
+
+
+local trinket1 = GetInventoryItemID("player", 13)
+local trinket2 = GetInventoryItemID("player", 14)
+local trinket1ready = IsUsableItem(trinket1) and IsEquippedItem(trinket1) and select(2,GetItemCooldown(trinket1)) < 1.5
+local trinket2ready = IsUsableItem(trinket2) and IsEquippedItem(trinket2) and select(2,GetItemCooldown(trinket2)) < 1.5
+local trinketblacklist = 202612
+
+local inRange25 = 0
+for i = 1, 40 do
+    if UnitExists('nameplate' .. i) then
+        inRange25 = inRange25 + 1
+    end
+end
+
+
+
         if Player:IsCasting() or Player:IsChanneling() then
             return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
         elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") 
@@ -209,6 +228,7 @@ local function APL()
     
         local castchannelTime = math.random(275, 500) / 1000
 
+        local aoeDots = (inRange25>=2 or GetMobsInCombat()>=2) and GriphRH.AoEON()
 
 
 
@@ -286,14 +306,30 @@ local function APL()
         end
 
 
-
-        
+        if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
+            targetTTD = UnitHealth('target')/getCurrentDPS()
+            else targetTTD = 8888
+            end
+        if  AuraUtil.FindAuraByName('Lightning Shield','player') then
+            _, _, lightningshieldstacks = AuraUtil.FindAuraByName('Lightning Shield','player')
+        else
+            lightningshieldstacks = 0
+        end
+    
     if AuraUtil.FindAuraByName("Flame Shock", "target", "PLAYER|HARMFUL") then
-        flameshockdebuff = select(6, AuraUtil.FindAuraByName("Flame Shock", "target", "PLAYER|HARMFUL")) - GetTime()
+        flameshockdebuffremains = select(6, AuraUtil.FindAuraByName("Flame Shock", "target", "PLAYER|HARMFUL")) - GetTime()
     else
-        flameshockdebuff = 0
+        flameshockdebuffremains = 0
     end
 
+
+
+
+    if AuraUtil.FindAuraByName("Wushoolay's Charm of Spirits", "player") then
+        trinketbuffwushooremains = select(6, AuraUtil.FindAuraByName("Wushoolay's Charm of Spirits", "player")) - GetTime()
+    else
+        trinketbuffwushooremains = 0
+    end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------SPELL QUEUES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -494,7 +530,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         or UnitCreatureType("target") == "Giant"
         or UnitCreatureType("target") == "Critter"
         or UnitCreatureType("target") == "Non-combat Pet")
-        and RangeCount(20) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuff<1 then
+        and RangeCount(20) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuffremains<1 then
             return S.FlameShock:Cast()
         end
 
@@ -552,7 +588,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
 
 
 
-        if (Target:TimeToDie()<10 or Target:HealthPercentage()<20 and Target:IsAPlayer())          and (UnitCreatureType("target") == "Beast"
+        if (targetTTD<10 or Target:HealthPercentage()<20 and Target:IsAPlayer())          and (UnitCreatureType("target") == "Beast"
         or UnitCreatureType("target") == "Dragonkin"
         or UnitCreatureType("target") == "Humanoid"
         or UnitCreatureType("target") == "Demon"
@@ -571,13 +607,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         or UnitCreatureType("target") == "Giant"
         or UnitCreatureType("target") == "Critter"
         or UnitCreatureType("target") == "Non-combat Pet"
-    ) and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or Target:TimeToDie()<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and TargetinRange(25) then
+    ) and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or aoeTTD()<10 or targetTTD<10 or UnitHealth('target')<3000 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock') and TargetinRange(25) then
             return S.EarthShock:Cast()
         end
 
-        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<25 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and TargetinRange(25) then
-            return S.earthshock1:Cast()
-        end
         
         if IsReady('Lightning Shield') and not Target:IsAPlayer() and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.LightningShield:Cast()
@@ -639,11 +672,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
 
-        if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>30 and RangeCount(10)==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>30 and RangeCount(10)==1 and targetTTD>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.SearingTotem:Cast()
         end
 
-        if not Target:IsAPlayer() and aoeTTD()> 3 and IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>11 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if not Target:IsAPlayer() and aoeTTD()> 3 and IsReady(SpellRank('Mana Spring Totem')) and targetTTD>11 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
        
@@ -680,7 +713,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             or UnitCreatureType("target") == "Giant"
             or UnitCreatureType("target") == "Critter"
             or UnitCreatureType("target") == "Non-combat Pet")
-            and RangeCount(20) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuff<1 then
+            and RangeCount(20) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuffremains<1 then
                 return S.FlameShock:Cast()
             end
     
@@ -837,11 +870,11 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         return S.TotemicProjection:Cast()
         end
 
-        if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>40 and RangeCount(10)==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if IsReady('Searing Totem') and aoeTTD()> 3 and Player:ManaPercentage()>40 and RangeCount(10)==1 and targetTTD>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.SearingTotem:Cast()
         end
 
-        if not Target:IsAPlayer() and aoeTTD()> 3 and IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>11 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        if not Target:IsAPlayer() and aoeTTD()> 3 and IsReady(SpellRank('Mana Spring Totem')) and targetTTD>11 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
 
@@ -857,31 +890,113 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return I.autoattack:ID()
         end
 
-        if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<70 and Target:IsAPlayer()) and GriphRH.CDsON() and TargetinRange(30)  then
+        if IsReady('Shamanistic Rage') and (Player:ManaPercentage()<65 or Player:HealthPercentage()<80 and Player:ManaPercentage()<75 and Target:IsAPlayer()) and GriphRH.CDsON() and RangeCount(25)>=1  then
             return S.shamanisticrage:Cast()
         end
 
-        if IsReady('Chain Lightning') and TargetinRange(30) and RangeCount(25)>1 then
-            return S.ChainLightning:Cast()
+
+        if IsReady('Feral Spirit') and targetRangeShock and GriphRH.CDsON() then
+            return S.FeralSpirit:Cast()
         end
 
-        if IsReady('Lava Burst') and TargetinRange(30) then
-            return S.LavaBurst:Cast()
-        end
 
-        if IsReady('Chain Lightning') and TargetinRange(30) then
-            return S.ChainLightning:Cast()
-        end
-        if Player:ManaPercentage()>=30          and (UnitCreatureType("target") == "Beast"
+        if targetRangeShock then
+if trinket1ready and trinket1 ~= trinketblacklist and lightningshieldstacks>=8 and trinket1 == 19956 then
+    return Item(118330):Cast()
+end
+
+if trinket2ready and trinket2ready ~= trinketblacklist and lightningshieldstacks>=8 and trinket2 == 19956 then
+    return Item(114616):Cast()
+end
+end
+
+if not IsReady('Lava Burst') and IsReady("Elemental Mastery") and AuraUtil.FindAuraByName("Flame Shock", "target", "PLAYER|HARMFUL") and targetRangeLBCL then
+    return S.ElementalMastery:Cast()
+end
+        
+        if AuraUtil.FindAuraByName("Wushoolay's Charm of Spirits","player") and trinketbuffwushooremains<=2
+        and IsReady("Earth Shock") and targetRangeShock and (UnitCreatureType("target") == "Beast"
         or UnitCreatureType("target") == "Dragonkin"
         or UnitCreatureType("target") == "Humanoid"
         or UnitCreatureType("target") == "Demon"
         or UnitCreatureType("target") == "Giant"
         or UnitCreatureType("target") == "Critter"
         or UnitCreatureType("target") == "Non-combat Pet"
-    ) and (aoeTTD()<3 or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or Target:TimeToDie()<3) and IsReady('Earth Shock') and TargetinRange(25) then
+    ) then
             return S.EarthShock:Cast()
         end
+
+
+        if flameshockdebuffremains<3  and (GetMobsInCombat()>=5 or inRange25>=5)  and GriphRH.AoEON() and (UnitCreatureType("target") == "Beast"
+        or UnitCreatureType("target") == "Dragonkin"
+        or UnitCreatureType("target") == "Humanoid"
+        or UnitCreatureType("target") == "Demon"
+        or UnitCreatureType("target") == "Giant"
+        or UnitCreatureType("target") == "Critter"
+        or UnitCreatureType("target") == "Non-combat Pet"
+    ) and IsReady('Flame Shock') and targetRangeShock then
+            return S.FlameShock:Cast()
+        end
+
+        if IsReady('Chain Lightning') and targetRangeLBCL and aoeDots and GriphRH.AoEON() then
+            return S.ChainLightning:Cast()
+        end
+
+        if IsReady('Lava Burst') and aoeDots and flameshockdebuffremains> S.LavaBurst:CastTime() then
+            return S.LavaBurst:Cast()
+        end
+
+        if IsReady("Earth Shock") and targetRangeShock and lightningshieldstacks>=7 and (UnitCreatureType("target") == "Beast"
+        or UnitCreatureType("target") == "Dragonkin"
+        or UnitCreatureType("target") == "Humanoid"
+        or UnitCreatureType("target") == "Demon"
+        or UnitCreatureType("target") == "Giant"
+        or UnitCreatureType("target") == "Critter"
+        or UnitCreatureType("target") == "Non-combat Pet"
+    ) then
+            return S.EarthShock:Cast()
+        end
+
+
+        if IsReady("Fire Nova") and GriphRH.AoEON() and targetRangeLBCL
+         and (GetMobsInCombat()>=5 or inRange25>=5) and haveTotem1 == true then
+            return S.FireNovaTotem:Cast()
+        end	
+
+
+
+
+        if flameshockdebuffremains<3   and GriphRH.AoEON() and aoeDots and (UnitCreatureType("target") == "Beast"
+        or UnitCreatureType("target") == "Dragonkin"
+        or UnitCreatureType("target") == "Humanoid"
+        or UnitCreatureType("target") == "Demon"
+        or UnitCreatureType("target") == "Giant"
+        or UnitCreatureType("target") == "Critter"
+        or UnitCreatureType("target") == "Non-combat Pet"
+    ) and IsReady('Flame Shock') and targetRangeShock then
+            return S.FlameShock:Cast()
+        end
+
+
+        if IsReady("Fire Nova") and GriphRH.AoEON() and targetRangeLBCL
+         and (GetMobsInCombat()>=3 or inRange25>=3) and haveTotem1 == true then
+            return S.FireNovaTotem:Cast()
+        end	
+
+        if IsReady('Magma Totem') 
+        and aoeTTD()>5 and (GetMobsInCombat()>=3 or inRange25>=3) and GriphRH.AoEON() and haveTotem1 == false  then
+            return S.MagmaTotem:Cast()
+        end
+
+        if IsReady('Searing Totem') 
+        and aoeTTD()>5 and (GetMobsInCombat()<3 or inRange25<3) and haveTotem1 == false  then
+            return S.SearingTotem:Cast()
+        end
+
+        if IsReady('Lightning Bolt') and targetRangeLBCL then
+            return S.LightningBolt:Cast()
+        end
+
 
         if IsReady('Earth Shock(rank 1)') and Player:ManaPercentage()<30 and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime or AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL")) and IsReady('Earth Shock(rank 1)') and TargetinRange(25) then
             return S.earthshock1:Cast()
@@ -890,20 +1005,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.LightningShield:Cast()
         end
         
-        if Player:ManaPercentage()>=30          and (UnitCreatureType("target") == "Beast"
-        or UnitCreatureType("target") == "Dragonkin"
-        or UnitCreatureType("target") == "Humanoid"
-        or UnitCreatureType("target") == "Demon"
-        or UnitCreatureType("target") == "Giant"
-        or UnitCreatureType("target") == "Critter"
-        or UnitCreatureType("target") == "Non-combat Pet"
-    ) and IsReady('Flame Shock') and TargetinRange(25) and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
-            return S.FlameShock:Cast()
-        end
-
-        if Player:ManaPercentage()<30 and IsReady('Flame Shock(rank 1)') and TargetinRange(25) and not AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
-            return S.flameshock1:Cast()
-        end
+   
         if IsReady("Poison Cleansing Totem") and S.PoisonCleansingTotem:TimeSinceLastCast()> 30 and GetAppropriateCureSpell() == "Poison" and totemName3 ~= 'Poison Cleansing Totem' then
             return S.PoisonCleansingTotem:Cast()
         end
@@ -912,20 +1014,15 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.DiseaseCleansingTotem:Cast()
         end
 
-       
+        if Target:IsAPlayer() and  IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.GroundingTotem:Cast()
+        end  
+
         if not Target:IsAPlayer() and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
         
         
-        if Target:IsAPlayer() and  IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.GroundingTotem:Cast()
-        end  
-
-        if not Target:IsAPlayer() and not Player:IsMoving() and Player:ManaPercentage()>70 and IsReady('Magma Totem') and aoeTTD()>5 and RangeCount(10)>1 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.MagmaTotem:Cast()
-        end
-
         if IsReady(SpellRank('Strength of Earth Totem')) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
             return S.StrengthofEarthTotem:Cast()
         end
@@ -940,17 +1037,12 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
          and not AuraUtil.FindAuraByName("Mana Spring", "player"))) then
         return S.TotemicProjection:Cast()
         end
-        if IsReady('Searing Totem') and Player:ManaPercentage()>40 and RangeCount(10)==1 and Target:TimeToDie()>5 and haveTotem1 == false and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.SearingTotem:Cast()
-        end
-
-        if IsReady(SpellRank('Mana Spring Totem')) and Target:TimeToDie()>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
+        
+        if IsReady(SpellRank('Mana Spring Totem')) and targetTTD>10 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and IsInGroup() and  partyInRange()>=1 and not AuraUtil.FindAuraByName("Mana Spring", "player") and haveTotem3 == false then
             return S.ManaSpringTotem:Cast()
         end
 
-        if IsReady('Lightning Bolt') and TargetinRange(30) then
-            return S.LightningBolt:Cast()
-        end
+
 
     end
 
