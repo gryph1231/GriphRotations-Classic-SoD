@@ -206,6 +206,17 @@ end
 
 if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat() or IsCurrentSpell(6603) or S.Smite:InFlight() or S.MindSpike:InFlight()) and not Target:IsDeadOrGhost() then 
 
+if AuraUtil.FindAuraByName('Inner Focus', "player") then
+	if not Player:IsMoving() and IsReady("Mind Blast") then 
+		return S.MindBlast:Cast()
+		end
+		if  IsReady("Shadow Word: Death") then
+		return S.ShadowWordDeath:Cast()
+	end
+end
+
+
+
 	if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() and  targetRange36 and (GetMobsInCombat()>=5 or inRange25>=5) then
 		return S.handrune:Cast()
 	end	
@@ -248,13 +259,6 @@ if stoprotation == false and Player:CanAttack(Target) and not AuraUtil.FindAuraB
 		return S.ShadowWordPain:Cast()
 	end
 
-if AuraUtil.FindAuraByName("Inner Focus","player") then
-	if not Player:IsMoving() and IsReady("Mind Blast") then 
-	return S.MindBlast:Cast()
-	elseif Player:IsMoving() and IsReady("Shadow Word: Death") then
-	return S.ShadowWordDeath:Cast()
-end
-end
 
 
 	if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and  targetRange36 and GriphRH.CDsON() then
@@ -282,6 +286,18 @@ end
 		return S.vampirictouch:Cast()
 	end
 
+	if IsReady("Inner Focus") then
+		return S.InnerFocus:Cast()
+	end
+
+	if not Player:IsMoving() and IsReady("Mind Blast") then 
+		return S.MindBlast:Cast()
+		end
+		if IsReady("Shadow Word: Death") then
+		return S.ShadowWordDeath:Cast()
+	end
+
+	
 	if IsReady("Mind Sear") and not Player:IsMoving() and  targetRange36 and aoeDots  then
 		return S.handrune:Cast()
 	end	
@@ -308,7 +324,7 @@ end
 		return S.MindFlay:Cast()
 	end
 
-	if IsReady('Shadow Word: Death') and  targetRange36 and Player:IsMoving() then
+	if IsReady('Shadow Word: Death') and  targetRange36  then
 		return S.ShadowWordDeath:Cast()
 	end
 	if IsReady('Vampiric Touch') and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
