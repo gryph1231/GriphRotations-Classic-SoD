@@ -61,6 +61,9 @@ GriphRH.Spell[5] = {
 
 local S = GriphRH.Spell[5]
 
+
+
+
 S.Smite:RegisterInFlight()
 S.Shoot:RegisterInFlight()
 S.MindSpike:RegisterInFlight()
@@ -98,7 +101,6 @@ local function APL()
 		end
 	end
 
-	
 
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
