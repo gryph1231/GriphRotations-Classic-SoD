@@ -141,10 +141,10 @@ local function APL()
     local nameechoesofberserkerstance = GetSpellInfo('Echoes of Berserker Stance')
     local namebloodsurge = GetSpellInfo('Blood Surge')
     local namebloodfrenzy = GetSpellInfo('Blood Frenzy')
+    local nameprecisetiming = GetSpellInfo('Precise Timing')
 
 
     local nameflagellation = GetSpellInfo('Flagellation')
-    local nameprecisetiming = GetSpellInfo('Precise Timing')
     local namerampage = GetSpellInfo('Rampage')
     local nameconsumedbyrage = GetSpellInfo('Consumed By Rage')
 
@@ -451,7 +451,6 @@ local function APL()
   
 
 
-
             --prot rotation
 
 
@@ -526,11 +525,13 @@ local function APL()
                     return S.Revenge:Cast()
                 end
 
-                if IsReady("Slam") and TargetinRange(5)
-                    and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player") then
-                    return S.Slam:Cast()
-                end
 
+                if IsReady("Slam") and TargetinRange(5)
+                and (namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player")
+                or
+                nameprecisetiming == "Precise Timing") then
+                return S.Slam:Cast()
+                end
 
                 if IsReady("Overpower") and TargetinRange(5) then
                     return S.Overpower:Cast()
@@ -641,8 +642,10 @@ local function APL()
 
 
                 if IsReady("Slam") and TargetinRange(5)
-                    and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player") then
-                    return S.Slam:Cast()
+                and (namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player")
+                or
+                nameprecisetiming == "Precise Timing" ) then
+                return S.Slam:Cast()
                 end
 
                 if IsReady("Overpower") and TargetinRange(5) then
@@ -812,7 +815,10 @@ local function APL()
                     end
 
                     if IsReady("Slam") and TargetinRange(5)
-                        and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player") and spendaoe then
+                        and (namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player")
+                        or
+                        nameprecisetiming == "Precise Timing" )
+                        and spendaoe then
                         return S.Slam:Cast()
                     end
 
@@ -896,9 +902,13 @@ local function APL()
                         return S.Overpower:Cast()
                     end
                     if IsReady("Slam") and TargetinRange(5)
-                        and namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player") then
-                        return S.Slam:Cast()
-                    end
+                    and (namebloodsurge == "Blood Surge" and AuraUtil.FindAuraByName("Blood Surge", "player")
+                    or
+                    nameprecisetiming == "Precise Timing" )
+                     then
+                    return S.Slam:Cast()
+                end
+
 
                     if IsReady('Whirlwind') and TargetinRange(5) and Player:Rage() >= 30 then
                         return S.Whirlwind:Cast()
