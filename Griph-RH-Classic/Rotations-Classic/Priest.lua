@@ -286,7 +286,7 @@ end
 		return S.vampirictouch:Cast()
 	end
 
-	if IsReady("Inner Focus") then
+	if IsReady("Inner Focus") and GriphRH.CDsON()and  ( IsReady("Mind Blast")  and not Player:IsMoving() or Player:IsMoving() and IsReady("Shadow Word: Death") )then
 		return S.InnerFocus:Cast()
 	end
 

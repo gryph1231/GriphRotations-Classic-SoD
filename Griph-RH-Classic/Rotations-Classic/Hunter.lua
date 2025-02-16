@@ -18,7 +18,7 @@ GriphRH.Spell[3] = {
 	Default = Spell(30681),
 	ChimeraShot = Spell(409433),
 KillShot = Spell(409974),
-
+MongooseBite = Spell(14271),
 	ViperSting = Spell(14279),
 	BestialWrath = Spell(19574),
 	RaptorStrike = Spell(14262),

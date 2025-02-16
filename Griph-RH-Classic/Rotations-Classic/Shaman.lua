@@ -433,7 +433,7 @@ local function APL()
 
 -- print(mainHandEnchantID)
 if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMoving()) and GCDRemaining()<.25  and not AuraUtil.FindAuraByName('Ghost Wolf', "player") and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then
-    if IsReady(SpellRank('Rockbiter Weapon')) and rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=683 and mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
+    if IsReady(SpellRank('Rockbiter Weapon')) and rockbitermh == true and (mhenchantseconds<30 or (mainHandEnchantID~=7568 and mainHandEnchantID~=683 and mainHandEnchantID~=29 and mainHandEnchantID~=6 and mainHandEnchantID~=1 and mainHandEnchantID~=503 and mainHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
     if IsReady(SpellRank('Flametongue Weapon')) and flametonguemh == true and (mhenchantseconds<30  or (mainHandEnchantID~=5 and mainHandEnchantID~=4 and mainHandEnchantID~=3 and mainHandEnchantID~=523)) then
@@ -445,7 +445,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     if IsReady(SpellRank('Windfury Weapon')) and windfuryoh == true and (ohenchantseconds<30  or (offHandEnchantID~=7569 and  offHandEnchantID~=1669 and offHandEnchantID~=525 and offHandEnchantID~=283 and offHandEnchantID~=284)) then
         return S.WindfuryWeapon:Cast()
     end
-    if IsReady(SpellRank('Rockbiter Weapon')) and rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=683 and offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
+    if IsReady(SpellRank('Rockbiter Weapon')) and rockbiteroh == true and (ohenchantseconds<30  or (offHandEnchantID~=7568 and offHandEnchantID~=683 and offHandEnchantID~=29 and offHandEnchantID~=6 and offHandEnchantID~=503 and offHandEnchantID~=1 and offHandEnchantID~=1663)) then
         return S.RockbiterWeapon:Cast()
     end
     if IsReady(SpellRank('Flametongue Weapon')) and flametongueoh == true and (ohenchantseconds<30  or (offHandEnchantID~=5 and offHandEnchantID~=4 and offHandEnchantID~=3 and offHandEnchantID~=523)) then
@@ -486,6 +486,18 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         if IsReady('Stormstrike',1) then
             return S.Stormstrike:Cast()
         end
+
+        if IsReady("Flame Shock") and nameBurn == "Burn" and (UnitCreatureType("target") == "Beast"
+        or UnitCreatureType("target") == "Dragonkin"
+        or UnitCreatureType("target") == "Humanoid"
+        or UnitCreatureType("target") == "Demon"
+        or UnitCreatureType("target") == "Giant"
+        or UnitCreatureType("target") == "Critter"
+        or UnitCreatureType("target") == "Non-combat Pet")
+        and RangeCount(20) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuff<1 then
+            return S.FlameShock:Cast()
+        end
+
 
         if  (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime)          and (UnitCreatureType("target") == "Beast"
         or UnitCreatureType("target") == "Dragonkin"
@@ -529,9 +541,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.LavaLash:Cast()
         end
 
-        if IsReady("Flame Shock") and nameBurn == "Burn" and RangeCount(10) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuff<1 then
-            return S.FlameShock:Cast()
-        end
+   
 
     
 
@@ -660,6 +670,20 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
                 return S.LesserHealingWave:Cast()
             end
 
+
+
+
+            if IsReady("Flame Shock") and nameBurn == "Burn" and (UnitCreatureType("target") == "Beast"
+            or UnitCreatureType("target") == "Dragonkin"
+            or UnitCreatureType("target") == "Humanoid"
+            or UnitCreatureType("target") == "Demon"
+            or UnitCreatureType("target") == "Giant"
+            or UnitCreatureType("target") == "Critter"
+            or UnitCreatureType("target") == "Non-combat Pet")
+            and RangeCount(20) >1 and GriphRH.AoEON() and IsSpellInRange("Flame Shock","target") and flameshockdebuff<1 then
+                return S.FlameShock:Cast()
+            end
+    
       
             if IsReady('Stormstrike',1) then
                 return S.Stormstrike:Cast()
@@ -678,6 +702,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
     
             if IsReady('Earth Shock(rank 1)') and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and TargetinRange(25) and GriphRH.InterruptsON() then
                 return S.earthshock1:Cast()
+            end
+
+            if IsReady('Feral Spirit') and GriphRH.CDsON() and CheckInteractDistance("target", 3) then
+                return S.FeralSpirit:Cast()
             end
                 
             if IsReady('Lightning Shield') and not Target:IsAPlayer() and S.LightningShield:TimeSinceLastCast()>4 and not AuraUtil.FindAuraByName("Lightning Shield", "player")  and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and nameovercharged == 'Overcharged' then
@@ -737,7 +765,9 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
 
-        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<25 and (isTanking==false and TargetinRange(10) and nameWayofEarth == 'Way of Earth' or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and IsReady('Earth Shock(rank 1)') and TargetinRange(25) then
+        if IsReady('Earth Shock(rank 1)') and not Target:IsAPlayer() and S.earthshock1:CooldownRemains()<1.5 and  Player:ManaPercentage()<25
+         and (isTanking==false and TargetinRange(10) and nameWayofEarth == 'Way of Earth' or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime)
+          and IsReady('Earth Shock(rank 1)') and TargetinRange(25) then
             return S.earthshock1:Cast()
         end
                     
@@ -778,7 +808,10 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         --     return S.Hamstring:Cast()
         -- end
 
-    
+        if Target:IsAPlayer() and IsReady(SpellRank('Grounding Totem')) and (Target:IsCasting() or castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+            return S.GroundingTotem:Cast()
+        end  
+  
     
         if not Target:IsAPlayer() and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Wild Strikes", "player") and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
@@ -788,10 +821,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
             return S.GraceofAirTotem:Cast()
         end        
         
-        if Target:IsAPlayer() and IsReady(SpellRank('Grounding Totem')) and Target:IsCasting() and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-            return S.GroundingTotem:Cast()
-        end  
-  
+
 
         if IsReady(SpellRank('Strength of Earth Totem')) and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") and not AuraUtil.FindAuraByName("Strength of Earth", "player") and haveTotem2 == false then
             return S.StrengthofEarthTotem:Cast()
