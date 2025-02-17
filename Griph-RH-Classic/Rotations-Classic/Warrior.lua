@@ -63,6 +63,7 @@ GriphRH.Spell[1] = {
     Meathook = Spell(403228),
     Shockwave = Spell(440488),
     DeathWish = Spell(12328),
+    RallyingCry = Spell(426490),
     CommandingShout = Spell(403215),
     Recklessness = Spell(1719),
     MortalStrike = Spell(12294),

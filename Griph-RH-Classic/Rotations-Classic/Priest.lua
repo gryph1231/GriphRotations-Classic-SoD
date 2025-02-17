@@ -77,11 +77,6 @@ S.MindSpike:RegisterInFlight()
 		cooldown_remains = 0 
 	end
 	
-
-
-
-
-
 local function APL()
 
 	if S.ShadowReach:IsAvailable() then
@@ -100,9 +95,7 @@ local function APL()
 			Shoot = ActionSlot
 		end
 	end
-
-
-if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
+	if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
