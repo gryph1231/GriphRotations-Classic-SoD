@@ -21,6 +21,7 @@ GriphRH.Spell[5] = {
 	MindFlay6 = Spell(18807),
 	Heal = Spell(6064),
 	GreaterHeal = Spell(10965),
+	MindSear = Spell(413259),
 	Renew = Spell(139),
 	VoidZone = Spell(431681),
 	LesserHeal = Spell(2053),
@@ -100,7 +101,7 @@ targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
 
-    local targetdying = (aoeTTD() < 4 and not Target:IsAPlayer() or targetTTD<4 and not Target:IsAPlayer() or Target:IsAPlayer() and Target:HealthPercentage()<20)
+    local targetdying = (aoeTTD() < 3.5 and not Target:IsAPlayer() or targetTTD<3.5 and not Target:IsAPlayer() or Target:IsAPlayer() and Target:HealthPercentage()<20)
 
     local inRange25 = 0
         for i = 1, 10 do
@@ -132,28 +133,25 @@ else
 	mindspikestack = 0
 end
 
+
+
 if AuraUtil.FindAuraByName("Mind Spike", "target", "PLAYER|HARMFUL") then
 	mindspikeremains = select(6, AuraUtil.FindAuraByName("Mind Spike", "target", "PLAYER|HARMFUL")) - GetTime()
 else
 	mindspikeremains = 0
 end
 
-if Player:ChannelRemains()<0 then
-	channelremaining = 0
-else
-	channelremaining = Player:ChannelRemains()
-end
+if Player:IsChanneling(S.MindFlay6)then
 
+	channelremaining = Player:ChannelRemains()
+else
+	channelremaining = 3
+end
 -- print(channelremaining)
-if channelremaining<2 and Player:IsChanneling(S.MindFlay6)  and not AuraUtil.FindAuraByName("Melting Faces","player") then
+if channelremaining<2 and Player:IsChanneling(S.MindFlay6) and not AuraUtil.FindAuraByName("Melting Faces","player") then
 	return S.cancelchannel:Cast()
 end
 
-
--- if Player:IsChanneling(S.MindFlay) and tierequipped()>=4 then
--- 	return S.MindSpike:Cast()
--- end
--- print(channelremaining)
 if UnitCastingInfo('Player') or UnitChannelInfo('Player') or IsCurrentSpell(19434) then
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", true
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") 
@@ -217,14 +215,8 @@ if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell(SpellRank('H
 	return GriphRH.QueuedSpell():Cast()
 end
 
--- print(CanCastWithTolerance("Flash Heal"))
--- print(GetMobsInCombat())
-local aoeDots5 = (inRange25>=5 or GetMobsInCombat()>=5) and GriphRH.AoEON()
-local aoeDots4 = (inRange25>=4 or GetMobsInCombat()>=4) and GriphRH.AoEON()
 
-local aoeDots3 = (inRange25>=3 or GetMobsInCombat()>=3) and GriphRH.AoEON()
-local aoeDots = (inRange25>=2 or GetMobsInCombat()>=2) and GriphRH.AoEON()
-local ST = Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange36 or inRange25==1 or GetMobsInCombat()==1 or not GriphRH.AoEON()
+local aoeDots = (inRange25>=3 or GetMobsInCombat()>=3) and GriphRH.AoEON()
 
 
 
@@ -233,11 +225,6 @@ if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") 
 end
 
 
-
-
-
--- print("targetTTD",targetTTD)
--- print("aoeTTD:",aoeTTD())
 
 if AuraUtil.FindAuraByName("Divine Protection","target") 
 or AuraUtil.FindAuraByName("Ice Block","target") 
@@ -253,360 +240,211 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
  and not Target:IsDeadOrGhost() then 
 
 
-
---===Start of dps rotation ===--
-
-
-if AuraUtil.FindAuraByName("Inner Focus","player") and targetRange36 then
-	if not Player:IsMoving() and IsReady("Mind Blast") then
-		return S.MindBlast:Cast()
-	end
-
-	if Player:IsMoving() and IsReady("Shadow Word: Death") then
-		return S.ShadowWordDeath:Cast()
-	end
-
-end
-
-
-
--- CC's / heals / shield -- prio where needed
-
-if IsReady("Silence") 
-and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime ) 
-and  targetRange36 and GriphRH.InterruptsON() then
-	return S.Silence:Cast()
-end
-
-if IsReady("Psychic Scream") and RangeCount(10)>=1 and ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) 
-or Player:HealthPercentage() < 80 and Target:IsAPlayer()) and GriphRH.InterruptsON() then
-	return S.PsychicScream:Cast()
-end	
-
-if IsReady("Dispersion") and inRange25>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") 
-and Player:HealthPercentage()<15 then
-	return S.Dispersion:Cast()
-end	
-
-if IsReady("Power Word: Shield") and UnitName("targettarget") == UnitName("player") and RangeCount(10)>=1 
-and (instanceType== 'none' or isTanking == true or Target:IsAPlayer() or instanceType == 'pvp') and not AuraUtil.FindAuraByName("Dispersion","player") 
-and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
-	return S.PowerWordShield:Cast()
-end	
-
-if IsReady("Dispersion")  and targetRange36 and instanceType~= 'pvp' 
-and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<50) 
-and GriphRH.CDsON() then
-	return S.Dispersion:Cast()
-end	
-
-
-
-
-
-
-	if IsReady("Inner Focus") and GriphRH.CDsON() and ( IsReady("Mind Blast")  and not Player:IsMoving() or Player:IsMoving() 
-	and IsReady("Shadow Word: Death") )then
-		return S.InnerFocus:Cast()
-	end
-
-	if IsReady("Silence") and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime 
-
-	or UnitClass("target") == "Shaman"
-	or UnitClass("target") == "Druid"
-	or UnitClass("target") == "Mage"
-	or UnitClass("target") == "Paladin"
-	or UnitClass("target") == "Warlock"
-	or UnitClass("target") == "Priest"
-
-) 
-	and  targetRange36 and GriphRH.InterruptsON() then
-		return S.Silence:Cast()
-	end
-
-	if IsReady("Abolish Disease") and GriphRH.InterruptsON() and GetAppropriateCureSpell() == "Disease" and not AuraUtil.FindAuraByName("Shadowform","player") then
-		return S.AbolishDisease:Cast()
-	end
-
-	if IsReady("Cure Disease") and GriphRH.InterruptsON() and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Shadowform","player")  then
-		return S.CureDisease:Cast()
-	end
-
-
-
-
---===2 or more target rotation ===--
-	if aoeDots then
-
-	
-		if IsReady('Mind Flay') and not Player:IsMoving() and AuraUtil.FindAuraByName("Melting Faces","player") and targetRange36 then
-			return S.MindFlay:Cast()
+	if AuraUtil.FindAuraByName('Inner Focus', "player") then
+		if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36 then 
+			return S.MindBlast:Cast()
+			end
+			if IsReady("Shadow Word: Death") and targetRange36 then
+			return S.ShadowWordDeath:Cast()
 		end
-
-		if IsReady('Shadow Word: Pain') and targetRange36 and nameSharedPain == "Shared Pain"
-		and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	end
+	
+	
+	
+		if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 
+		and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") 
+		and not Player:IsMoving() and targetRange36 and (GetMobsInCombat()>=5 or inRange25>=5) then
+			return S.MindSear:Cast()
+		end	
+	
+		if IsReady('Shadow Word: Death') and  targetRange36 
+		and (AuraUtil.FindAuraByName("Inner Focus","player") and (Player:IsMoving() or not IsReady("Mind Blast") and not Player:IsMoving())  
+		or not Target:IsAPlayer() and (UnitHealth('target')<1500 or UnitHealthMax('target')>100000 and (targetTTD<5 and HL.CombatTime()>3 or UnitHealth('target')<2500))
+		or Target:IsAPlayer() and Target:HealthPercentage()<20) then
+			return S.ShadowWordDeath:Cast()
+		end
+	
+		if IsReady("Silence") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and  targetRange36 and GriphRH.InterruptsON() then
+			return S.Silence:Cast()
+		end
+	
+		if IsReady("Psychic Scream") and RangeCount(10)>=1 and  ((castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) or Player:HealthPercentage() < 40 and Target:IsAPlayer())  and GriphRH.InterruptsON() then
+			return S.PsychicScream:Cast()
+		end	
+		
+		if IsReady("Dispersion") and inRange25>=1 and (instanceType == 'pvp' or Target:IsAPlayer()) and not AuraUtil.FindAuraByName("Power Word: Shield","player") and Player:HealthPercentage()<15 then
+			return S.Dispersion:Cast()
+		end	
+	
+		if IsReady("Power Word: Shield") and UnitName("targettarget") == UnitName("player") and RangeCount(10)>=1 
+		and (instanceType== 'none' or isTanking == true or Target:IsAPlayer() or instanceType == 'pvp') and not AuraUtil.FindAuraByName("Dispersion","player") 
+		and not AuraUtil.FindAuraByName("Power Word: Shield","player") and not AuraUtil.FindAuraByName("Weakened Soul","player","PLAYER|HARMFUL") then
+			return S.PowerWordShield:Cast()
+		end	
+		
+	
+		-- if IsReady("Renew") and not AuraUtil.FindAuraByName("Shadowform","player") and Player:ManaPercentage()>40 and Player:HealthPercentage() < 60 and not AuraUtil.FindAuraByName("Renew","player") then
+		-- 	return S.Renew:Cast()
+		-- end	
+	
+		if IsReady("Abolish Disease") and GriphRH.InterruptsON() and GetAppropriateCureSpell() == "Disease" and not AuraUtil.FindAuraByName("Shadowform","player") then
+			return S.AbolishDisease:Cast()
+		end
+	
+		if IsReady("Cure Disease") and GriphRH.InterruptsON() and GetAppropriateCureSpell() == "Disease" and not Target:IsAPlayer() and Player:ManaPercentage()>80 and not AuraUtil.FindAuraByName("Shadowform","player")  then
+			return S.CureDisease:Cast()
+		end
+	
+	
+		if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or Target:IsAPlayer() or Player:IsMoving() or targetTTD>4) and aoeDots 
+		and nameSharedPain == "Shared Pain" and  targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 			return S.ShadowWordPain:Cast()
 		end
-
-		if IsReady('Void Zone') and targetRange36 and not Player:IsMoving() and aoeDots5 then
-			return S.VoidZone:Cast()
-		end
-
-		if IsReady('Mind Sear') and targetRange36 and not Player:IsMoving() and aoeDots5 and (nameSharedPain == "Shared Pain"
-		and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") or nameSharedPain ~= "Shared Pain") then
+	
+		if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 
+		and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() 
+		and aoeDots and targetRange36 and inRange25>=4 then
 			return S.MindSear:Cast()
-		end
+		end	
 	
-
-
---target about to croak we want to frontload--
-if targetdying then
-	
-
-	if IsReady("Shadow Word: Death") and targetRange36 then
-		return S.ShadowWordDeath:Cast()
-	end
-
-	if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
-		return S.MindFlay:Cast()
-	end
-
-
-end
-
-
-		if IsReady('Void Plague') and (targetTTD>6 or Target:IsAPlayer())
+		if IsReady('Void Plague') and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() or Player:IsMoving()) 
 		and targetRange36 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 			return S.VoidPlague:Cast()
 		end
 	
-		if IsReady('Shadow Word: Pain') and targetRange36 and (targetTTD>6 or Target:IsAPlayer())
-		and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
+	
+		if IsReady("Dispersion") and not targetdying and targetRange36 and instanceType~= 'pvp' 
+		and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<50) 
+		and GriphRH.CDsON() then
+			return S.Dispersion:Cast()
+		end	
+	
+		if IsReady('Eye of the Void') and  targetRange36 and GriphRH.CDsON() then
+			return S.EyeoftheVoid:Cast()
+		end
+	
+		if IsReady('Shadow Word: Pain') and (HL.CombatTime()<4 or Player:IsMoving() or targetTTD>4 or Target:IsAPlayer()) 
+		and targetRange36 and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
 			return S.ShadowWordPain:Cast()
 		end
 	
-		if IsReady('Devouring Plague') and targetRange36 and GriphRH.CDsON() and (targetTTD>6 or Target:IsAPlayer()) then
-			return S.DevouringPlague:Cast()
+		if IsReady('Vampiric Touch') and aoeDots and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
+		and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) 
+		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+			return S.vampirictouch:Cast()
 		end
 	
-
-
-		if IsReady('Void Zone') and targetRange36 and not Player:IsMoving() and aoeDots4 then
-			return S.VoidZone:Cast()
+		if IsReady("Inner Focus") and GriphRH.CDsON() and ( IsReady("Mind Blast")  and not Player:IsMoving() or Player:IsMoving() 
+		and IsReady("Shadow Word: Death") )then
+			return S.InnerFocus:Cast()
 		end
-
+	
+		if IsReady('Mind Flay') and not Player:IsMoving() and AuraUtil.FindAuraByName("Melting Faces","player") and targetRange36 then
+			return S.MindFlay:Cast()
+		end
+	
+		if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36 then 
+			return S.MindBlast:Cast()
+		end
+	
 		if IsReady('Homunculi') and targetRange36 and GriphRH.CDsON() then
 			return S.Homunculi:Cast()
 		end
-
-	if IsReady('Eye of the Void') and targetRange36 and GriphRH.CDsON() then
-		return S.EyeoftheVoid:Cast()
-	end
-
-
 	
-		if IsReady('Mind Sear') and targetRange36 and not Player:IsMoving() and aoeDots4 then
+		if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange36 and GriphRH.CDsON() then
+			return S.Shadowfiend:Cast()
+		end
+	
+		if IsReady("Mind Sear") and not Player:IsMoving() and targetRange36 and aoeDots then
 			return S.MindSear:Cast()
-		end
-
-	
-			if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36 then 
-				return S.MindBlast:Cast()
-			end
-	
-			if IsReady("Shadow Word: Death") and targetRange36 then
-				return S.ShadowWordDeath:Cast()
-			end
-			
-	
-			if IsReady('Shadowfiend') and (Player:ManaPercentage()<=50 or instanceType == 'raid') and targetRange36 and GriphRH.CDsON() then
-				return S.Shadowfiend:Cast()
-			end
+		end	
 		
-			if IsReady('Void Zone') and targetRange36 and not Player:IsMoving() and aoeDots3 then
-				return S.VoidZone:Cast()
-			end
-	
-			if IsReady('Mind Sear') and targetRange36 and not Player:IsMoving() and aoeDots3 then
-				return S.MindSear:Cast()
-			end
-		--heals
-		if IsReady('Vampiric Embrace') and (targetTTD>8 or Target:IsAPlayer() and Player:IsMoving()) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
-			return S.VampiricEmbrace:Cast()
+		if IsReady('Penance') and not Player:IsMoving() and  targetRange36  then
+			return S.Penance:Cast()
 		end
-	
-			--mana
-			if IsReady('Vampiric Touch') and targetTTD>8  and not Target:IsAPlayer() and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
-			and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
-				return S.vampirictouch:Cast()
-			end
-	
-
+		if IsReady('Shadow Word: Death') and targetRange36 then
+			return S.ShadowWordDeath:Cast()
+		end
 		if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
 			return S.MindFlay:Cast()
 		end
-
-
+	
 
 	
-		if IsReady('Mind Spike') and targetRange36 and not Player:IsMoving() and (mindspikeremains<3 or mindspikestack<3) then
-			return S.MindSpike:Cast() 
+		if IsReady('Devouring Plague') and (targetTTD>7 or Target:IsAPlayer()) and  targetRange36 and GriphRH.CDsON() then
+			return S.DevouringPlague:Cast()
 		end
 	
-		if IsReady("Penance") and targetRange36 and not Player:IsMoving()  then
-			return S.Penance:Cast()
+		--heals
+		if IsReady('Vampiric Embrace') and HL.CombatTime()>3 and (targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) 
+		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
+			return S.VampiricEmbrace:Cast()
 		end
-		if IsReady('Void Zone') and targetRange36 and not Player:IsMoving() then
-			return S.VoidZone:Cast()
+	
+		--mana
+		if IsReady('Vampiric Touch') and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
+		and (targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) and HL.CombatTime()>3
+		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
+			return S.vampirictouch:Cast()
 		end
-
-		if IsReady('Mind Sear') and targetRange36 and not Player:IsMoving() then
+	
+		
+		if IsReady('Void Zone') and  targetRange36 and not Player:IsMoving() then
+			return S.VoidZone:Cast() 
+		end
+		
+		
+		if IsReady('Mind Sear') and targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2) and not Player:IsMoving() and GriphRH.AoEON() then
 			return S.MindSear:Cast()
 		end
 
 		if IsReady('Mind Spike') and targetRange36 and not Player:IsMoving() then
 			return S.MindSpike:Cast() 
 		end
-		
 	
-		if IsReady('Smite') and targetRange36 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
+		if IsReady('Mind Sear') and targetRange36 and not Player:IsMoving() then
+			return S.MindSear:Cast()
+		end
+	
+		if IsReady('Smite') and  targetRange36 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
 			return S.Smite:Cast() 
 		end
 	
-	
-	end -- end of 2 target rotation
-
-
-
---===ST rotation ===--
-if ST then
-
-	
-	if IsReady('Mind Flay') and not Player:IsMoving() and AuraUtil.FindAuraByName("Melting Faces","player") and targetRange36 then
-		return S.MindFlay:Cast()
-	end
-
-
---target about to croak we want to frontload--
-if targetdying then
-	
-
-
-	if IsReady("Shadow Word: Death") and targetRange36 then
-		return S.ShadowWordDeath:Cast()
-	end
-
-	if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
-		return S.MindFlay:Cast()
-	end
-
-end
-
-	if IsReady('Void Plague') and (targetTTD>6 or Target:IsAPlayer())
-	and targetRange36 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
-		return S.VoidPlague:Cast()
-	end
-
-	if IsReady('Shadow Word: Pain') and targetRange36 and (targetTTD>6 or Target:IsAPlayer())
-	and not AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then
-		return S.ShadowWordPain:Cast()
-	end
-
-	if IsReady('Devouring Plague') and targetRange36 and GriphRH.CDsON() and (targetTTD>6 or Target:IsAPlayer()) then
-		return S.DevouringPlague:Cast()
-	end
-
-	if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36 then 
-		return S.MindBlast:Cast()
-	end
-
-	if IsReady("Shadow Word: Death") and targetRange36 then
-		return S.ShadowWordDeath:Cast()
-	end
-
-	if IsReady('Homunculi') and targetRange36 and GriphRH.CDsON() then
-		return S.Homunculi:Cast()
-	end
-
-if IsReady('Eye of the Void') and targetRange36 and GriphRH.CDsON() then
-	return S.EyeoftheVoid:Cast()
-end
-
-if IsReady('Shadowfiend') and (Player:ManaPercentage()<=50 or instanceType == 'raid') and targetRange36 and GriphRH.CDsON() then
-	return S.Shadowfiend:Cast()
-end
-
-		--heals
-		if IsReady('Vampiric Embrace') and (targetTTD>8 or Target:IsAPlayer() and Player:IsMoving()) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
-			return S.VampiricEmbrace:Cast()
+		if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and  targetRange36 and Player:ManaPercentage()<10 then
+			return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
 		end
 	
-			--mana
-			if IsReady('Vampiric Touch') and targetTTD>8  and not Target:IsAPlayer() and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
-			and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
-				return S.vampirictouch:Cast()
-			end
-
-
-
-
-	if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
-		return S.MindFlay:Cast()
-	end
-
-	if IsReady('Mind Spike') and targetRange36 and not Player:IsMoving() and (mindspikeremains<3 or mindspikestack<3) then
-		return S.MindSpike:Cast() 
-	end
-
-	if IsReady("Penance") and targetRange36 and not Player:IsMoving()  then
-		return S.Penance:Cast()
-	end
-
-	if IsReady('Mind Spike') and targetRange36 and not Player:IsMoving() then
-		return S.MindSpike:Cast() 
-	end
-
-	if IsReady('Mind Sear') and targetRange36 and not Player:IsMoving() then
-		return S.MindSear:Cast()
-	end
-
-
-	if IsReady('Smite') and targetRange36 and not Player:IsMoving() and not AuraUtil.FindAuraByName("Shadowform","player") then
-		return S.Smite:Cast() 
-	end
-
-
-end -- end of ST rotation
-
-if GCDRemaining()==0  and not IsAutoRepeatAction(Shoot) and not IsCurrentSpell(5019) and not Player:IsMoving() and  targetRange36 and Player:ManaPercentage()<10 then
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\ABILITY_SHOOTWAND.blp", false
-end
-
-end
-
-
-
-if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
-
-	if IsReady("Power Word: Fortitude") and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Prayer of Fortitude","player") and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
-	return S.PowerWordFortitude:Cast()
-	end	
-
-	if IsReady("Inner Fire") and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Fire","player") then
-	return S.InnerFire:Cast()
-	end	
-
-	if IsReady('Shadow Protection') and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Prayer of Shadow Protection","player") and not AuraUtil.FindAuraByName("Shadow Protection","player") then
-	return S.ShadowProtection:Cast()
-	end
-
-	if IsReady('Touch of Weakness') and not Target:IsAPlayer() and Player:ManaPercentage()>80 and Player:IsMoving() and instanceType== 'none'  and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
-		return S.TouchofWeakness:Cast()
-	end
+		-- if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
+		-- 	return Item(135274, { 13, 14 }):ID()
+		-- end
+	--test test
+	
 	
 	end
-	return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
-end
 	
-GriphRH.Rotation.SetAPL(5, APL);
-GriphRH.Rotation.SetPASSIVE(5, PASSIVE);
+	
+	
+	if not Player:AffectingCombat() and not AuraUtil.FindAuraByName('Drained of Blood', "player", "PLAYER|HARMFUL") then 
+	
+		if IsReady("Power Word: Fortitude") and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Prayer of Fortitude","player") and not AuraUtil.FindAuraByName("Power Word: Fortitude","player") then
+		return S.PowerWordFortitude:Cast()
+		end	
+	
+		if IsReady("Inner Fire") and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Inner Fire","player") then
+		return S.InnerFire:Cast()
+		end	
+	
+		if IsReady('Shadow Protection') and not Target:IsAPlayer() and Player:IsMoving() and not AuraUtil.FindAuraByName("Prayer of Shadow Protection","player") and not AuraUtil.FindAuraByName("Shadow Protection","player") then
+		return S.ShadowProtection:Cast()
+		end
+	
+		if IsReady('Touch of Weakness') and not Target:IsAPlayer() and Player:ManaPercentage()>80 and Player:IsMoving() and instanceType== 'none'  and not AuraUtil.FindAuraByName("Touch of Weakness","player") then
+			return S.TouchofWeakness:Cast()
+		end
+		
+		end
+		return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
+	end
+		
+	GriphRH.Rotation.SetAPL(5, APL);
+	GriphRH.Rotation.SetPASSIVE(5, PASSIVE);

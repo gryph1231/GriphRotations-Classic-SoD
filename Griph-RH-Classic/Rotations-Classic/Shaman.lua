@@ -139,6 +139,8 @@ local function APL()
 ---------------------------------VARIABLES/FUNCTIONS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+
 -- print(IsItemInRange(17626,"target"))
 
 -- print(not CheckInteractDistance("target", 3))
@@ -348,6 +350,32 @@ end
     else
         trinketbuffwushooremains = 0
     end
+
+
+    local function useWFtotem()
+        local classesToBuff = {
+            ["ROGUE"] = true,
+            ["WARRIOR"] = true,
+            ["HUNTER"] = true,
+            ["DRUID"] = true,
+            ["SHAMAN"] = true,
+
+        }
+    
+        local partyUnits = { "party1", "party2", "party3", "party4" }
+    
+        for _, unit in ipairs(partyUnits) do
+            if UnitExists(unit) then
+                local _, classFile = UnitClass(unit) -- Get class file constant
+                if classesToBuff[classFile] then
+                    return true
+                end
+            end
+        end
+    
+        return false
+    end
+    
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------SPELL QUEUES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -749,7 +777,7 @@ if (Player:AffectingCombat() or  not Player:AffectingCombat() and Player:IsMovin
         end
 
     
-        if not Target:IsAPlayer() and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Wild Strikes", "player") and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+        if useWFtotem() and  not Target:IsAPlayer() and aoeTTD()> 3 and not AuraUtil.FindAuraByName("Wild Strikes", "player") and IsReady(SpellRank('Windfury Totem')) and (mhenchantseconds>30 and (ohenchantseconds>30 or not HasOffhandWeapon())) and  haveTotem4 == false and partyInRange()>=1 and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then
             return S.WindfuryTotem:Cast()
         end
 

@@ -1311,81 +1311,6 @@ end
 
 
 
--- -- Table to hold the GUIDs of mobs in combat with the player
--- local mobsInCombat = {}
-
--- -- Function to extract NPC ID from GUID
--- local function GetNPCIDFromGUID(guid)
---     local type, _, _, _, _, npcID = strsplit("-", guid)
---     if type == "Creature" or type == "Vehicle" then
---         return tonumber(npcID)
---     end
---     return nil
--- end
-
--- -- Function to handle combat log events
--- local function OnCombatLogEvent(self, event)
---     local _, subEvent, _, sourceGUID, _, _, _, destGUID = CombatLogGetCurrentEventInfo()
---     local playerGUID = UnitGUID("player")
-
---     -- Track combat events involving the player
---     if subEvent == "SWING_DAMAGE" or subEvent == "SWING_MISSED" or subEvent == "SPELL_DAMAGE" or subEvent == "SPELL_MISSED" or subEvent == "SPELL_AURA_APPLIED"  or subEvent == "SPELL_PERIODIC_DAMAGE" then
---         local npcID = GetNPCIDFromGUID(destGUID)
---         if sourceGUID == playerGUID and destGUID ~= playerGUID then
---             if not mobsInCombat[destGUID] then
---                 print("Adding mob to counter: " .. destGUID)
---             end
---             mobsInCombat[destGUID] = GetTime()
---         elseif destGUID == playerGUID and sourceGUID ~= playerGUID then
---             if not mobsInCombat[sourceGUID] then
---                 print("Adding mob to counter: " .. sourceGUID)
---             end
---             mobsInCombat[sourceGUID] = GetTime()
---         end
---     elseif subEvent == "UNIT_DIED" then
---         if mobsInCombat[destGUID] then
---             print("Removing mob from counter (died): " .. destGUID)
---         end
---         mobsInCombat[destGUID] = nil
---     end
--- end
-
--- -- Function to handle leaving combat
--- local function OnPlayerRegenEnabled(self, event)
---     mobsInCombat = {}
---     print("Player left combat. Resetting mobsInCombat.")
--- end
-
--- -- Create a frame to listen for relevant events
--- local frame = CreateFrame("Frame")
--- frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
--- frame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Fired when the player leaves combat
--- frame:SetScript("OnEvent", function(self, event, ...)
---     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
---         OnCombatLogEvent(self, event, ...)
---     elseif event == "PLAYER_REGEN_ENABLED" then
---         OnPlayerRegenEnabled(self, event)
---     end
--- end)
-
--- -- Function to get the number of mobs in combat with the player
--- function GetMobsInCombat()
---     local currentTime = GetTime()
---     local numMobsInCombat = 0
-
---     for guid, timestamp in pairs(mobsInCombat) do
---         if currentTime - timestamp < 15 then
---             numMobsInCombat = numMobsInCombat + 1
---         else
---             print("Removing mob from counter (timeout): " .. guid)
---             mobsInCombat[guid] = nil
---         end
---     end
-
---     return numMobsInCombat
--- end
-
-
 
 
 
@@ -1655,6 +1580,19 @@ function GetMobsInCombat()
 
     return numMobsInCombat
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
