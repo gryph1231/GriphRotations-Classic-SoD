@@ -431,12 +431,12 @@ end
 				return S.MindSear:Cast()
 			end
 		--heals
-		if IsReady('Vampiric Embrace') and (targetTTD>6 or Target:IsAPlayer() and Player:IsMoving()) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
+		if IsReady('Vampiric Embrace') and (targetTTD>8 or Target:IsAPlayer() and Player:IsMoving()) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
 			return S.VampiricEmbrace:Cast()
 		end
 	
 			--mana
-			if IsReady('Vampiric Touch') and targetTTD>6  and not Target:IsAPlayer() and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
+			if IsReady('Vampiric Touch') and targetTTD>8  and not Target:IsAPlayer() and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
 			and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 				return S.vampirictouch:Cast()
 			end
@@ -537,12 +537,12 @@ if IsReady('Shadowfiend') and (Player:ManaPercentage()<=50 or instanceType == 'r
 end
 
 		--heals
-		if IsReady('Vampiric Embrace') and (targetTTD>6 or Target:IsAPlayer() and Player:IsMoving()) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
+		if IsReady('Vampiric Embrace') and (targetTTD>8 or Target:IsAPlayer() and Player:IsMoving()) and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
 			return S.VampiricEmbrace:Cast()
 		end
 	
 			--mana
-			if IsReady('Vampiric Touch') and targetTTD>6  and not Target:IsAPlayer() and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
+			if IsReady('Vampiric Touch') and targetTTD>8  and not Target:IsAPlayer() and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
 			and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 				return S.vampirictouch:Cast()
 			end
