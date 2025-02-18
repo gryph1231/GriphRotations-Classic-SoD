@@ -1586,17 +1586,10 @@ end
 
 
 
-
-
-
-
-
-
--- Table to hold the GUIDs and names of mobs in combat with the player
+-- Table to store GUIDs of mobs in combat with the player or party members
 local mobsInCombat = {}
-local mobNames = {}
 
--- Function to extract NPC ID from GUID
+-- Function to extract NPC ID from a GUID (optional for debugging or advanced tracking)
 local function GetNPCIDFromGUID(guid)
     local type, _, _, _, _, npcID = strsplit("-", guid)
     if type == "Creature" or type == "Vehicle" then
@@ -1610,43 +1603,40 @@ local function OnCombatLogEvent(self, event)
     local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
     local playerGUID = UnitGUID("player")
 
-    -- Track combat events involving the player
-    if subEvent == "SWING_DAMAGE" or subEvent == "SWING_MISSED" or subEvent == "SPELL_DAMAGE" or subEvent == "SPELL_MISSED" or subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_PERIODIC_DAMAGE" then
-        local npcIDSource = GetNPCIDFromGUID(sourceGUID)
-        local npcIDDest = GetNPCIDFromGUID(destGUID)
-        if sourceGUID == playerGUID and destGUID ~= playerGUID and npcIDDest then
-            if not mobsInCombat[destGUID] then
-                -- print("Adding mob to counter: " .. (destName or "Unknown") .. " (" .. destGUID .. ")")
-                mobNames[destGUID] = destName
+    -- Check if the event is a relevant combat event involving you or your party
+    if (subEvent == "SWING_DAMAGE" or subEvent == "SWING_MISSED" or subEvent == "SPELL_DAMAGE" 
+       or subEvent == "SPELL_MISSED" or subEvent == "SPELL_PERIODIC_DAMAGE" or subEvent == "SPELL_PERIODIC_MISSED") then
+
+        -- Prevent adding dead mobs back into the list and ensure we're only adding live mobs
+        if subEvent ~= "UNIT_DIED" then
+            if (UnitInParty(sourceName) or UnitInRaid(sourceName) or sourceGUID == playerGUID) and not mobsInCombat[destGUID] then
+                mobsInCombat[destGUID] = GetTime()
+                -- print("Added mob to combat: " .. destGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(destGUID) or "Unknown") .. ")")
+            elseif (UnitInParty(destName) or UnitInRaid(destName) or destGUID == playerGUID) and not mobsInCombat[sourceGUID] then
+                mobsInCombat[sourceGUID] = GetTime()
+                -- print("Added mob to combat: " .. sourceGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(sourceGUID) or "Unknown") .. ")")
             end
-            mobsInCombat[destGUID] = GetTime()
-        elseif destGUID == playerGUID and sourceGUID ~= playerGUID and npcIDSource then
-            if not mobsInCombat[sourceGUID] then
-                -- print("Adding mob to counter: " .. (sourceName or "Unknown") .. " (" .. sourceGUID .. ")")
-                mobNames[sourceGUID] = sourceName
-            end
-            mobsInCombat[sourceGUID] = GetTime()
         end
+
     elseif subEvent == "UNIT_DIED" then
+        -- Remove the mob's GUID when it dies
         if mobsInCombat[destGUID] then
-            -- print("Removing mob from counter (died): " .. (mobNames[destGUID] or "Unknown") .. " (" .. destGUID .. ")")
-            mobNames[destGUID] = nil
+            -- print("Removing mob from combat (died): " .. destGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(destGUID) or "Unknown") .. ")")
+            mobsInCombat[destGUID] = nil
         end
-        mobsInCombat[destGUID] = nil
     end
 end
 
--- Function to handle leaving combat
+-- Function to reset mobs when combat ends (e.g., player leaves combat)
 local function OnPlayerRegenEnabled(self, event)
     mobsInCombat = {}
-    mobNames = {}
-    -- print("Player left combat. Resetting mobsInCombat.")
+    -- print("Player left combat. Resetting mobs in combat.")
 end
 
 -- Create a frame to listen for relevant events
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Fired when the player leaves combat
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Triggered when the player leaves combat
 frame:SetScript("OnEvent", function(self, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         OnCombatLogEvent(self, event, ...)
@@ -1655,20 +1645,19 @@ frame:SetScript("OnEvent", function(self, event, ...)
     end
 end)
 
--- Function to get the number of mobs in combat with the player
+-- Function to get the number of mobs in combat
 function GetMobsInCombat()
-    local currentTime = GetTime()
     local numMobsInCombat = 0
 
-    for guid, timestamp in pairs(mobsInCombat) do
-        if currentTime - timestamp < 15 then
-            numMobsInCombat = numMobsInCombat + 1
-        else
-            -- print("Removing mob from counter (timeout): " .. (mobNames[guid] or "Unknown") .. " (" .. guid .. ")")
-            mobsInCombat[guid] = nil
-            mobNames[guid] = nil
-        end
+    for guid, _ in pairs(mobsInCombat) do
+        numMobsInCombat = numMobsInCombat + 1
     end
 
     return numMobsInCombat
 end
+
+
+
+
+
+
