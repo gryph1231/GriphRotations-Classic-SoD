@@ -85,6 +85,13 @@ local function APL()
 		targetRange36 = TargetinRange(30)
 	end
 
+
+	if S.MindFlay6:IsAvailable() then
+		targetRange24 = IsSpellInRange("Mind Flay")
+	else
+		targetRange24 = TargetinRange(25)
+	end
+
 	local Shoot = 0
 
 
@@ -233,7 +240,7 @@ end
 local aoeDots = (inRange25>=3 or GetMobsInCombat()>=3) and GriphRH.AoEON()
 
 
-
+-- print(GetMobsInCombat())
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
@@ -317,7 +324,7 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 	
 		if IsReady("Mind Sear") and nameSharedPain == "Shared Pain" and  targetRange36 
 		and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") and not Player:IsMoving() 
-		and aoeDots and targetRange36 and inRange25>=4 then
+		 and targetRange36 and (inRange25>=4 or GetMobsInCombat()>=4) then
 			return S.MindSear:Cast()
 		end	
 	
@@ -325,7 +332,9 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		and targetRange36 and not AuraUtil.FindAuraByName("Void Plague","target","PLAYER|HARMFUL") then
 			return S.VoidPlague:Cast()
 		end
-	
+		if IsReady('Void Zone') and  targetRange36 and not Player:IsMoving() and aoeDots then
+			return S.VoidZone:Cast() 
+		end
 	
 		if IsReady("Dispersion") and not targetdying and targetRange36 and instanceType~= 'pvp' 
 		and (not AuraUtil.FindAuraByName("Power Word: Shield","player") and inRange25>=1 and Player:HealthPercentage()<25 or Player:ManaPercentage()<50) 
@@ -342,6 +351,16 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 			return S.ShadowWordPain:Cast()
 		end
 	
+
+		if IsReady('Mind Flay') and targetRange24 and not Player:IsMoving() and AuraUtil.FindAuraByName("Melting Faces","player") then
+			return S.MindFlay:Cast()
+		end
+
+		if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36 and AuraUtil.FindAuraByName("Shadow Word: Pain","target","PLAYER|HARMFUL") then 
+			return S.MindBlast:Cast()
+		end
+	
+
 		if IsReady('Vampiric Touch') and aoeDots and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
 		and not AuraUtil.FindAuraByName("Inner Focus","player") and (targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) 
 		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
@@ -352,15 +371,20 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		and IsReady("Shadow Word: Death") )then
 			return S.InnerFocus:Cast()
 		end
-	
-		if IsReady('Mind Flay') and not Player:IsMoving() and AuraUtil.FindAuraByName("Melting Faces","player") and targetRange36 then
-			return S.MindFlay:Cast()
+
+		
+		if IsReady('Devouring Plague') and (targetTTD>7 or Target:IsAPlayer()) and  targetRange36 and GriphRH.CDsON() then
+			return S.DevouringPlague:Cast()
 		end
-	
-		if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36 then 
+
+		if not Player:IsMoving() and IsReady("Mind Blast") and targetRange36  then 
 			return S.MindBlast:Cast()
 		end
 	
+		if IsReady('Shadow Word: Death') and targetRange36 then
+			return S.ShadowWordDeath:Cast()
+		end
+
 		if IsReady('Homunculi') and targetRange36 and GriphRH.CDsON() then
 			return S.Homunculi:Cast()
 		end
@@ -369,29 +393,9 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 			return S.Shadowfiend:Cast()
 		end
 
-		if IsReady('Shadow Word: Death') and targetRange36 then
-			return S.ShadowWordDeath:Cast()
-		end
-		if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
-			return S.MindFlay:Cast()
-		end
-		
-	
-		if IsReady("Mind Sear") and not Player:IsMoving() and targetRange36 and aoeDots then
-			return S.MindSear:Cast()
-		end	
-		
-		if IsReady('Penance') and not Player:IsMoving() and  targetRange36  then
-			return S.Penance:Cast()
-		end
 
 
 
-	
-		if IsReady('Devouring Plague') and (targetTTD>7 or Target:IsAPlayer()) and  targetRange36 and GriphRH.CDsON() then
-			return S.DevouringPlague:Cast()
-		end
-	
 		--heals
 		if IsReady('Vampiric Embrace') and HL.CombatTime()>3 and (targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) 
 		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Embrace","target","PLAYER|HARMFUL") then
@@ -404,12 +408,16 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 			return S.vampirictouch:Cast()
 		end
-	
+
 		
-		if IsReady('Void Zone') and  targetRange36 and not Player:IsMoving() then
-			return S.VoidZone:Cast() 
+		if IsReady('Penance') and not Player:IsMoving() and  targetRange36  then
+			return S.Penance:Cast()
 		end
-		if IsReady('Mind Flay') and targetRange36 and not Player:IsMoving() then
+
+		
+	
+
+		if IsReady('Mind Flay') and targetRange24 and not Player:IsMoving() then
 			return S.MindFlay:Cast()
 		end
 		

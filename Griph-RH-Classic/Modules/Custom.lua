@@ -1510,7 +1510,6 @@ end
 
 
 
-
 -- Table to store GUIDs of mobs in combat with the player or party members
 local mobsInCombat = {}
 
@@ -1536,17 +1535,17 @@ local function OnCombatLogEvent(self, event)
         if subEvent ~= "UNIT_DIED" then
             if (UnitInParty(sourceName) or UnitInRaid(sourceName) or sourceGUID == playerGUID) and not mobsInCombat[destGUID] then
                 mobsInCombat[destGUID] = GetTime()
-                -- print("Added mob to combat: " .. destGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(destGUID) or "Unknown") .. ")")
+                print("Added mob to combat: " .. destGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(destGUID) or "Unknown") .. ")")
             elseif (UnitInParty(destName) or UnitInRaid(destName) or destGUID == playerGUID) and not mobsInCombat[sourceGUID] then
                 mobsInCombat[sourceGUID] = GetTime()
-                -- print("Added mob to combat: " .. sourceGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(sourceGUID) or "Unknown") .. ")")
+                print("Added mob to combat: " .. sourceGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(sourceGUID) or "Unknown") .. ")")
             end
         end
 
     elseif subEvent == "UNIT_DIED" then
         -- Remove the mob's GUID when it dies
         if mobsInCombat[destGUID] then
-            -- print("Removing mob from combat (died): " .. destGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(destGUID) or "Unknown") .. ")")
+            print("Removing mob from combat (died): " .. destGUID .. " (NPC ID: " .. (GetNPCIDFromGUID(destGUID) or "Unknown") .. ")")
             mobsInCombat[destGUID] = nil
         end
     end
@@ -1555,7 +1554,7 @@ end
 -- Function to reset mobs when combat ends (e.g., player leaves combat)
 local function OnPlayerRegenEnabled(self, event)
     mobsInCombat = {}
-    -- print("Player left combat. Resetting mobs in combat.")
+    print("Player left combat. Resetting mobs in combat.")
 end
 
 -- Create a frame to listen for relevant events

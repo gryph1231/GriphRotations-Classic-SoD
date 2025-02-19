@@ -32,7 +32,7 @@ RighteousFury = Spell(25780),
 SealofCommand = Spell(20375),
 SealofRighteousness = Spell(21084),
 Exorcism = Spell(415068),
-Judgment = Spell(20271),
+Judgement = Spell(20271),
 BlessingofMight = Spell(19740),
 DivineProtection = Spell(498),
 BlessingofProtection = Spell(1022),
@@ -105,9 +105,6 @@ local I = Item.Paladin.Protection;
 
 local function APL()
 
-    -- local start, duration = GetSpellCooldown(61304) -- 61304 is a dummy spell used to represent the GCD
--- print(IsActionInRange(3))
-
 
         local inRange25 = 0
         for i = 1, 40 do
@@ -144,9 +141,9 @@ end
 
 
 
-if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not IsReady("Hammer of Justice",1) or S.HammerofJustice:CooldownRemains()>3) then
+if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not IsReady("Hammer of Justice") or S.HammerofJustice:CooldownRemains()>3) then
     GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
-elseif GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and IsReady("Hammer of Justice",1) then
+elseif GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and IsReady("Hammer of Justice") then
         return GriphRH.QueuedSpell():Cast()
 	end
  
@@ -164,8 +161,177 @@ elseif   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light"
 	elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player")  then
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\prot.tga", false
 	end 
-	
--- print('next auto',nextauto)
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------IN COMBAT ROTATION--------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+if Player:HealthPercentage()<20 and IsReady("Lay on Hands") and not AuraUtil.FindAuraByName("Divine Protection", "player") then
+    return S.LayonHands:Cast()
+   end
+   if IsReady("Blessing of Wisdom") and not S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player")  and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+    return S.BlessingofWisdom:Cast()
+end
+if IsReady("Sanctity Aura") and not AuraUtil.FindAuraByName("Sanctity Aura", "player")  and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
+    return S.SanctityAura:Cast()
+end
+
+if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
+    return S.DevotionAura:Cast()
+end
+
+if IsReady("Retribution Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
+    return S.RetributionAura:Cast()
+end
+
+if IsReady("Blessing of Might") and not UnitIsPlayer('target') and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
+    return S.BlessingofMight:Cast()
+end
+
+
+if (Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() or IsCurrentSpell(6603)) then 
+
+    if not IsCurrentSpell(6603) and Target:Exists() and TargetinRange(10) then
+        return I.autoattack:ID()
+        end
+
+
+
+
+--RET
+if sealbuffremains<1.5 then
+if IsReady("Judgement") and TargetinRange(10) then
+    return S.Judgement:Cast()
+end
+if IsReady("Seal of Martyrdom") then
+    return S.SealofMartyrdom:Cast()
+end
+
+
+end
+
+
+if IsReady("Hammer of Wrath") and TargetinRange(10) then
+    return S.HammerofWrath:Cast()
+end
+if IsReady("Exorcism") and TargetinRange(30) 
+and
+(  UnitCreatureType("target") == "Undead"
+or UnitCreatureType("target") == "Demon")
+then
+    return S.Exorcism:Cast()
+end
+if IsReady("Crusader Strike") and TargetinRange(5) then
+    return S.CrusaderStrike:Cast()
+end
+if IsReady("Judgement") and TargetinRange(10) then
+    return S.Judgement:Cast()
+end 
+if IsReady("Divine Storm") and TargetinRange(5) then
+return S.DivineStorm:Cast()
+end 
+-- print("240",true)
+if IsReady("Holy Shock") and TargetinRange(10) then
+    return S.HolyShock:Cast()
+end 
+
+if IsReady("Consecration") and TargetinRange(5) then
+    return S.Consecration:Cast()
+end 
+
+        if IsReady("Righteous Fury") and not AuraUtil.FindAuraByName("Righteous Fury", "player") 
+         and IsEquippedItemType("Shield") 
+        then
+            return S.RighteousFury:Cast()
+        end
+    
+ 
+       
+
+    
+
+   
+                
+                    
+                    if IsReady("Avenger's Shield") and TargetinRange(30) and GriphRH.CDsON()   then
+                        return S.AvengersShield:Cast()
+                    end
+            
+                    if IsReady("Crusader Strike") and TargetinRange(5) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
+                        return S.CrusaderStrike:Cast()
+                    end
+            
+                    if IsReady("Divine Storm") and TargetinRange(5) and sealbuffremains> GCDRemaining()+0.15 then
+                        return S.DivineStorm:Cast()
+                    end
+            
+              
+                
+                    if IsReady("Judgement") and TargetinRange(10)
+                    and (GriphRH.CDsON() or UnitIsPlayer('target')) and
+                    (
+                        nextauto+0.15>GCDRemaining()
+                    or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
+                    )
+                     then
+                        return S.Judgement:Cast()
+                    end
+        
+        
+                    if IsReady('Exorcism') and TargetinRange(10)  and UnitIsPlayer('target')
+                    and Target:AffectingCombat() and GriphRH.CDsON() 
+                    and Target:Exists()  and
+                    (  UnitCreatureType("target") == "Undead"
+                    or UnitCreatureType("target") == "Demon")
+                    and Player:CanAttack(Target) 
+                     then
+                       return S.Exorcism:Cast()
+                    end
+        
+            
+                    if sealbuffremains<Player:GCD()+nextauto + 0.15 then 
+            
+                        if IsReady("Seal of the Crusader") 
+                        and TTDlong
+                        and not Target:Debuff(S.SealoftheCrusaderDebuff) and not UnitIsPlayer('target') then
+                            return S.SealoftheCrusader:Cast()
+                        end
+                
+                        if IsReady("Seal of Command") then
+                            return S.SealofCommand:Cast()
+                        end
+                
+                        if IsReady("Seal of Martyrdom") then
+                            return S.SealofMartyrdom:Cast()
+                        end
+                        
+                        if IsReady("Seal of Righteousness") then
+                            return S.SealofRighteousness:Cast()
+                        end
+            
+                        end
+            
+            
+                        if IsReady('Exorcism') and TargetinRange(30) 
+                    and Target:AffectingCombat() and GriphRH.CDsON() 
+                    and Target:Exists()  and
+                    (  UnitCreatureType("target") == "Undead"
+                    or UnitCreatureType("target") == "Demon")
+                    and Player:CanAttack(Target) 
+                     then
+                       return S.Exorcism:Cast()
+                    end
+            
+                        
+             
+                        if IsReady("Consecration") and TargetinRange(5) and not Player:IsMoving() then
+                            return S.Consecration:Cast()
+                        end
+            
+                     end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -211,34 +377,36 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
             end
         
             
-            if IsReady("Avenger's Shield",1) and GriphRH.CDsON()   then
+            if IsReady("Avenger's Shield") and GriphRH.CDsON() and TargetinRange(30)  then
                 return S.AvengersShield:Cast()
             end
     
-            if IsReady("Crusader Strike") and IsActionInRange(1) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
+            if IsReady("Crusader Strike") and TargetinRange(5) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
                 return S.CrusaderStrike:Cast()
             end
     
-            if IsReady("Divine Storm") and IsActionInRange(1) and sealbuffremains> GCDRemaining()+0.15 then
+            if IsReady("Divine Storm") and TargetinRange(5) and sealbuffremains> GCDRemaining()+0.15 then
                 return S.DivineStorm:Cast()
             end
     
       
         
-            if IsReady("Judgment",1)
+            if IsReady("Judgement") and TargetinRange(10)
             and (GriphRH.CDsON() or UnitIsPlayer('target')) and
             (
                 nextauto+0.15>GCDRemaining()
             or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
             )
              then
-                return S.Judgment:Cast()
+                return S.Judgement:Cast()
             end
 
 
-            if IsReady('Exorcism',1)  and UnitIsPlayer('target')
+            if IsReady('Exorcism') and TargetinRange(30)  and UnitIsPlayer('target') 
             and Target:AffectingCombat() and GriphRH.CDsON() 
-            and Target:Exists() 
+            and Target:Exists() and
+            (  UnitCreatureType("target") == "Undead"
+            or UnitCreatureType("target") == "Demon")
             and Player:CanAttack(Target) 
              then
                return S.Exorcism:Cast()
@@ -268,17 +436,20 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
                 end
     
     
-                if IsReady('Exorcism',1) 
+                if IsReady('Exorcism') and TargetinRange(30) 
             and Target:AffectingCombat() and GriphRH.CDsON() 
             and Target:Exists() 
             and Player:CanAttack(Target) 
+            and
+            (  UnitCreatureType("target") == "Undead"
+            or UnitCreatureType("target") == "Demon")
              then
                return S.Exorcism:Cast()
             end
     
                 
      
-                if IsReady("Consecration") and IsActionInRange(1) and not Player:IsMoving() then
+                if IsReady("Consecration") and TargetinRange(5) and not Player:IsMoving() then
                     return S.Consecration:Cast()
                 end
     
@@ -287,166 +458,6 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
 
 	return "Interface\\Addons\\Griph-RH-Classic\\Media\\prot.tga", false
 end
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------IN COMBAT ROTATION--------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-if Player:HealthPercentage()<20 and IsReady("Lay on Hands") and not AuraUtil.FindAuraByName("Divine Protection", "player") then
-    return S.LayonHands:Cast()
-   end
-   if IsReady("Blessing of Wisdom") and not S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player")  and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
-    return S.BlessingofWisdom:Cast()
-end
-if IsReady("Sanctity Aura") and not AuraUtil.FindAuraByName("Sanctity Aura", "player")  and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
-    return S.SanctityAura:Cast()
-end
-
-if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and IsEquippedItemType("Shields") then
-    return S.DevotionAura:Cast()
-end
-
-if IsReady("Retribution Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") and not AuraUtil.FindAuraByName("Retribution Aura", "player") and not IsEquippedItemType("Shields") then
-    return S.RetributionAura:Cast()
-end
-
-if IsReady("Blessing of Might") and not UnitIsPlayer('target') and S.impblessingofmight:IsAvailable() and not AuraUtil.FindAuraByName("Blessing of Wisdom", "player") and not AuraUtil.FindAuraByName("Blessing of Might", "player") and Player:IsMoving() and not  AuraUtil.FindAuraByName("Blessing of Protection", "player") then
-    return S.BlessingofMight:Cast()
-end
-
-
-if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and IsCurrentSpell(6603) then 
-
-    if not IsCurrentSpell(6603) and Target:Exists() then
-        return I.autoattack:ID()
-        end
---RET
-if sealbuffremains<1.5 then
-if IsReady("Judgment",1) then
-    return S.Judgment:Cast()
-end
-if IsReady("Seal of Martyrdom") then
-    return S.SealofMartyrdom:Cast()
-end
-
-
-end
-
-
-if IsReady("Hammer of Wrath") and IsActionInRange(3) then
-    return S.HammerofWrath:Cast()
-end
-if IsReady("Exorcism") and IsActionInRange(3) then
-    return S.Exorcism:Cast()
-end
-if IsReady("Crusader Strike",1) then
-    return S.CrusaderStrike:Cast()
-end
-if IsReady("Judgment",1) then
-    return S.Judgment:Cast()
-end 
-if IsReady("Divine Storm") and IsActionInRange(1) then
-    return S.DivineStorm:Cast()
-end 
-
-if IsReady("Holy Shock") and IsActionInRange(3) then
-    return S.HolyShock:Cast()
-end 
-
-if IsReady("Consecration") and IsActionInRange(1) then
-    return S.Consecration:Cast()
-end 
-
-        if IsReady("Righteous Fury") and not AuraUtil.FindAuraByName("Righteous Fury", "player") 
-         and IsEquippedItemType("Shield") 
-        then
-            return S.RighteousFury:Cast()
-        end
-    
- 
-       
-
-    
-
-   
-                
-                    
-                    if IsReady("Avenger's Shield",1) and GriphRH.CDsON() and IsActionInRange(3)  then
-                        return S.AvengersShield:Cast()
-                    end
-            
-                    if IsReady("Crusader Strike") and IsActionInRange(1) and (sealbuffremains> GCDRemaining()+0.15 or sealbuffremains==0 and Player:ManaPercentage()<10) then
-                        return S.CrusaderStrike:Cast()
-                    end
-            
-                    if IsReady("Divine Storm") and IsActionInRange(1) and sealbuffremains> GCDRemaining()+0.15 then
-                        return S.DivineStorm:Cast()
-                    end
-            
-              
-                
-                    if IsReady("Judgment",1)
-                    and (GriphRH.CDsON() or UnitIsPlayer('target')) and
-                    (
-                        nextauto+0.15>GCDRemaining()
-                    or TTDlong and not Target:Debuff(S.SealoftheCrusaderDebuff) and AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER") and not UnitIsPlayer('target')
-                    )
-                     then
-                        return S.Judgment:Cast()
-                    end
-        
-        
-                    if IsReady('Exorcism') and IsActionInRange(3)  and UnitIsPlayer('target')
-                    and Target:AffectingCombat() and GriphRH.CDsON() 
-                    and Target:Exists() 
-                    and Player:CanAttack(Target) 
-                     then
-                       return S.Exorcism:Cast()
-                    end
-        
-            
-                    if sealbuffremains<Player:GCD()+nextauto + 0.15 then 
-            
-                        if IsReady("Seal of the Crusader") 
-                        and TTDlong
-                        and not Target:Debuff(S.SealoftheCrusaderDebuff) and not UnitIsPlayer('target') then
-                            return S.SealoftheCrusader:Cast()
-                        end
-                
-                        if IsReady("Seal of Command") then
-                            return S.SealofCommand:Cast()
-                        end
-                
-                        if IsReady("Seal of Martyrdom") then
-                            return S.SealofMartyrdom:Cast()
-                        end
-                        
-                        if IsReady("Seal of Righteousness") then
-                            return S.SealofRighteousness:Cast()
-                        end
-            
-                        end
-            
-            
-                        if IsReady('Exorcism',1) 
-                    and Target:AffectingCombat() and GriphRH.CDsON() 
-                    and Target:Exists() 
-                    and Player:CanAttack(Target) 
-                     then
-                       return S.Exorcism:Cast()
-                    end
-            
-                        
-             
-                        if IsReady("Consecration") and IsActionInRange(1) and not Player:IsMoving() then
-                            return S.Consecration:Cast()
-                        end
-            
-                    end
-
 
                     return "Interface\\Addons\\Griph-RH-Classic\\Media\\griph.tga", false
 

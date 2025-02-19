@@ -23,7 +23,6 @@ Modules\UI.lua
 Modules\CombatTracker.lua
 Modules\HealingEngine.lua
 Modules\Quest.lua
-Modules\MiniMap.lua
 Rotations-Classic\Shared.lua
 Rotations-Classic\Rogue.lua
 Rotations-Classic\Hunter.lua
