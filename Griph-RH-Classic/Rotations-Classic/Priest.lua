@@ -96,6 +96,12 @@ local function APL()
 			Shoot = ActionSlot
 		end
 	end
+
+--  	local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, notInterruptible, spellId = UnitChannelInfo("player")
+
+-- print(startTimeMS-endTimeMS)
+
+
 	if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -127,6 +133,7 @@ local castchannelTime = math.random(275, 500) / 1000
 
 local nameSharedPain = GetSpellInfo('Shared Pain')
 
+
 if AuraUtil.FindAuraByName("Mind Spike", "target", "PLAYER|HARMFUL") then
 	mindspikestack = select(3, AuraUtil.FindAuraByName("Mind Spike", "target", "PLAYER|HARMFUL"))
 else
@@ -141,14 +148,21 @@ else
 	mindspikeremains = 0
 end
 
-if Player:IsChanneling(S.MindFlay6)then
+if Player:IsChanneling(S.MindFlay6) then
 
 	channelremaining = Player:ChannelRemains()
 else
 	channelremaining = 3
 end
--- print(channelremaining)
-if channelremaining<2 and Player:IsChanneling(S.MindFlay6) and not AuraUtil.FindAuraByName("Melting Faces","player") then
+if (Player:IsCasting() or Player:IsChanneling()) and Player:IsChanneling(S.MindFlay6) then
+	mindflaytimer = Player:CastDuration()
+else
+mindflaytimer = 0
+end
+
+
+-- print(Player:CastDuration())
+if (channelremaining<1 or IsReady("Mind Blast")) and mindflaytimer>2.5 and Player:IsChanneling(S.MindFlay6)  then
 	return S.cancelchannel:Cast()
 end
 
@@ -329,7 +343,7 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		end
 	
 		if IsReady('Vampiric Touch') and aoeDots and CanCastWithTolerance("Vampiric Touch") and not Player:IsMoving() 
-		and not AuraUtil.FindAuraByName("Inner Focus","player") and (HL.CombatTime()<4 or targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) 
+		and not AuraUtil.FindAuraByName("Inner Focus","player") and (targetTTD>4 or Target:IsAPlayer() and Target:HealthPercentage()>50) 
 		and targetRange36 and not AuraUtil.FindAuraByName("Vampiric Touch","target","PLAYER|HARMFUL") then
 			return S.vampirictouch:Cast()
 		end
@@ -354,6 +368,14 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		if IsReady('Shadowfiend') and Player:ManaPercentage()<=50 and targetRange36 and GriphRH.CDsON() then
 			return S.Shadowfiend:Cast()
 		end
+
+		if IsReady('Shadow Word: Death') and targetRange36 then
+			return S.ShadowWordDeath:Cast()
+		end
+		if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
+			return S.MindFlay:Cast()
+		end
+		
 	
 		if IsReady("Mind Sear") and not Player:IsMoving() and targetRange36 and aoeDots then
 			return S.MindSear:Cast()
@@ -362,13 +384,8 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		if IsReady('Penance') and not Player:IsMoving() and  targetRange36  then
 			return S.Penance:Cast()
 		end
-		if IsReady('Shadow Word: Death') and targetRange36 then
-			return S.ShadowWordDeath:Cast()
-		end
-		if IsReady('Mind Flay') and not Player:IsMoving() and targetRange36 then
-			return S.MindFlay:Cast()
-		end
-	
+
+
 
 	
 		if IsReady('Devouring Plague') and (targetTTD>7 or Target:IsAPlayer()) and  targetRange36 and GriphRH.CDsON() then
@@ -392,7 +409,9 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 		if IsReady('Void Zone') and  targetRange36 and not Player:IsMoving() then
 			return S.VoidZone:Cast() 
 		end
-		
+		if IsReady('Mind Flay') and targetRange36 and not Player:IsMoving() then
+			return S.MindFlay:Cast()
+		end
 		
 		if IsReady('Mind Sear') and targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2) and not Player:IsMoving() and GriphRH.AoEON() then
 			return S.MindSear:Cast()
