@@ -155,7 +155,7 @@ local function APL()
 
 local inRange25 = 0
 for i = 1, 40 do
-    if UnitExists('nameplate' .. i) then
+    if UnitExists('nameplate' .. i) and  UnitAffectingCombat("nameplate") then
         inRange25 = inRange25 + 1
     end
 end

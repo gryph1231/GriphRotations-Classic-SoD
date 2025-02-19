@@ -281,6 +281,8 @@ GriphRH.Spell[4] = {
 
 GriphRH.Spell[2] = {
 	AutoAttack = Spell(6603),
+    Rebuke = Spell(425609),
+
 		Default = Spell(1),
 		DevotionAura = Spell(465),
         HolyShock = Spell(20473),

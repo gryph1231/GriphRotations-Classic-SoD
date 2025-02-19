@@ -21,7 +21,7 @@ GriphRH.Spell[2] = {
 		HolyLight = Spell(639),
         Purify = Spell(1152),
         SealoftheCrusaderDebuff = Spell(20300),
-SealofMartyrdom = Spell(10326),-- turn undead
+SealofMartyrdom = Spell(10326), -- turn undead
         SealoftheCrusader = Spell(20305),
 FrostRA = Spell(27152),
 FireRA = Spell(27153),
@@ -44,6 +44,7 @@ RetributionAura = Spell(7294),
 BlessingofFreedom = Spell(1044),
 FlashofLight = Spell(27137),
 ConcentrationAura = Spell(19746),
+Rebuke = Spell(425609),
 BlessingofKings = Spell(20217),
 SealofLight = Spell(20165),	
 BlessingofSalvation = Spell(1038),
@@ -54,6 +55,7 @@ HolyShield = Spell(20928),
 SealofWisdom = Spell(20166),
 SealofWisdomDebuff = Spell(20355),
 SanctityAura = Spell(20218),
+BlessingofWisdom2 = Spell(19850),
 BlessingofWisdom = Spell(19742),
 HammerofWrath = Spell(24275),
 Repentance = Spell(20066),
@@ -116,6 +118,24 @@ local function APL()
         TTDlong =  UnitHealth('target')>5000
         nextauto = math.max(0, (GriphRH.lasthit()-UnitAttackSpeed('player'))*-1)
 
+        local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+
+        local _,instanceType = IsInInstance()
+        local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
+        
+        local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+        
+        local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+        
+        local channelTime = elapsedTimech / 1000
+        
+        local castTime = elapsedTimeca / 1000
+        
+        local castchannelTime = math.random(275, 500) / 1000
+        
+        local nameTheArtofWar = GetSpellInfo('The Art of War')
+
+
 
      if AuraUtil.FindAuraByName("Seal of the Crusader", "player") then
         sealbuffremains = select(6,AuraUtil.FindAuraByName("Seal of the Crusader","player","PLAYER")) - GetTime()
@@ -141,18 +161,18 @@ end
 
 
 
-if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and (not IsReady("Hammer of Justice") or S.HammerofJustice:CooldownRemains()>3) then
+if GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and ( S.HammerofJustice:CooldownRemains()>2) then
     GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
-elseif GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() and IsReady("Hammer of Justice") then
+elseif GriphRH.QueuedSpell():ID() == S.HammerofJustice:ID() then
         return GriphRH.QueuedSpell():Cast()
 	end
  
-if GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and Player:MovingFor()>0.3 then
-    GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
-elseif   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light") then
+if   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light") then
         return GriphRH.QueuedSpell():Cast()
 	end
-	
+	if GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and ( IsCurrentSpell(SpellRank('Holy Light')) or not IsUsableSpell("Holy Light") or Player:MovingFor()>.15) then
+        GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
+    end
 
 
 
@@ -162,6 +182,8 @@ elseif   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light"
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\prot.tga", false
 	end 
 
+
+      
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -197,10 +219,14 @@ if (Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() 
     if not IsCurrentSpell(6603) and Target:Exists() and TargetinRange(10) then
         return I.autoattack:ID()
         end
+        if IsReady("Rebuke") and spellwidgetfort~='Widget Fortress' and (castTime > 0.25+castchannelTime or channelTime > 0.25+castchannelTime) and  TargetinRange(5) and GriphRH.InterruptsON() then
+			return S.Rebuke:Cast()
+		end
+   
 
-
-
-
+        if IsReady("Divine Storm") and TargetinRange(5) and RangeCount(10)>=2 and GriphRH.AoEON() then
+            return S.DivineStorm:Cast()
+            end 
 --RET
 if sealbuffremains<1.5 then
 if IsReady("Judgement") and TargetinRange(10) then
@@ -214,13 +240,13 @@ end
 end
 
 
-if IsReady("Hammer of Wrath") and TargetinRange(10) then
-    return S.HammerofWrath:Cast()
-end
+-- if IsReady("Hammer of Wrath") and TargetinRange(10) then
+--     return S.HammerofWrath:Cast()
+-- end
 if IsReady("Exorcism") and TargetinRange(30) 
 and
-(  UnitCreatureType("target") == "Undead"
-or UnitCreatureType("target") == "Demon")
+( nameTheArtofWar == "The Art of War" or UnitCreatureType("target") == "Undead"
+or UnitCreatureType("target") == "Demon" )
 then
     return S.Exorcism:Cast()
 end
@@ -284,7 +310,7 @@ end
                     if IsReady('Exorcism') and TargetinRange(10)  and UnitIsPlayer('target')
                     and Target:AffectingCombat() and GriphRH.CDsON() 
                     and Target:Exists()  and
-                    (  UnitCreatureType("target") == "Undead"
+                    (nameTheArtofWar == "The Art of War" or  UnitCreatureType("target") == "Undead"
                     or UnitCreatureType("target") == "Demon")
                     and Player:CanAttack(Target) 
                      then
@@ -318,7 +344,7 @@ end
                         if IsReady('Exorcism') and TargetinRange(30) 
                     and Target:AffectingCombat() and GriphRH.CDsON() 
                     and Target:Exists()  and
-                    (  UnitCreatureType("target") == "Undead"
+                    (nameTheArtofWar == "The Art of War" or  UnitCreatureType("target") == "Undead"
                     or UnitCreatureType("target") == "Demon")
                     and Player:CanAttack(Target) 
                      then
@@ -405,7 +431,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
             if IsReady('Exorcism') and TargetinRange(30)  and UnitIsPlayer('target') 
             and Target:AffectingCombat() and GriphRH.CDsON() 
             and Target:Exists() and
-            (  UnitCreatureType("target") == "Undead"
+            ( nameTheArtofWar == "The Art of War" or  UnitCreatureType("target") == "Undead"
             or UnitCreatureType("target") == "Demon")
             and Player:CanAttack(Target) 
              then
@@ -441,7 +467,7 @@ if not Player:AffectingCombat() and not AuraUtil.FindAuraByName("Drink", "player
             and Target:Exists() 
             and Player:CanAttack(Target) 
             and
-            (  UnitCreatureType("target") == "Undead"
+            (  nameTheArtofWar == "The Art of War" or UnitCreatureType("target") == "Undead"
             or UnitCreatureType("target") == "Demon")
              then
                return S.Exorcism:Cast()

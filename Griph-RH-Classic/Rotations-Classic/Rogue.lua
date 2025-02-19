@@ -112,26 +112,32 @@ local function EnvenomDMG()
 		occult_poison_stacksI = 0
 	end
 
+	if AuraUtil.FindAuraByName('Occult Poison II','target','PLAYER|HARMFUL') then
+		_, _, occult_poison_stacksII = AuraUtil.FindAuraByName('Occult Poison II','target','PLAYER|HARMFUL')
+	else
+		occult_poison_stacksII = 0
+	end
+
 	local envenom_damage = 0
 	
-	if (deadly_poison_stacks or deadly_poison_stacksII or deadly_poison_stacksIII or deadly_poison_stacksIV or occult_poison_stacksI) and not UnitIsPlayer('target') then
-		if (deadly_poison_stacks >= 1 or deadly_poison_stacksII >= 1 or deadly_poison_stacksIII >= 1 or deadly_poison_stacksIV >= 1 or occult_poison_stacksI >= 1) and Player:ComboPoints() >= 1 then
+	if (deadly_poison_stacks or deadly_poison_stacksII or deadly_poison_stacksIII or deadly_poison_stacksIV or occult_poison_stacksI or occult_poison_stacksII) and not UnitIsPlayer('target') then
+		if (deadly_poison_stacks >= 1 or deadly_poison_stacksII >= 1 or deadly_poison_stacksIII >= 1 or deadly_poison_stacksIV >= 1 or occult_poison_stacksI >= 1 or occult_poison_stacksII >= 1) and Player:ComboPoints() >= 1 then
 			envenom_damage = ((5.741530 - 0.255683 * UnitLevel("player") + 0.032656 * UnitLevel("player") * UnitLevel("player")) * 80 / 100) * 1 + attack_power * 0.072
 		end
 
-		if (deadly_poison_stacks >= 2 or deadly_poison_stacksII >= 2 or deadly_poison_stacksIII >= 2 or deadly_poison_stacksIV >= 2 or occult_poison_stacksI >= 2) and Player:ComboPoints() >= 2 then
+		if (deadly_poison_stacks >= 2 or deadly_poison_stacksII >= 2 or deadly_poison_stacksIII >= 2 or deadly_poison_stacksIV >= 2 or occult_poison_stacksI >= 2 or occult_poison_stacksII >= 2) and Player:ComboPoints() >= 2 then
 			envenom_damage = ((5.741530 - 0.255683 * UnitLevel("player") + 0.032656 * UnitLevel("player") * UnitLevel("player")) * 80 / 100) * 2 + attack_power * 0.144
 		end
 
-		if (deadly_poison_stacks >= 3 or deadly_poison_stacksII >= 3 or deadly_poison_stacksIII >= 3 or deadly_poison_stacksIV >= 3 or occult_poison_stacksI >= 3) and Player:ComboPoints() >= 3 then
+		if (deadly_poison_stacks >= 3 or deadly_poison_stacksII >= 3 or deadly_poison_stacksIII >= 3 or deadly_poison_stacksIV >= 3 or occult_poison_stacksI >= 3 or occult_poison_stacksII >= 3) and Player:ComboPoints() >= 3 then
 			envenom_damage = ((5.741530 - 0.255683 * UnitLevel("player") + 0.032656 * UnitLevel("player") * UnitLevel("player")) * 80 / 100) * 3 + attack_power * 0.216
 		end
 
-		if (deadly_poison_stacks >= 4 or deadly_poison_stacksII >= 4 or deadly_poison_stacksIII >= 4 or deadly_poison_stacksIV >= 4 or occult_poison_stacksI >= 4) and Player:ComboPoints() >= 4 then
+		if (deadly_poison_stacks >= 4 or deadly_poison_stacksII >= 4 or deadly_poison_stacksIII >= 4 or deadly_poison_stacksIV >= 4 or occult_poison_stacksI >= 4 or occult_poison_stacksII >= 4) and Player:ComboPoints() >= 4 then
 			envenom_damage = ((5.741530 - 0.255683 * UnitLevel("player") + 0.032656 * UnitLevel("player") * UnitLevel("player")) * 80 / 100) * 4 + attack_power * 0.288
 		end
 
-		if (deadly_poison_stacks >= 5 or deadly_poison_stacksII >= 5 or deadly_poison_stacksIII >= 5 or deadly_poison_stacksIV >= 5 or occult_poison_stacksI >= 5) and Player:ComboPoints() >= 5 then
+		if (deadly_poison_stacks >= 5 or deadly_poison_stacksII >= 5 or deadly_poison_stacksIII >= 5 or deadly_poison_stacksIV >= 5 or occult_poison_stacksI >= 5 or occult_poison_stacksII >= 5) and Player:ComboPoints() >= 5 then
 			envenom_damage = ((5.741530 - 0.255683 * UnitLevel("player") + 0.032656 * UnitLevel("player") * UnitLevel("player")) * 80 / 100) * 5 + attack_power * 0.36
 		end
 	end
@@ -270,7 +276,7 @@ local function Finish()
 		return S.CloakRune:Cast()
 	end
 
-	if IsReady('Slice and Dice') and CTRefreshableAOE(2) < 3 and (not UnitIsPlayer('target') or IsSpellInRange("Sinister Strike", "target") == 0 or ((S.KidneyShot:CooldownRemains() > 2 and not GetSpellCooldown('Between the Eyes')) or (S.BetweenTheEyes:CooldownRemains() > 2 and GetSpellCooldown('Between the Eyes')))) and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or (not GetSpellCooldown('Cut to the Chase') and ((Player:BuffRemains(S.SliceandDice) < 4 and Player:ComboPoints() >= 2 and (Player:ComboPoints() >= 5 or (target_unhealthy and RangeCount(5) > 1)))))) then
+	if IsReady('Slice and Dice') and CTRefreshableAOE(2) < 3 and (not UnitIsPlayer('target') or IsSpellInRange("Sinister Strike", "target") == 0) and (not AuraUtil.FindAuraByName("Slice and Dice", "player") or (not GetSpellCooldown('Cut to the Chase') and ((Player:BuffRemains(S.SliceandDice) < 4 and Player:ComboPoints() >= 2 and (Player:ComboPoints() >= 5 or (target_unhealthy and RangeCount(5) > 1)))))) then
 		return S.SliceandDice:Cast()
 	end
 
@@ -279,7 +285,7 @@ local function Finish()
 	end
 
 	if IsReady('Envenom',1) and ((cp_finish_condition and (not AuraUtil.FindAuraByName("Envenom", "player") or Player:Energy() >= 65 or (Player:Energy() >= 50 and IsReady('Poisoned Knife',1)) or UnitIsPlayer('target'))) or (EnvenomDMG() >= UnitHealth('target') and not UnitIsPlayer('target')) or (GetSpellCooldown('Cut to the Chase') and (AuraUtil.FindAuraByName("Slice and Dice", "player") and ((Player:Buff(S.SliceandDice) and Player:BuffRemains(S.SliceandDice) < 4) or (((Player:Buff(S.SliceandDice) and Player:BuffRemains(S.SliceandDice) < 8)) and cp_finish_condition))))) then
-		if IsReady('Cold Blood') and IsReady('Envenom',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and ((deadly_poison_stacks and deadly_poison_stacks >= 5) or (deadly_poison_stacksII and deadly_poison_stacksII >= 5) or (deadly_poison_stacksIII and deadly_poison_stacksIII >= 5) or (deadly_poison_stacksIV and deadly_poison_stacksIV >= 5) or (occult_poison_stacksI and occult_poison_stacksI >= 5)) and cp_finish_condition then
+		if IsReady('Cold Blood') and IsReady('Envenom',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and ((deadly_poison_stacks and deadly_poison_stacks >= 5) or (deadly_poison_stacksII and deadly_poison_stacksII >= 5) or (deadly_poison_stacksIII and deadly_poison_stacksIII >= 5) or (deadly_poison_stacksIV and deadly_poison_stacksIV >= 5) or (occult_poison_stacksI and occult_poison_stacksI >= 5) or (occult_poison_stacksII and occult_poison_stacksII >= 5)) and cp_finish_condition then
 			return S.ColdBlood:Cast()
 		end
 	
@@ -290,7 +296,7 @@ local function Finish()
 		return S.Eviscerate:Cast()
 	end
 
-	if IsReady('Between The Eyes',1) and (not GetSpellCooldown('Envenom') or (not AuraUtil.FindAuraByName('Deadly Poison','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison II','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison III','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison IV','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison I','target','PLAYER|HARMFUL'))) and (cp_finish_condition or (BTEDMG() >= UnitHealth('target') and not UnitIsPlayer('target'))) then
+	if IsReady('Between The Eyes',1) and (not GetSpellCooldown('Envenom') or (not AuraUtil.FindAuraByName('Deadly Poison','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison II','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison III','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison IV','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison I','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison II','target','PLAYER|HARMFUL'))) and (cp_finish_condition or (BTEDMG() >= UnitHealth('target') and not UnitIsPlayer('target'))) then
 		if IsReady('Cold Blood') and IsReady('Between the Eyes',1) and not AuraUtil.FindAuraByName("Cutthroat", "player") and GriphRH.CDsON() and cp_finish_condition then
 			return S.ColdBlood:Cast()
 		end
@@ -298,7 +304,7 @@ local function Finish()
 		return S.BetweenTheEyes:Cast()
 	end
 
-	if IsReady('Eviscerate',1) and (not GetSpellCooldown('Envenom') or (not AuraUtil.FindAuraByName('Deadly Poison','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison II','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison III','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison IV','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison I','target','PLAYER|HARMFUL'))) and (cp_finish_condition or target_unhealthy) then
+	if IsReady('Eviscerate',1) and (not GetSpellCooldown('Envenom') or (not AuraUtil.FindAuraByName('Deadly Poison','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison II','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison III','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Deadly Poison IV','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison I','target','PLAYER|HARMFUL') and not AuraUtil.FindAuraByName('Occult Poison II','target','PLAYER|HARMFUL'))) and (cp_finish_condition or target_unhealthy) then
 		return S.Eviscerate:Cast()
 	end
 
