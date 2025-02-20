@@ -233,7 +233,21 @@ PetActive()
 PetHapiness()
 StingTime()
 local namechimerashot = GetSpellInfo('Chimera Shot' )
+local namekillshot = GetSpellInfo('Kill Shot' )
+local nameraptorfury = GetSpellInfo('Raptor Fury' )
+local nameexposeweakness = GetSpellInfo('Expose Weakness' )
+local namewyvernstrike = GetSpellInfo('Wyvern Strike' )
 
+
+nextauto = math.max(0, (GriphRH.lasthit()-UnitAttackSpeed('player'))*-1)
+
+
+if namechimerashot == "Chimera Shot" and namekillshot == "Kill Shot" and nameraptorfury == "Raptor Fury" 
+and nameexposeweakness == "Expose Weakness" and namewyvernstrike == "Wyvern Strike" then
+	weave = true
+else
+	weave = false
+end
 if AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL") then
 	serpentstingdebuffremains = select(6,AuraUtil.FindAuraByName("Serpent Sting","target","PLAYER|HARMFUL")) - GetTime()
 	 else
@@ -366,6 +380,7 @@ if not Player:AffectingCombat() then
 	if IsReady('Feed Pet') and (PetHapiness() == 'Content' or PetHapiness() == 'Unhappy') and PetActive() and not Pet:Buff(S.FeedPetBuff) then 
 		return S.FeedPet:Cast() 
 	end
+	if not weave then
 	if S.TrueshotAura:IsAvailable() then
 	if IsCurrentSpell(6603) and IsReady("Aimed Shot") then
 		return S.AimedShot:Cast()
@@ -375,10 +390,51 @@ if not Player:AffectingCombat() then
 	end
 	end
 end
+
+if weave and TargetinRange(40) then
+
+
+	if IsReady('Aspect of the Falcon') and  not AuraUtil.FindAuraByName("Aspect of the Falcon", "player") 
+	and ((not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and not AuraUtil.FindAuraByName("Aspect of the Viper", "player") 
+	and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")) 
+	or (UnitAffectingCombat('player') and CheckInteractDistance("target",3))) then
+		return S.AspectoftheFalcon:Cast()
+	end
+	
+	if 	IsCurrentSpell(6603) then
+	if  IsReady("Blood Fury") then
+		return S.BloodFury:Cast()
+	end
+	if  IsReady("Berserking") then
+		return S.Berserking:Cast()
+	end
+
+	if  IsReady("Rapid Fire") then
+		return S.RapidFire:Cast()
+	end
+
+
+	if  IsReady("Sepent Sting") then
+		return S.SerpentSting:Cast()
+	end
+
+end
+
+
+
+
+end
+
+
+
+
+
+end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:AffectingCombat() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and ((AuraUtil.FindAuraByName("Dazed", "player") and UnitAffectingCombat('player')) or CleaveCount() >= 1 or S.AutoShot:InFlight()) then
+if Player:AffectingCombat() and AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and ManaPct()>=50
+and ((AuraUtil.FindAuraByName("Dazed", "player") and UnitAffectingCombat('player')) or CleaveCount() >= 1 or S.AutoShot:InFlight()) then
 	return S.AspectoftheCheetahCancel:Cast()
 end
 
@@ -392,6 +448,15 @@ or (UnitAffectingCombat('player') and CheckInteractDistance("target",3))) then
 	return S.AspectoftheViper:Cast()
 end
 
+
+if IsReady('Aspect of the Falcon') and  not AuraUtil.FindAuraByName("Aspect of the Falcon", "player") 
+and ((not AuraUtil.FindAuraByName("Aspect of the Cheetah", "player") and not AuraUtil.FindAuraByName("Aspect of the Viper", "player") 
+and not AuraUtil.FindAuraByName("Aspect of the Pack", "player")) 
+or (UnitAffectingCombat('player') and CheckInteractDistance("target",3))) then
+	return S.AspectoftheFalcon:Cast()
+end
+
+
 if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCurrentSpell(6603) or IsAutoRepeatAction(AutoShot)) and not Target:IsDeadOrGhost() then 
 
 	if not IsAutoRepeatAction(AutoShot) and not Player:IsMoving() and IsSpellInRange('Auto Shot', 'target') == 1 then
@@ -401,7 +466,106 @@ if UnitCanAttack('player', 'target') and (UnitAffectingCombat('target') or IsCur
 	if not IsCurrentSpell(6603) and CheckInteractDistance("target",3) then
 		return Item(135274, { 13, 14 }):ID()
 	end
-if namechimerashot ~= "Chimera Shot" then 
+
+
+	if weave then -- NEED SUPPORT FROM DUZTI
+-- 		Serpent Sting on Pull
+-- Pre-Rapid Fire: Chimera + Auto Shot -> Wyvern Strike + Raptor
+-- During Rapid Fire: Kill Shot, only Chimera Shot once to refresh Serpent Sting
+-- Normal >20% HP: Chimera + Auto Shot -> Wyvern Strike + Raptor -> Kill Shot + Auto Shot -> Chimera -> Kill Shot + Auto Shot -> Multi Shot/Arcane Shot
+-- Execute <20% HP: Chimera + Auto Shot -> Wyvern Strike + Raptor -> Kill Shot + Auto Shot -> Kill Shot + Melee
+	
+if HL.CombatTime()<4 or S.RapidFire:CooldownRemains()<4 and GriphRH.CDsON() then
+	
+	if IsReady("Serpent Sting")  and serpentstingdebuffremains < 1.5 and IsSpellInRange('Auto Shot', 'target') == 1  then
+		return S.SerpentSting:Cast() 
+	end
+	
+	if IsReady("Chimera Shot") and IsSpellInRange('Auto Shot', 'target') == 1 then
+		return S.ChimeraShot:Cast()
+	end
+
+
+	if  IsReady("Wyvern Strike") and  CheckInteractDistance("target",3) then
+		return S.WyvernStrike:Cast()
+	end 
+	if  IsReady("Raptor Strike") and  CheckInteractDistance("target",3) then
+		return S.RaptorStrike:Cast()
+	end 
+	
+
+
+end
+
+if  AuraUtil.FindAuraByName("Rapid Fire", "player") then
+	
+
+	if  IsReady("Kill Shot") and (IsSpellInRange('Auto Shot', 'target') == 1 or CheckInteractDistance("target",3)) then
+		return S.KillShot:Cast()
+	end 
+
+
+	if IsReady("Chimera Shot") and IsSpellInRange('Auto Shot', 'target') == 1 and serpentstingdebuffremains<2 then
+		return S.ChimeraShot:Cast()
+	end
+
+
+
+
+end
+
+
+if GriphRH.CDsON() and IsReady("Rapid Fire") and S.ChimeraShot:CooldownRemains()<6 and S.ChimeraShot:CooldownRemains()>4 and IsSpellInRange('Auto Shot', 'target') == 1 then
+	return S.RapidFire:Cast() 
+end
+
+if IsReady("Chimera Shot") and IsSpellInRange('Auto Shot', 'target') == 1 and serpentstingdebuffremains<2 then
+	return S.ChimeraShot:Cast()
+end
+
+
+
+if  IsReady("Wyvern Strike") and  CheckInteractDistance("target",3) then
+	return S.WyvernStrike:Cast()
+end 
+if  IsReady("Raptor Strike") and  CheckInteractDistance("target",3) then
+	return S.RaptorStrike:Cast()
+end 
+
+if  IsReady("Kill Shot") and (IsSpellInRange('Auto Shot', 'target') == 1 or CheckInteractDistance("target",3)) then
+	return S.KillShot:Cast()
+end 
+
+if IsReady("Chimera Shot") and IsSpellInRange('Auto Shot', 'target') == 1  then
+	return S.ChimeraShot:Cast()
+end
+
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if namechimerashot ~= "Chimera Shot" and not weave then 
 
 
 
@@ -452,7 +616,7 @@ end
 	end 
 end
 
-if namechimerashot == "Chimera Shot"  then
+if namechimerashot == "Chimera Shot" and not weave then
 
 	if IsReady("Kill Shot") and Target:HealthPercentage()<20 and  CheckInteractDistance("target",3)  then
 		return S.KillShot:Cast()

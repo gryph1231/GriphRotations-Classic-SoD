@@ -148,7 +148,6 @@ else
 end
 
 
-
 if AuraUtil.FindAuraByName("Mind Spike", "target", "PLAYER|HARMFUL") then
 	mindspikeremains = select(6, AuraUtil.FindAuraByName("Mind Spike", "target", "PLAYER|HARMFUL")) - GetTime()
 else
@@ -167,6 +166,7 @@ else
 mindflaytimer = 0
 end
 
+-- print(GetMobsInCombat())
 
 -- print(Player:CastDuration())
 if (channelremaining<1 or IsReady("Mind Blast")) and mindflaytimer>2.5 and Player:IsChanneling(S.MindFlay6)  then
@@ -236,11 +236,10 @@ if GriphRH.QueuedSpell():ID() == S.Heal:ID() and not IsCurrentSpell(SpellRank('H
 	return GriphRH.QueuedSpell():Cast()
 end
 
-
 local aoeDots = (inRange25>=3 or GetMobsInCombat()>=3) and GriphRH.AoEON()
 
 
--- print(GetMobsInCombat())
+-- print(GetNumGroupMembers()())
 if IsReady('Shadowform') and not AuraUtil.FindAuraByName("Shadowform","player") then
 	return S.Shadowform:Cast()
 end
@@ -421,7 +420,7 @@ and (Player:AffectingCombat() or IsCurrentSpell(5019) or Target:AffectingCombat(
 			return S.MindFlay:Cast()
 		end
 		
-		if IsReady('Mind Sear') and targetRange36 and (inRange25>=2 or GetMobsInCombat()>=2) and not Player:IsMoving() and GriphRH.AoEON() then
+		if IsReady('Mind Sear') and targetRange36 and (GetMobsInCombat()>=2) and not Player:IsMoving() and GriphRH.AoEON() then
 			return S.MindSear:Cast()
 		end
 

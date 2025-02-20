@@ -175,6 +175,14 @@ if   GriphRH.QueuedSpell():ID() == S.HolyLight:ID() and IsReady("Holy Light") th
     end
 
 
+if GriphRH.QueuedSpell():ID() == S.Rebuke:ID() and ( S.Rebuke:CooldownRemains()>2) then
+    GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
+end
+     
+if   GriphRH.QueuedSpell():ID() == S.Rebuke:ID() and IsReady("Rebuke") then
+    return GriphRH.QueuedSpell():Cast()
+end
+
 
 	if Player:IsCasting() or Player:IsChanneling() or AuraUtil.FindAuraByName("First Aid", "player") then
 		return "Interface\\Addons\\Griph-RH-Classic\\Media\\channel.tga", false
