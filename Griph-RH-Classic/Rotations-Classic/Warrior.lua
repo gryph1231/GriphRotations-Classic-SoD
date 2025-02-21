@@ -50,6 +50,7 @@ GriphRH.Spell[1] = {
     Retaliation = Spell(20230),
     Cleave = Spell(845),
     BerserkerRage = Spell(18499),
+    Rend7 = Spell(11574),
     berserkerrage = Spell(20554), --berserking
     DemoralizingShout = Spell(11555),
     ShieldWall = Spell(871),
@@ -207,6 +208,7 @@ local function APL()
     local castTime = elapsedTimeca / 1000
 
     local castchannelTime = math.random(275, 500) / 1000
+    boss =  UnitLevel('target') == -1
 
     local spellwidgetfort = UnitCastingInfo("target")
     -- print(AuraUtil.FindAuraByName("Aspect of the Hawk","target"))
@@ -299,6 +301,11 @@ local function APL()
     if GriphRH.QueuedSpell():ID() == S.IntimidatingShout:ID() and S.IntimidatingShout:CooldownRemains() > 2 then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
+
+    if GriphRH.QueuedSpell():ID() == S.Rend:ID() and (not Target:Exists() or not Player:CanAttack(Target) or Target:IsDeadOrGhost()) then
+        GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
+    end
+
     if GriphRH.QueuedSpell():ID() == S.Intercept:ID() and (S.Intercept:CooldownRemains() > 2 or not IsSpellInRange("Intercept","target") or Target:IsDeadOrGhost() or not Player:CanAttack(Target) or  IsCurrentSpell(SpellRank('Charge')) ) then
         GriphRH.queuedSpell = { GriphRH.Spell[1].Default, 0 }
     end
@@ -355,7 +362,9 @@ local function APL()
 
 
 
-
+    if GriphRH.QueuedSpell():ID() == S.Rend:ID()  then
+        return GriphRH.QueuedSpell():Cast()
+    end
     if GriphRH.QueuedSpell():ID() == S.Recklessness:ID()  then
         return GriphRH.QueuedSpell():Cast()
     end
@@ -489,14 +498,16 @@ local function APL()
 
 
 
-                if IsReady("Rend") and (TargetinRange(5) or targetRange5)
-                    and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy" or UnitClass("target") == 4)
+                if IsReady("Rend") and (TargetinRange(5) or targetRange5) and S.Rend7:TimeSinceLastCast()>5 and (RangeCount(10)>1 and S.Whirlwind:CooldownRemains()>2 and GriphRH.AoEON() 
+                or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
+                    and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                     and (UnitCreatureType("target") == "Beast"
                         or UnitCreatureType("target") == "Dragonkin"
                         or UnitCreatureType("target") == "Humanoid"
                         or UnitCreatureType("target") == "Demon"
                         or UnitCreatureType("target") == "Critter"
                         or UnitCreatureType("target") == "Non-combat Pet"
+                        or boss
                     )
 
                 then
@@ -673,7 +684,7 @@ local function APL()
                     return S.RagingBlow:Cast()
                 end
 
-                if IsReady("Rend") and (TargetinRange(5) or targetRange5) and (RangeCount(10)>1 and S.Whirlwind:CooldownRemains()>2 and GriphRH.AoEON() 
+                if IsReady("Rend") and (TargetinRange(5) or targetRange5) and S.Rend7:TimeSinceLastCast()>5 and (RangeCount(10)>1 and S.Whirlwind:CooldownRemains()>2 and GriphRH.AoEON() 
                 or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
                     and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                     and (UnitCreatureType("target") == "Beast"
@@ -682,6 +693,7 @@ local function APL()
                         or UnitCreatureType("target") == "Demon"
                         or UnitCreatureType("target") == "Critter"
                         or UnitCreatureType("target") == "Non-combat Pet"
+                        or boss
                     )
 
                 then
@@ -797,19 +809,21 @@ local function APL()
                         return S.BattleStance:Cast()
                     end
 
-                    if IsReady("Rend") and (TargetinRange(5) or targetRange5) and spendaoe
-                        and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
-                        and (UnitCreatureType("target") == "Beast"
-                            or UnitCreatureType("target") == "Dragonkin"
-                            or UnitCreatureType("target") == "Humanoid"
-                            or UnitCreatureType("target") == "Demon"
-                            or UnitCreatureType("target") == "Critter"
-                            or UnitCreatureType("target") == "Non-combat Pet"
-                        )
+                    if IsReady("Rend") and (TargetinRange(5) or targetRange5) and S.Rend7:TimeSinceLastCast()>5 and (RangeCount(10)>1 and S.Whirlwind:CooldownRemains()>2 and GriphRH.AoEON() 
+                or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
+                    and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
+                    and (UnitCreatureType("target") == "Beast"
+                        or UnitCreatureType("target") == "Dragonkin"
+                        or UnitCreatureType("target") == "Humanoid"
+                        or UnitCreatureType("target") == "Demon"
+                        or UnitCreatureType("target") == "Critter"
+                        or UnitCreatureType("target") == "Non-combat Pet"
+                        or boss
+                    )
 
-                    then
-                        return S.Rend:Cast()
-                    end
+                then
+                    return S.Rend:Cast()
+                end
 
                     if IsReady("Overpower") and (TargetinRange(5) or targetRange5) and (checkOverpowerTimeautos()<2 or checkOverpowerTimespells() <2)  and spendaoe then
                         return S.Overpower:Cast()
@@ -883,7 +897,8 @@ local function APL()
                         return S.BattleStance:Cast()
                     end
 
-                    if IsReady("Rend") and (TargetinRange(5) or targetRange5)
+                    if IsReady("Rend") and (TargetinRange(5) or targetRange5) and S.Rend7:TimeSinceLastCast()>5 and (RangeCount(10)>1 and S.Whirlwind:CooldownRemains()>2 and GriphRH.AoEON() 
+                    or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
                         and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                         and (UnitCreatureType("target") == "Beast"
                             or UnitCreatureType("target") == "Dragonkin"
@@ -891,12 +906,12 @@ local function APL()
                             or UnitCreatureType("target") == "Demon"
                             or UnitCreatureType("target") == "Critter"
                             or UnitCreatureType("target") == "Non-combat Pet"
+                            or boss
                         )
-
+    
                     then
                         return S.Rend:Cast()
                     end
-
 
           
                     if IsReady("Overpower") and (TargetinRange(5) or targetRange5)  then
