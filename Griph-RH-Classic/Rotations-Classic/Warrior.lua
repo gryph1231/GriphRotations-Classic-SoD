@@ -502,13 +502,17 @@ local function APL()
                 or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
                     and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                     and (UnitCreatureType("target") == "Beast"
-                        or UnitCreatureType("target") == "Dragonkin"
-                        or UnitCreatureType("target") == "Humanoid"
-                        or UnitCreatureType("target") == "Demon"
-                        or UnitCreatureType("target") == "Critter"
-                        or UnitCreatureType("target") == "Non-combat Pet"
-                        or boss
-                    )
+                    or UnitCreatureType("target") == "Dragonkin"
+                    or UnitCreatureType("target") == "Humanoid"
+                    or UnitCreatureType("target") == "Demon"
+                    or UnitCreatureType("target") == "Critter"
+                    or UnitCreatureType("target") == "Undead"
+                    or UnitCreatureType("target") == "Giant"
+                    or UnitCreatureType("target") == "Not specified"
+                    or UnitCreatureType("target") == "Non-combat Pet"
+
+                    or boss
+                )
 
                 then
                     return S.Rend:Cast()
@@ -688,13 +692,17 @@ local function APL()
                 or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
                     and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                     and (UnitCreatureType("target") == "Beast"
-                        or UnitCreatureType("target") == "Dragonkin"
-                        or UnitCreatureType("target") == "Humanoid"
-                        or UnitCreatureType("target") == "Demon"
-                        or UnitCreatureType("target") == "Critter"
-                        or UnitCreatureType("target") == "Non-combat Pet"
-                        or boss
-                    )
+                    or UnitCreatureType("target") == "Dragonkin"
+                    or UnitCreatureType("target") == "Humanoid"
+                    or UnitCreatureType("target") == "Demon"
+                    or UnitCreatureType("target") == "Critter"
+                    or UnitCreatureType("target") == "Undead"
+                    or UnitCreatureType("target") == "Giant"
+                    or UnitCreatureType("target") == "Not specified"
+                    or UnitCreatureType("target") == "Non-combat Pet"
+
+                    or boss
+                )
 
                 then
                     return S.Rend:Cast()
@@ -813,13 +821,17 @@ local function APL()
                 or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
                     and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                     and (UnitCreatureType("target") == "Beast"
-                        or UnitCreatureType("target") == "Dragonkin"
-                        or UnitCreatureType("target") == "Humanoid"
-                        or UnitCreatureType("target") == "Demon"
-                        or UnitCreatureType("target") == "Critter"
-                        or UnitCreatureType("target") == "Non-combat Pet"
-                        or boss
-                    )
+                    or UnitCreatureType("target") == "Dragonkin"
+                    or UnitCreatureType("target") == "Humanoid"
+                    or UnitCreatureType("target") == "Demon"
+                    or UnitCreatureType("target") == "Critter"
+                    or UnitCreatureType("target") == "Undead"
+                    or UnitCreatureType("target") == "Giant"
+                    or UnitCreatureType("target") == "Not specified"
+                    or UnitCreatureType("target") == "Non-combat Pet"
+
+                    or boss
+                )
 
                 then
                     return S.Rend:Cast()
@@ -901,13 +913,17 @@ local function APL()
                     or not GriphRH.AoEON() or RangeCount(10)==1 or Player:Rage()>=25)
                         and renddebuff == 0 and (nametasteforblood == "Taste for Blood" or namebloodfrenzy == "Blood Frenzy")
                         and (UnitCreatureType("target") == "Beast"
-                            or UnitCreatureType("target") == "Dragonkin"
-                            or UnitCreatureType("target") == "Humanoid"
-                            or UnitCreatureType("target") == "Demon"
-                            or UnitCreatureType("target") == "Critter"
-                            or UnitCreatureType("target") == "Non-combat Pet"
-                            or boss
-                        )
+                        or UnitCreatureType("target") == "Dragonkin"
+                        or UnitCreatureType("target") == "Humanoid"
+                        or UnitCreatureType("target") == "Demon"
+                        or UnitCreatureType("target") == "Critter"
+                        or UnitCreatureType("target") == "Undead"
+                        or UnitCreatureType("target") == "Giant"
+                        or UnitCreatureType("target") == "Not specified"
+                        or UnitCreatureType("target") == "Non-combat Pet"
+
+                        or boss
+                    )
     
                     then
                         return S.Rend:Cast()

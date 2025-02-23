@@ -605,15 +605,15 @@ if  IsReady("Aspect of the Viper") and  CheckInteractDistance("target",3) and Ma
 	return S.AspectoftheViper:Cast()
 end 
 
-if  IsReady("Aspect of the Falcon") and  CheckInteractDistance("target",3) and ManaPct()>50 then
+if  IsReady("Aspect of the Falcon") and  CheckInteractDistance("target",3) and ManaPct()>70 then
 	return S.AspectoftheFalcon:Cast()
 end 
 
 
 
-	if IsReady("Immolation Trap") and CheckInteractDistance("target",3) and S.RaptorStrike:CooldownRemains()>=1.5 and S.MongooseBite:CooldownRemains()>1.5 then
-		return S.ImmolationTrap:Cast()
-	end 
+	-- if IsReady("Immolation Trap") and CheckInteractDistance("target",3) and S.RaptorStrike:CooldownRemains()>=1.5 and S.MongooseBite:CooldownRemains()>1.5 then
+	-- 	return S.ImmolationTrap:Cast()
+	-- end 
 end
 
 if namechimerashot == "Chimera Shot" and not weave then
@@ -633,9 +633,9 @@ if IsReady("Rapid Fire") and HL.CombatTime()<5 then
 	if IsReady("Kill Shot") and  CheckInteractDistance("target",3)  then
 		return S.KillShot:Cast()
 	end
-	if IsReady("Immolation Trap") and IsSpellInRange('Auto Shot', 'target') == 1 then
-		return S.ImmolationTrap:Cast()
-	end
+	-- if IsReady("Immolation Trap") and IsSpellInRange('Auto Shot', 'target') == 1 then
+	-- 	return S.ImmolationTrap:Cast()
+	-- end
 	if IsReady("Multi-Shot")  and IsSpellInRange('Auto Shot', 'target') == 1 then
 		return S.Multishot:Cast()
 	end
@@ -668,9 +668,9 @@ end
 if IsReady("Kill Shot") and  CheckInteractDistance("target",3) then
 	return S.KillShot:Cast() 
 end
-if IsReady("Immolation Trap") and IsSpellInRange('Auto Shot', 'target') == 1 then
-	return S.ImmolationTrap:Cast() 
-end
+-- if IsReady("Immolation Trap") and IsSpellInRange('Auto Shot', 'target') == 1 then
+-- 	return S.ImmolationTrap:Cast() 
+-- end
 if IsReady("Multi-Shot") and IsSpellInRange('Auto Shot', 'target') == 1 then
 	return S.Multishot:Cast()
 end
