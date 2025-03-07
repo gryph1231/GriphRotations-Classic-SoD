@@ -623,6 +623,9 @@ local function APL()
 
             if fury then
 
+                       if IsReady("Battle Shout") and Player:IsMoving() and battleshoutbuffremains < 10  then
+                    return S.BattleShout:Cast()
+                end
                 
                 if GetShapeshiftFormID() ~= 19 and IsReady("Berserker Stance")
                     and (TargetinRange(5) or targetRange5) and S.BerserkerStance:TimeSinceLastCast() > 1.5
@@ -652,7 +655,7 @@ local function APL()
                 end
 
        
-                if IsReady("Execute") and (TargetinRange(5) or targetRange5) and (Target:HealthPercentage() <= 20 and (Player:Rage() >= 40 or STttd < 3) or AuraUtil.FindAuraByName("Sudden Death", "player")) then
+                if IsReady("Execute") and (TargetinRange(5) or targetRange5) and (AuraUtil.FindAuraByName("Sudden Death", "player")) then
                     return S.Execute:Cast()
                 end
 
@@ -707,7 +710,10 @@ local function APL()
                 then
                     return S.Rend:Cast()
                 end
-
+ 
+                if IsReady("Execute") and (TargetinRange(5) or targetRange5) and (Target:HealthPercentage() <= 20 and (Player:Rage() >= 75)) then
+                    return S.Execute:Cast()
+                end
 
                 if IsReady("Quick Strike") and (TargetinRange(5) or targetRange5) and spend then
                     return S.QuickStrike:Cast()

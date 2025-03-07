@@ -62,10 +62,12 @@ MongooseBite = Spell(14271),
 	Disengage = Spell(14272),
 	BloodFury = Spell(20572),
 	FreezingTrap = Spell(1499),
+	
 };
 
 local S = GriphRH.Spell[3]
 S.KillShot.TextureSpellID = { 409974 } --flanking strike / leg rune slot G.g. 
+S.AspectoftheHawk.TextureSpellID = { 20580 } --shadowmeld
 
 if not Item.Hunter then
     Item.Hunter = {}
