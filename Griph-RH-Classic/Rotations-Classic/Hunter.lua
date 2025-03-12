@@ -67,7 +67,7 @@ MongooseBite = Spell(14271),
 
 local S = GriphRH.Spell[3]
 S.KillShot.TextureSpellID = { 409974 } --flanking strike / leg rune slot G.g. 
-S.AspectoftheHawk.TextureSpellID = { 20580 } --shadowmeld
+S.AspectoftheFalcon.TextureSpellID = { 13165 } --aspect of the hawk
 
 if not Item.Hunter then
     Item.Hunter = {}
