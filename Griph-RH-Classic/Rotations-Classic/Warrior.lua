@@ -634,6 +634,7 @@ local function APL()
                     S.TacticalMastery:IsAvailable() and Player:Rage() <= 25 or 
                      Player:Rage() <= 10 or 
                      S.Whirlwind:CooldownRemains() < 2 and GriphRH.AoEON() and RangeCount(10) > 1 
+                     or UnitInRaid("player")
                     ) 
                     then
                     return S.BerserkerStance:Cast()
@@ -743,7 +744,8 @@ local function APL()
                     and (TargetinRange(5) or targetRange5)
                     and ( canoverpower 
                     and ( S.Whirlwind:CooldownRemains()>2 and RangeCount(10)>1 and GriphRH.AoEON()  or  RangeCount(10)==1 or not GriphRH.AoEON()) 
-                    and (S.TacticalMastery:IsAvailable() and Player:Rage() <= 25 or Player:Rage() <= 10))
+                    and (S.TacticalMastery:IsAvailable() and Player:Rage() <= 25 or Player:Rage() <= 10 or UnitInRaid("player"))
+                        )
                
 
                 then
