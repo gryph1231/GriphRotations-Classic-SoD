@@ -32,6 +32,7 @@ Rotations-Classic\Warrior.lua
 Rotations-Classic\Mage.lua
 Rotations-Classic\Druid.lua
 Rotations-Classic\Priest.lua
+Rotations-Classic\Warlock.lua
 
 
 Modules\PVP.lua
