@@ -167,15 +167,23 @@ local function APL()
     --             local input = nil
     --         end
 
-
     if AuraUtil.FindAuraByName("Judgement of Wisdom", "target", "PLAYER|HARMFUL") then
         judgementofwisdomremains = select(6, AuraUtil.FindAuraByName("Judgement of Wisdom", "target", "PLAYER|HARMFUL")) -
             GetTime()
     else
         judgementofwisdomremains = 0
     end
-    local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
+    
+    if AuraUtil.FindAuraByName("Judgement of Martyrdom", "target", "PLAYER|HARMFUL") then
+        judgementofmartyrdomremains = select(6, AuraUtil.FindAuraByName("Judgement of Martyrdom", "target", "PLAYER|HARMFUL")) -
+            GetTime()
+    else
+        judgementofmartyrdomremains = 0
+    end
+    local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+sealtwistwindow = 1.5+0.3
+newseal = 0.3
 
     if AuraUtil.FindAuraByName("Seal of the Crusader", "player") then
         sealbuffremains = select(6, AuraUtil.FindAuraByName("Seal of the Crusader", "player", "PLAYER")) - GetTime()
@@ -191,6 +199,18 @@ local function APL()
         sealbuffremains = 0
     end
 
+if AuraUtil.FindAuraByName("Seal of Martyrdom", "player") and
+         select(6, AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER")) - GetTime()>0 and  AuraUtil.FindAuraByName("Seal of Command", "player") and
+        select(6, AuraUtil.FindAuraByName("Seal of Command", "player", "PLAYER")) - GetTime()>0
+        then
+            judgementwindow = true
+        else
+            judgementwindow = false
+        end
+
+
+
+
     if inRange25 == 0 and AuraUtil.FindAuraByName("Forbearance", "player", "PLAYER|HARMFUL")
         and (GriphRH.QueuedSpell():ID() == S.BlessingofProtection:ID() and S.BlessingofProtection:CooldownRemains() > Player:GCD()
             or GriphRH.QueuedSpell():ID() == S.DivineProtection:ID() and S.DivineProtection:CooldownRemains() > Player:GCD()) then
@@ -199,9 +219,9 @@ local function APL()
         return GriphRH.QueuedSpell():Cast()
     end
 
-    if inRange25 == 0 and AuraUtil.FindAuraByName("Forbearance", "player", "PLAYER|HARMFUL")
-        and (GriphRH.QueuedSpell():ID() == S.BlessingofProtection:ID() and S.BlessingofProtection:CooldownRemains() > Player:GCD()
-            or GriphRH.QueuedSpell():ID() == S.DivineShield:ID() and S.DivineShield:CooldownRemains() > Player:GCD()) then
+    if inRange25 == 0 or AuraUtil.FindAuraByName("Forbearance", "player", "PLAYER|HARMFUL")
+        
+            or GriphRH.QueuedSpell():ID() == S.DivineShield:ID() and S.DivineShield:CooldownRemains() > Player:GCD() then
         GriphRH.queuedSpell = { GriphRH.Spell[2].Default, 0 }
     elseif GriphRH.QueuedSpell():ID() == S.DivineShield:ID() and IsReady("Divine Shield") then
         return GriphRH.QueuedSpell():Cast()
@@ -334,15 +354,9 @@ local function APL()
             --         return S.HammerofWrath:Cast()
             --     end
 
-            if IsReady("Seal of Wisdom") and Player:ManaPercentage() < 65 and targetRange5 and judgementofwisdomremains < 2
-                and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER")
-                and not AuraUtil.FindAuraByName("Seal of Wisdom", "player", "PLAYER")
-                and sealbuffremains <= 0 then
-                return S.SealofWisdom:Cast()
-            end
 
-            if IsReady("Seal of Martyrdom") and targetRange5
-                and not AuraUtil.FindAuraByName("Seal of Wisdom", "player", "PLAYER") and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER")
+            if IsReady("Seal of Martyrdom") and targetRange10
+                and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER")
                 and sealbuffremains <= 0 then
                 return S.SealofMartyrdom:Cast()
             end
@@ -353,14 +367,14 @@ local function APL()
                 return S.HolyShield:Cast()
             end
 
-            if IsReady("Avenging Wrath") and GriphRH.CDsON() and targetRange10 then
-                return S.AvengingWrath:Cast()
-            end
+            -- if IsReady("Avenging Wrath") and GriphRH.CDsON() and targetRange10 and not AuraUtil.FindAuraByName("Forbearance", "player", "PLAYER|HARMFUL") and not Target:IsAPlayer() then
+            --     return S.AvengingWrath:Cast()
+            -- end
 
             if IsReady("Hammer of the Righteous") and targetRange5 then
                 return S.HammeroftheRighteous:Cast()
             end
-            if IsReady("Shield of Righteousness") and targetRange5 then
+            if IsReady("Shield of Righteousness") and targetRange5 and AuraUtil.FindAuraByName("Holy Shield", "player", "PLAYER")  then
                 return S.ShieldofRighteousness:Cast()
             end
 
@@ -373,8 +387,7 @@ local function APL()
                 return S.AvengersShield:Cast()
             end
 
-            if IsReady("Judgement") and targetRange10 and sealbuffremains > 0 and (AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER")
-                    or judgementofwisdomremains < 2 and AuraUtil.FindAuraByName("Seal of Wisdom", "player", "PLAYER")) then
+            if IsReady("Judgement") and targetRange10 and sealbuffremains > 0 and judgementofmartyrdomremains < 2  then
                 return S.Judgement:Cast()
             end
         end
@@ -382,136 +395,68 @@ local function APL()
 
 
         if not IsEquippedItemType("Shields") then
-            if (nextauto >= UnitAttackSpeed('player') - 0.3 or not targetRange5) and targetRange10 and (AuraUtil.FindAuraByName("Seal of Command", "player", "PLAYER") or AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER")) then
+            if (judgementwindow or not targetRange5) and targetRange10 and ( AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER") and  AuraUtil.FindAuraByName("Seal of Command","player","PLAYER")) then
                 if IsReady("Judgement") then
                     return S.Judgement:Cast()
                 end
+            end
+                   if IsReady("Seal of Command") and targetRange5 and nextauto >= UnitAttackSpeed('player') - 0.3  and  not AuraUtil.FindAuraByName("Seal of Command","player","PLAYER") then
+                return S.SealofCommand:Cast()
+                end
+
+
+      if IsReady("Consecration") and targetRange5 and (RangeCount(10) >= 4 and GriphRH.AoEON()) then
+                return S.Consecration:Cast()
             end
 
             if IsReady("Divine Storm") and (RangeCount(5) >= 2 and GriphRH.AoEON())  and targetRange5 then
                 return S.DivineStorm:Cast()
             end
 
-            if IsReady("Consecration") and S.Consecration5:TimeSinceLastCast() > 7 and targetRange5 and (Player:ManaPercentage() > 55 and RangeCount(10) >= 2 and GriphRH.AoEON()) then
+            if IsReady("Consecration") and targetRange5 and (RangeCount(10) >= 2 and GriphRH.AoEON()) then
                 return S.Consecration:Cast()
             end
 
             --CHECK LINE BELOW - do we really only want to hammer of wrath with seal of martyrdom up?
             if IsReady("Seal of Martyrdom") and targetRange5 and not AuraUtil.FindAuraByName("Seal of Command", "player", "PLAYER")
-                and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER") and IsReady("Hammer of Wrath") then
+                and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER") and IsReady("Hammer of Wrath")  and Target:HealthPercentage()<=10 then
                 return S.SealofMartyrdom:Cast()
             end
 
-            if IsReady("Hammer of Wrath") and IsUsableSpell("Hammer of Wrath") and targetRange30 and (not IsEquippedItemType("Shields") or Target:IsAPlayer()) then
-                return S.HammerofWrath:Cast()
-            end
+            -- if IsReady("Hammer of Wrath") and IsUsableSpell("Hammer of Wrath") and targetRange30 and (not IsEquippedItemType("Shields") and Target:HealthPercentage()<=10 or Target:IsAPlayer()) then
+            --     return S.HammerofWrath:Cast()
+            -- end
 
 
-            if IsReady("Seal of Martyrdom") and targetRange5 and nextauto <= 0.5 and AuraUtil.FindAuraByName("Seal of Command", "player", "PLAYER") 
+            if IsReady("Seal of Martyrdom") and targetRange5 and nextauto <= newseal and AuraUtil.FindAuraByName("Seal of Command", "player", "PLAYER") 
             and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER") then
                 return S.SealofMartyrdom:Cast()
             end
-              if IsReady("Seal of Command") and targetRange5 and nextauto <= 0.5 and AuraUtil.FindAuraByName("Seal of Martyrdom","player","PLAYER") and not AuraUtil.FindAuraByName("Seal of Command","player","PLAYER") then
+              if IsReady("Seal of Command") and targetRange5 and nextauto <= newseal and AuraUtil.FindAuraByName("Seal of Martyrdom","player","PLAYER") and not AuraUtil.FindAuraByName("Seal of Command","player","PLAYER") then
                 return S.SealofCommand:Cast()
                 end
             if IsReady("Seal of Martyrdom") and targetRange5  and not AuraUtil.FindAuraByName("Seal of Command", "player", "PLAYER") and not AuraUtil.FindAuraByName("Seal of Martyrdom", "player", "PLAYER") then
                 return S.SealofMartyrdom:Cast()
             end
 
-            if IsReady("Avenging Wrath") and GriphRH.CDsON() and targetRange10 then
-                return S.AvengingWrath:Cast()
-            end
-
-            if IsReady("Divine Storm") and targetRange5 and (nextauto>1.6 or RangeCount(10)>1 and GriphRH.AoEON())  then
-                return S.DivineStorm:Cast()
-            end
-            if IsReady("Exorcism") and targetRange30 and (nextauto>1.6 or RangeCount(10)>1 and GriphRH.AoEON()) then
-                return S.Exorcism:Cast()
-            end
+            -- if IsReady("Avenging Wrath") and GriphRH.CDsON() and targetRange10 and not AuraUtil.FindAuraByName("Forbearance", "player", "PLAYER|HARMFUL") and not Target:IsAPlayer() then
+            --     return S.AvengingWrath:Cast()
+            -- end
 
 
-            if IsReady("Crusader Strike") and targetRange5 and (nextauto>1.6 or RangeCount(10)>1 and GriphRH.AoEON()) then
+            if IsReady("Crusader Strike") and targetRange5 and (nextauto>sealtwistwindow or RangeCount(10)>1 and GriphRH.AoEON()) then
                 return S.CrusaderStrike:Cast()
             end
 
 
+            if IsReady("Divine Storm") and targetRange5 and (nextauto>sealtwistwindow or RangeCount(10)>1 and GriphRH.AoEON())  then
+                return S.DivineStorm:Cast()
+            end
+            if IsReady("Exorcism") and targetRange30 and (nextauto>sealtwistwindow or RangeCount(10)>1 and GriphRH.AoEON()) then
+                return S.Exorcism:Cast()
+            end
 
-
-
-
-
-
-
-            -- if IsReady("Divine Storm") and (RangeCount(5) >= 2 and GriphRH.AoEON()) and S.Judgement:CooldownRemains()>2 and targetRange5 then
-            --         return S.DivineStorm:Cast()
-            --     end
-
-            --     if IsReady("Hammer of Wrath") and IsUsableSpell("Hammer of Wrath") and targetRange30 and (not IsEquippedItemType("Shields") or Target:IsAPlayer()) then
-            --         return S.HammerofWrath:Cast()
-            --     end
-
-            --         if IsReady("Seal of Martyrdom") and targetRange5 and not AuraUtil.FindAuraByName("Seal of Martyrdom","player","PLAYER")
-            --         and AuraUtil.FindAuraByName("Seal of Command","player","PLAYER") and nextauto<0.65 then
-            --             return S.SealofMartyrdom:Cast()
-            --         end
-
-            --         if IsReady("Seal of Command") and targetRange5 and not AuraUtil.FindAuraByName("Seal of Command","player","PLAYER")
-            --         and AuraUtil.FindAuraByName("Seal of Martyrdom","player","PLAYER") and nextauto<0.65 then
-            --             return S.SealofCommand:Cast()
-            --         end
-
-
-            --         if IsReady("Seal of Martyrdom") and not AuraUtil.FindAuraByName("Seal of Martyrdom","player","PLAYER")
-            --         and not AuraUtil.FindAuraByName("Seal of Command","player","PLAYER") and nextauto> GCDRemaining()+0.15 then
-            --             return S.SealofMartyrdom:Cast()
-            --         end
-
-            --         if IsReady("Seal of Command") and not AuraUtil.FindAuraByName("Seal of Command","player","PLAYER")
-            --         and not AuraUtil.FindAuraByName("Seal of Martyrdom","player","PLAYER") and nextauto> GCDRemaining()+0.15  then
-            --             return S.SealofCommand:Cast()
-            --         end
-
-
-            --     if IsReady("Judgement")  and (nextauto >= UnitAttackSpeed('player') - 0.3 or not targetRange5) and targetRange10 and sealbuffremains > 0 then
-            --         return S.Judgement:Cast()
-            --     end
-            --  if IsReady("Avenging Wrath") and GriphRH.CDsON() and targetRange10 then
-            --         return S.AvengingWrath:Cast()
-            --     end
-
-            --     if  nextauto>1.7 or HL.CombatTime()<3  then
-
-
-
-
-
-
-
-            --        if IsReady("Divine Storm") and targetRange5 then
-            --         return S.DivineStorm:Cast()
-            --     end
-
-
-            --     if IsReady("Exorcism") and targetRange30
-            --         and
-            --         (nameTheArtofWar == "The Art of War" or UnitCreatureType("target") == "Undead"
-            --             or UnitCreatureType("target") == "Demon")
-            --     then
-            --         return S.Exorcism:Cast()
-            --     end
-
-
-
-            --     if IsReady("Crusader Strike") and targetRange5 then
-            --         return S.CrusaderStrike:Cast()
-            --     end
-
-
-
-
-            --     end
-
-            if IsReady("Consecration") and nextauto>1.6 and S.Consecration5:TimeSinceLastCast() > 7 and targetRange5 and (Player:ManaPercentage() > 75) then
+            if IsReady("Consecration") and nextauto>sealtwistwindow  and targetRange5 and (Player:ManaPercentage() > 75) then
                 return S.Consecration:Cast()
             end
         end
@@ -561,12 +506,16 @@ local function APL()
                 return I.autoattack:ID()
             end
 
-            if IsReady("Judgement") and targetRange10 and sealbuffremains > 0 and nextauto > UnitAttackSpeed('player') - GCDRemaining() - 0.15 then
+           if IsReady("Exorcism") and not targetRange5 and targetRange30 and IsCurrentSpell(6603) and Player:IsMoving() then
+                return S.Exorcism:Cast()
+            end
+
+            if IsReady("Judgement") and targetRange10 and sealbuffremains > 0 and IsCurrentSpell(6603) and Player:IsMoving() and judgementwindow then
                 return S.Judgement:Cast()
             end
 
 
-            if IsReady("Holy Shield") and targetRange20 and not AuraUtil.FindAuraByName("Holy Shield", "player", "PLAYER") then
+            if IsReady("Holy Shield") and targetRange30 and not AuraUtil.FindAuraByName("Holy Shield", "player", "PLAYER") and Player:IsMoving() then
                 return S.HolyShield:Cast()
             end
 
@@ -576,23 +525,23 @@ local function APL()
             if sealbuffremains < Player:GCD() then
                 if IsReady("Seal of the Crusader") and not IsEquippedItemType("Shields")
                     and TTDlong
-                    and not Target:Debuff(S.SealoftheCrusaderDebuff) and not UnitIsPlayer('target') then
+                    and not Target:Debuff(S.SealoftheCrusaderDebuff) and not UnitIsPlayer('target') and IsCurrentSpell(6603) and Player:IsMoving() then
                     return S.SealoftheCrusader:Cast()
                 end
 
 
-                -- if IsReady("Seal of Command") then
-                --     return S.SealofCommand:Cast()
-                -- end
-                if IsReady("Seal of Wisdom") and judgementofwisdomremains < 2 and IsEquippedItemType("Shields") then
-                    return S.SealofWisdom:Cast()
+                if IsReady("Seal of Command")  and not IsEquippedItemType("Shields") and IsCurrentSpell(6603) and Player:IsMoving()  then
+                    return S.SealofCommand:Cast()
                 end
+                -- if IsReady("Seal of Wisdom") and judgementofwisdomremains < 2 and IsEquippedItemType("Shields") then
+                --     return S.SealofWisdom:Cast()
+                -- end
 
-                if IsReady("Seal of Martyrdom") and not IsEquippedItemType("Shields") then
+                if IsReady("Seal of Martyrdom") and not IsEquippedItemType("Shields") and IsCurrentSpell(6603) and Player:IsMoving()  then
                     return S.SealofMartyrdom:Cast()
                 end
 
-                if IsReady("Seal of Righteousness") then
+                if IsReady("Seal of Righteousness") and IsCurrentSpell(6603) and Player:IsMoving()  then
                     return S.SealofRighteousness:Cast()
                 end
             end
